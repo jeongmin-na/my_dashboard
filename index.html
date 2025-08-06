@@ -2000,8 +2000,9 @@
         function isFilterStateEqual(filter1, filter2) {
             if (!filter1 || !filter2) return false;
             
-            return filter1.dateRange.startDate.getTime() === filter2.dateRange.startDate.getTime() &&
-                   filter1.dateRange.endDate.getTime() === filter2.dateRange.endDate.getTime() &&
+            // dateRange는 이미 timestamp 형태로 저장되어 있으므로 직접 비교
+            return filter1.dateRange.startDate === filter2.dateRange.startDate &&
+                   filter1.dateRange.endDate === filter2.dateRange.endDate &&
                    filter1.filterType === filter2.filterType &&
                    filter1.members.length === filter2.members.length &&
                    filter1.rawEventsData.length === filter2.rawEventsData.length;
@@ -11015,6 +11016,338 @@
                 }, 3000); // 데이터 로드 완료 후 토글 상태 초기화
             }, 100);
         });
+
+        // 즉시 발송 함수
+        async function sendEmailImmediately() {
+            console.log('📧 즉시 발송 버튼이 클릭되었습니다.');
+            
+            // 현재 설정된 정보 수집
+            const emailData = collectCurrentEmailSettings();
+            
+            if (!emailData) {
+                return; // 오류가 있으면 함수 종료 (collectCurrentEmailSettings에서 알림 처리)
+            }
+            
+            // 버튼 비활성화 및 로딩 표시
+            const sendButton = event.target;
+            const originalText = sendButton.innerHTML;
+            sendButton.innerHTML = '📧 발송 중...';
+            sendButton.disabled = true;
+            sendButton.style.opacity = '0.6';
+            
+            try {
+                // SMTP를 통한 메일 발송
+                await sendEmailViaSMTP(emailData);
+                
+                // 성공 메시지
+                showSimpleAlert('✅ 이메일이 성공적으로 발송되었습니다!', 'success');
+                console.log('✅ 즉시 발송 완료');
+                
+            } catch (error) {
+                console.error('❌ 이메일 발송 실패:', error);
+                showSimpleAlert('❌ 이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+            } finally {
+                // 버튼 복원
+                sendButton.innerHTML = originalText;
+                sendButton.disabled = false;
+                sendButton.style.opacity = '1';
+            }
+        }
+
+        // 현재 설정된 정보 수집 함수
+        function collectCurrentEmailSettings() {
+            console.log('📋 현재 설정 정보 수집 시작');
+            
+            // 메시지 수집
+            const messageInput = document.getElementById('email-report-message');
+            let messageText = messageInput ? messageInput.value.trim() : '';
+            
+            // 메시지가 없으면 기본 메시지 설정
+            if (!messageText) {
+                messageText = '삼성 AI Experience Group 대시보드 리포트입니다.';
+            }
+            
+            // 체크박스 상태 확인
+            const adminCheckbox = document.getElementById('admin-checkbox');
+            const allMembersCheckbox = document.getElementById('all-members-checkbox');
+            const inactiveMembersCheckbox = document.getElementById('inactive-members-checkbox');
+            const customEmailCheckbox = document.getElementById('custom-email-checkbox');
+            
+            const selectedRecipients = [];
+            let allRecipientEmails = [];
+            
+            // 관리자 수집
+            if (adminCheckbox && adminCheckbox.checked) {
+                const admins = originalMembersData ? originalMembersData.filter(member => member.role === 'owner') : [];
+                const adminEmails = admins.map(admin => admin.email);
+                allRecipientEmails = allRecipientEmails.concat(adminEmails);
+                selectedRecipients.push('관리자');
+                console.log(`✓ 관리자 ${admins.length}명 선택:`, adminEmails);
+            }
+            
+            // 전체 멤버 수집
+            if (allMembersCheckbox && allMembersCheckbox.checked) {
+                const allMembers = originalMembersData ? [...originalMembersData] : [];
+                const allMemberEmails = allMembers.map(member => member.email);
+                allRecipientEmails = allRecipientEmails.concat(allMemberEmails);
+                selectedRecipients.push('전체 멤버');
+                console.log(`✓ 전체 멤버 ${allMembers.length}명 선택:`, allMemberEmails);
+            }
+            
+            // 비활성 멤버 수집
+            if (inactiveMembersCheckbox && inactiveMembersCheckbox.checked) {
+                const inactiveMembers = originalMembersData ? originalMembersData.filter(member => {
+                    // spendData가 있는 경우와 없는 경우 모두 처리
+                    if (member.spendData) {
+                        return member.spendData.premiumRequests === 0;
+                    }
+                    return true; // spendData가 없으면 비활성으로 간주
+                }) : [];
+                const inactiveMemberEmails = inactiveMembers.map(member => member.email);
+                allRecipientEmails = allRecipientEmails.concat(inactiveMemberEmails);
+                selectedRecipients.push('비활성 멤버');
+                console.log(`✓ 비활성 멤버 ${inactiveMembers.length}명 선택:`, inactiveMemberEmails);
+            }
+            
+            // 직접 입력 이메일 주소 수집
+            const customEmails = document.getElementById('custom-emails');
+            let customEmailList = [];
+            
+            if (customEmailCheckbox && customEmailCheckbox.checked && customEmails && customEmails.value.trim()) {
+                const emails = customEmails.value.split(',').map(email => email.trim()).filter(email => email);
+                customEmailList = emails;
+                allRecipientEmails = allRecipientEmails.concat(customEmailList);
+                console.log('📧 직접 입력된 이메일:', customEmailList);
+            }
+            
+            // 수신자가 없으면 오류
+            if (selectedRecipients.length === 0 && customEmailList.length === 0) {
+                showSimpleAlert('⚠️ 수신자를 선택해주세요. (관리자, 전체 멤버, 비활성 멤버 또는 직접 입력)', 'warning');
+                return null;
+            }
+            
+            // 직접 입력 이메일이 있는 경우 유효성 검사
+            if (customEmailList.length > 0) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                for (let email of customEmailList) {
+                    if (!emailRegex.test(email)) {
+                        showSimpleAlert(`⚠️ 올바르지 않은 이메일 형식입니다: ${email}`, 'warning');
+                        return null;
+                    }
+                }
+            }
+            
+            // 중복 이메일 제거
+            const uniqueEmails = [...new Set(allRecipientEmails)];
+            console.log(`📬 총 수신자 ${uniqueEmails.length}명 (중복 제거 후):`, uniqueEmails);
+            
+            return {
+                message: messageText,
+                selectedGroups: selectedRecipients,
+                customEmails: customEmailList,
+                allEmails: uniqueEmails, // 모든 수신자 이메일 (중복 제거)
+                timestamp: new Date().toLocaleString('ko-KR')
+            };
+        }
+
+        // 수신자 미리보기에서 즉시 발송하는 함수
+        async function sendEmailFromPreview() {
+            console.log('📧 미리보기에서 즉시 발송 버튼이 클릭되었습니다.');
+            
+            // 미리보기 팝업에서 현재 설정된 정보 다시 수집
+            const emailData = collectEmailDataFromPreview();
+            
+            if (!emailData) {
+                return; // 오류가 있으면 함수 종료
+            }
+            
+            // 버튼 비활성화 및 로딩 표시
+            const sendButton = event.target;
+            const originalText = sendButton.innerHTML;
+            sendButton.innerHTML = '📧 발송 중...';
+            sendButton.disabled = true;
+            sendButton.style.opacity = '0.6';
+            
+            try {
+                // SMTP를 통한 메일 발송
+                await sendEmailViaSMTP(emailData);
+                
+                // 성공 메시지
+                showSimpleAlert('✅ 이메일이 성공적으로 발송되었습니다!', 'success');
+                console.log('✅ 미리보기에서 즉시 발송 완료');
+                
+                // 미리보기 팝업 닫기
+                closeEmailRecipientsModal();
+                
+            } catch (error) {
+                console.error('❌ 이메일 발송 실패:', error);
+                showSimpleAlert('❌ 이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+            } finally {
+                // 버튼 복원
+                sendButton.innerHTML = originalText;
+                sendButton.disabled = false;
+                sendButton.style.opacity = '1';
+            }
+        }
+
+        // 미리보기 팝업에서 이메일 데이터 수집 함수
+        function collectEmailDataFromPreview() {
+            console.log('📋 미리보기에서 현재 설정 정보 수집 시작');
+            
+            // 메시지 수집 (미리보기 팝업의 메시지 입력창에서)
+            const messageInput = document.getElementById('email-preview-message');
+            let messageText = messageInput ? messageInput.value.trim() : '';
+            
+            // 메시지가 없으면 원본 입력창에서 가져오기
+            if (!messageText) {
+                const originalMessageInput = document.getElementById('email-report-message');
+                messageText = originalMessageInput ? originalMessageInput.value.trim() : '';
+            }
+            
+            // 메시지가 여전히 없으면 기본 메시지 설정
+            if (!messageText) {
+                messageText = '삼성 AI Experience Group 대시보드 리포트입니다.';
+            }
+            
+            // 현재 체크박스 상태를 다시 확인하여 수신자 수집
+            const adminCheckbox = document.getElementById('admin-checkbox');
+            const allMembersCheckbox = document.getElementById('all-members-checkbox');
+            const inactiveMembersCheckbox = document.getElementById('inactive-members-checkbox');
+            const customEmailCheckbox = document.getElementById('custom-email-checkbox');
+            
+            const selectedRecipients = [];
+            let allRecipientEmails = [];
+            
+            // 관리자 수집
+            if (adminCheckbox && adminCheckbox.checked) {
+                const admins = originalMembersData ? originalMembersData.filter(member => member.role === 'owner') : [];
+                const adminEmails = admins.map(admin => admin.email);
+                allRecipientEmails = allRecipientEmails.concat(adminEmails);
+                selectedRecipients.push('관리자');
+                console.log(`✓ 관리자 ${admins.length}명 선택:`, adminEmails);
+            }
+            
+            // 전체 멤버 수집
+            if (allMembersCheckbox && allMembersCheckbox.checked) {
+                const allMembers = originalMembersData ? [...originalMembersData] : [];
+                const allMemberEmails = allMembers.map(member => member.email);
+                allRecipientEmails = allRecipientEmails.concat(allMemberEmails);
+                selectedRecipients.push('전체 멤버');
+                console.log(`✓ 전체 멤버 ${allMembers.length}명 선택:`, allMemberEmails);
+            }
+            
+            // 비활성 멤버 수집
+            if (inactiveMembersCheckbox && inactiveMembersCheckbox.checked) {
+                const inactiveMembers = originalMembersData ? originalMembersData.filter(member => {
+                    if (member.spendData) {
+                        return member.spendData.premiumRequests === 0;
+                    }
+                    return true;
+                }) : [];
+                const inactiveMemberEmails = inactiveMembers.map(member => member.email);
+                allRecipientEmails = allRecipientEmails.concat(inactiveMemberEmails);
+                selectedRecipients.push('비활성 멤버');
+                console.log(`✓ 비활성 멤버 ${inactiveMembers.length}명 선택:`, inactiveMemberEmails);
+            }
+            
+            // 직접 입력 이메일 주소 수집
+            const customEmails = document.getElementById('custom-emails');
+            let customEmailList = [];
+            
+            if (customEmailCheckbox && customEmailCheckbox.checked && customEmails && customEmails.value.trim()) {
+                const emails = customEmails.value.split(',').map(email => email.trim()).filter(email => email);
+                customEmailList = emails;
+                allRecipientEmails = allRecipientEmails.concat(customEmailList);
+                console.log('📧 직접 입력된 이메일:', customEmailList);
+            }
+            
+            // 수신자가 없으면 오류
+            if (selectedRecipients.length === 0 && customEmailList.length === 0) {
+                showSimpleAlert('⚠️ 수신자를 선택해주세요. (관리자, 전체 멤버, 비활성 멤버 또는 직접 입력)', 'warning');
+                return null;
+            }
+            
+            // 직접 입력 이메일이 있는 경우 유효성 검사
+            if (customEmailList.length > 0) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                for (let email of customEmailList) {
+                    if (!emailRegex.test(email)) {
+                        showSimpleAlert(`⚠️ 올바르지 않은 이메일 형식입니다: ${email}`, 'warning');
+                        return null;
+                    }
+                }
+            }
+            
+            // 중복 이메일 제거
+            const uniqueEmails = [...new Set(allRecipientEmails)];
+            console.log(`📬 총 수신자 ${uniqueEmails.length}명 (중복 제거 후):`, uniqueEmails);
+            
+            return {
+                message: messageText,
+                selectedGroups: selectedRecipients,
+                customEmails: customEmailList,
+                allEmails: uniqueEmails,
+                timestamp: new Date().toLocaleString('ko-KR'),
+                source: 'preview' // 미리보기에서 발송됨을 표시
+            };
+        }
+
+        // SMTP를 통한 메일 발송 함수
+        async function sendEmailViaSMTP(emailData) {
+            console.log('📤 SMTP를 통한 메일 발송 시작');
+            
+            // 수신자 목록 텍스트 생성
+            let recipientText = '';
+            if (emailData.selectedGroups.length > 0) {
+                recipientText += `선택된 그룹: ${emailData.selectedGroups.join(', ')}`;
+                recipientText += ` (총 ${emailData.allEmails.length}명)`;
+            }
+            if (emailData.customEmails.length > 0) {
+                if (recipientText) recipientText += '\n';
+                recipientText += `직접 입력 이메일: ${emailData.customEmails.join(', ')}`;
+            }
+            
+            // 발송 데이터 준비
+            const emailPayload = {
+                to_emails: emailData.allEmails,
+                subject: '[Samsung AI Dashboard] 예약 발송 리포트',
+                message: emailData.message,
+                recipients: recipientText,
+                timestamp: emailData.timestamp,
+                dashboard_url: window.location.href,
+                recipient_count: emailData.allEmails ? emailData.allEmails.length : 0,
+                source: emailData.source || 'scheduled',
+                scheduleId: emailData.scheduleId,
+                scheduleTitle: emailData.scheduleTitle
+            };
+            
+            console.log('📧 SMTP 발송 데이터:', emailPayload);
+            console.log(`📬 발송 대상: ${emailData.allEmails ? emailData.allEmails.length : 0}명`);
+            console.log('📧 수신자 목록:', emailData.allEmails);
+            
+            // SMTP 서버로 발송 요청
+            try {
+                const response = await fetch('/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(emailPayload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('✅ SMTP 발송 성공:', result);
+                return result;
+                
+            } catch (error) {
+                console.error('❌ SMTP 발송 실패:', error);
+                throw new Error(`SMTP 발송 실패: ${error.message}`);
+            }
+        }
 
         // =====================================================
         // 📅 자동 메일 발송 스케줄러 시스템
