@@ -4314,22 +4314,53 @@
             // 통합 데이터 저장소에서 데이터 가져오기
             const rawEvents = chartDataStore.rawEvents.length > 0 ? chartDataStore.rawEvents : currentRawEventsData;
             
+            console.log('📊 generateDailyActivityData 디버깅:');
+            console.log('- chartDataStore.rawEvents.length:', chartDataStore.rawEvents ? chartDataStore.rawEvents.length : 0);
+            console.log('- currentRawEventsData.length:', currentRawEventsData ? currentRawEventsData.length : 0);
+            console.log('- 사용할 rawEvents.length:', rawEvents ? rawEvents.length : 0);
+            console.log('- dateRange:', {
+                start: new Date(dateRange.startDate).toLocaleString('ko-KR'),
+                end: new Date(dateRange.endDate).toLocaleString('ko-KR')
+            });
+            
             if (!rawEvents || rawEvents.length === 0) {
                 console.log('⚠️ generateDailyActivityData: 사용 가능한 이벤트 데이터가 없습니다.');
                 return dailyData;
             }
             
+            // 샘플 이벤트 확인
+            if (rawEvents.length > 0) {
+                const sampleEvent = rawEvents[0];
+                console.log('📝 샘플 이벤트:', {
+                    timestamp: sampleEvent.timestamp,
+                    date: new Date(parseInt(sampleEvent.timestamp)).toLocaleString('ko-KR'),
+                    userEmail: sampleEvent.userEmail,
+                    kind: sampleEvent.kind
+                });
+            }
+            
             // 날짜별 활동 수 집계
             const dailyActivity = new Map();
+            let processedEvents = 0;
+            let filteredEvents = 0;
             
             rawEvents.forEach(event => {
+                processedEvents++;
                 const eventDate = new Date(parseInt(event.timestamp));
                 const dateKey = eventDate.toISOString().split('T')[0];
                 
-                if (eventDate >= dateRange.startDate && eventDate <= dateRange.endDate) {
+                // 날짜 범위 확인을 위해 timestamp를 Date로 변환
+                const startDate = new Date(dateRange.startDate);
+                const endDate = new Date(dateRange.endDate);
+                
+                if (eventDate >= startDate && eventDate <= endDate) {
+                    filteredEvents++;
                     dailyActivity.set(dateKey, (dailyActivity.get(dateKey) || 0) + 1);
                 }
             });
+            
+            console.log(`📊 이벤트 처리 결과: 전체 ${processedEvents}개, 필터링된 ${filteredEvents}개`);
+            console.log('📅 날짜별 활동 집계:', Array.from(dailyActivity.entries()));
             
             // 날짜 범위 내 모든 날짜에 대해 데이터 생성
             const startDate = new Date(dateRange.startDate);
@@ -4338,13 +4369,15 @@
             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                 const dateKey = d.toISOString().split('T')[0];
                 const dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
+                const activityCount = dailyActivity.get(dateKey) || 0;
                 
                 dailyData.push({
                     date: dateStr,
-                    value: dailyActivity.get(dateKey) || 0
+                    value: activityCount
                 });
             }
             
+            console.log('📊 최종 일별 데이터:', dailyData);
             return dailyData;
         }
 
@@ -11460,9 +11493,16 @@
                 return false;
             }
 
-            // 현재 시간이 예약 시간과 같거나 지났는지 확인 (1분 오차 허용)
+            // 현재 시간이 예약 시간과 같거나 지났는지 확인 (5분 오차 허용으로 확대)
             const timeDiff = currentTime.getTime() - targetSendTime.getTime();
-            const shouldSend = timeDiff >= 0 && timeDiff < 60000; // 1분 이내
+            const shouldSend = timeDiff >= 0 && timeDiff < 300000; // 5분 이내
+
+            // 디버깅을 위한 상세 로그
+            console.log(`🔍 발송 시간 검사: ${schedule.title}`);
+            console.log(`   현재 시간: ${currentTime.toLocaleString('ko-KR')} (${currentTime.getTime()})`);
+            console.log(`   목표 시간: ${targetSendTime.toLocaleString('ko-KR')} (${targetSendTime.getTime()})`);
+            console.log(`   시간 차이: ${timeDiff}ms (${Math.round(timeDiff/1000/60)}분)`);
+            console.log(`   발송 여부: ${shouldSend}`);
 
             if (shouldSend) {
                 console.log(`⏰ 발송 시간 도달: ${schedule.title} (이번 발송: ${targetSendTimeStr}, 현재: ${currentTime.toLocaleString('ko-KR')})`);
@@ -11829,6 +11869,42 @@
                 console.log(`⏰ 시간 드롭다운 초기화: ${hours}:${minutes}`);
             }
         }
+
+        // 디버깅: 스케줄러 상태 확인 함수
+        function checkSchedulerStatus() {
+            console.log('=== 📅 스케줄러 상태 점검 ===');
+            console.log(`스케줄러 실행 중: ${isSchedulerRunning}`);
+            console.log(`스케줄러 활성화: ${emailSchedulerActive}`);
+            console.log(`스케줄러 인터벌: ${emailSchedulerInterval}`);
+            
+            if (window.emailScheduleList) {
+                console.log(`예약 리스트 개수: ${window.emailScheduleList.length}`);
+                window.emailScheduleList.forEach((schedule, index) => {
+                    console.log(`[${index}] ${schedule.title}: ${schedule.status}, 이번: ${schedule.currentSend}, 다음: ${schedule.nextSend}`);
+                });
+            } else {
+                console.log('예약 리스트 없음');
+            }
+            
+            const emailToggle = document.querySelector('#settings .toggle-switch');
+            if (emailToggle) {
+                console.log(`토글 상태: ${emailToggle.classList.contains('off') ? '비활성' : '활성'}`);
+            }
+            
+            // 다음 실행 시간 확인
+            const now = new Date();
+            console.log(`현재 시간: ${now.toLocaleString('ko-KR')}`);
+        }
+
+        // 디버깅: 테스트 예약 메일 발송 강제 실행
+        function forceCheckScheduledEmails() {
+            console.log('🔧 강제 예약 메일 검사 실행');
+            checkAndSendScheduledEmails();
+        }
+
+        // 전역 함수로 등록 (콘솔에서 호출 가능)
+        window.checkSchedulerStatus = checkSchedulerStatus;
+        window.forceCheckScheduledEmails = forceCheckScheduledEmails;
 
     </script>
 </body>
