@@ -5206,7 +5206,7 @@
 
         // API 호출을 위한 설정
         const API_CONFIG = {
-            baseUrl: 'http://localhost:8001', // 로컬 프록시 서버
+            baseUrl: window.location.origin, // 현재 도메인 사용 (Vercel 배포용)
             apiKey: 'key_e46368ce482125bbd568b7d55090c657e30e4b73c824f522cbc9ef9b1bf3f0d3',
             headers: {
                 'Content-Type': 'application/json'
@@ -5232,9 +5232,9 @@
                     options.body = JSON.stringify(data);
                 }
 
-                console.log(`실제 Cursor Admin API 호출: ${method} ${API_CONFIG.baseUrl}${endpoint}`, data);
+                console.log(`실제 Cursor Admin API 호출: ${method} ${API_CONFIG.baseUrl}/api${endpoint}`, data);
                
-                const response = await fetch(API_CONFIG.baseUrl + endpoint, options);
+                const response = await fetch(API_CONFIG.baseUrl + '/api' + endpoint, options);
                
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -5262,7 +5262,7 @@
         // API 연결 상태 확인
         async function checkAPIConnection() {
             try {
-                const response = await fetch(API_CONFIG.baseUrl + '/teams/members', {
+                const response = await fetch(API_CONFIG.baseUrl + '/api/teams/members', {
                     method: 'GET',
                     headers: API_CONFIG.headers
                 });
