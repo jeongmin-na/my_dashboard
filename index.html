@@ -11423,19 +11423,24 @@
 
         // 예약된 이메일 검사 및 발송
         async function checkAndSendScheduledEmails() {
+            console.log('=== 📅 예약 이메일 검사 시작 ===');
+            
             // 토글 상태 확인
             if (!emailSchedulerActive) {
                 console.log('📅 예약 메일 발송이 비활성화되어 있습니다.');
+                console.log(`   emailSchedulerActive: ${emailSchedulerActive}`);
                 return;
             }
 
             if (!window.emailScheduleList || window.emailScheduleList.length === 0) {
                 console.log('📅 예약된 이메일이 없습니다.');
+                console.log(`   window.emailScheduleList: ${window.emailScheduleList}`);
                 return;
             }
 
             const now = new Date();
             console.log(`📅 예약 이메일 검사 시작: ${now.toLocaleString('ko-KR')}`);
+            console.log(`📋 전체 예약 리스트: ${window.emailScheduleList.length}개`);
 
             // 활성 상태인 예약만 검사
             const activeSchedules = window.emailScheduleList.filter(schedule => 
@@ -11443,6 +11448,11 @@
             );
 
             console.log(`📅 활성 예약 ${activeSchedules.length}개 검사 중...`);
+            
+            // 각 예약의 상세 정보 출력
+            window.emailScheduleList.forEach((schedule, index) => {
+                console.log(`[${index}] 제목: ${schedule.title}, 상태: ${schedule.status}, 이번: ${schedule.currentSend}, 다음: ${schedule.nextSend}`);
+            });
 
             for (const schedule of activeSchedules) {
                 try {
@@ -11494,16 +11504,21 @@
                 return false;
             }
 
-            // 현재 시간이 예약 시간과 같거나 지났는지 확인 (5분 오차 허용으로 확대)
-            const timeDiff = currentTime.getTime() - targetSendTime.getTime();
-            const shouldSend = timeDiff >= 0 && timeDiff < 300000; // 5분 이내
+            // 시간을 분 단위까지만 비교 (초와 밀리초는 0으로 설정)
+            const currentMinute = new Date(currentTime);
+            currentMinute.setSeconds(0, 0);
+            
+            const targetMinute = new Date(targetSendTime);
+            targetMinute.setSeconds(0, 0);
+            
+            // 분 단위까지 일치하면 발송
+            const shouldSend = currentMinute.getTime() === targetMinute.getTime();
 
             // 디버깅을 위한 상세 로그
             console.log(`🔍 발송 시간 검사: ${schedule.title}`);
-            console.log(`   현재 시간: ${currentTime.toLocaleString('ko-KR')} (${currentTime.getTime()})`);
-            console.log(`   목표 시간: ${targetSendTime.toLocaleString('ko-KR')} (${targetSendTime.getTime()})`);
-            console.log(`   시간 차이: ${timeDiff}ms (${Math.round(timeDiff/1000/60)}분)`);
-            console.log(`   발송 여부: ${shouldSend}`);
+            console.log(`   현재 시간: ${currentTime.toLocaleString('ko-KR')} (분단위: ${currentMinute.toLocaleString('ko-KR')})`);
+            console.log(`   목표 시간: ${targetSendTime.toLocaleString('ko-KR')} (분단위: ${targetMinute.toLocaleString('ko-KR')})`);
+            console.log(`   분 단위 일치: ${shouldSend}`);
 
             if (shouldSend) {
                 console.log(`⏰ 발송 시간 도달: ${schedule.title} (이번 발송: ${targetSendTimeStr}, 현재: ${currentTime.toLocaleString('ko-KR')})`);
@@ -11515,15 +11530,29 @@
         // nextSend 문자열을 Date 객체로 변환
         function parseNextSendTime(nextSendStr) {
             try {
+                console.log(`🔧 시간 파싱 시도: "${nextSendStr}"`);
+                
                 // "2025. 8. 7. 오전 9:00" 형태의 문자열 파싱
                 const parts = nextSendStr.split(' ');
+                console.log(`🔧 분할 결과:`, parts);
+                
+                if (parts.length < 5) {
+                    console.warn(`❌ 시간 형식 부족: ${nextSendStr} (부분 수: ${parts.length})`);
+                    return null;
+                }
+                
                 const datePart = parts[0] + ' ' + parts[1] + ' ' + parts[2]; // "2025. 8. 7."
                 const timePart = parts[4]; // "9:00"
                 const ampm = parts[3]; // "오전" or "오후"
 
+                console.log(`🔧 날짜: ${datePart}, 오전/오후: ${ampm}, 시간: ${timePart}`);
+
                 // 날짜 파싱
                 const dateMatch = datePart.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\./);
-                if (!dateMatch) return null;
+                if (!dateMatch) {
+                    console.warn(`❌ 날짜 매칭 실패: ${datePart}`);
+                    return null;
+                }
 
                 const year = parseInt(dateMatch[1]);
                 const month = parseInt(dateMatch[2]) - 1; // Date 객체는 0부터 시작
@@ -11531,7 +11560,10 @@
 
                 // 시간 파싱
                 const timeMatch = timePart.match(/(\d{1,2}):(\d{2})/);
-                if (!timeMatch) return null;
+                if (!timeMatch) {
+                    console.warn(`❌ 시간 매칭 실패: ${timePart}`);
+                    return null;
+                }
 
                 let hour = parseInt(timeMatch[1]);
                 const minute = parseInt(timeMatch[2]);
@@ -11543,9 +11575,12 @@
                     hour = 0;
                 }
 
-                return new Date(year, month, day, hour, minute, 0, 0);
+                const result = new Date(year, month, day, hour, minute, 0, 0);
+                console.log(`✅ 시간 파싱 성공: ${nextSendStr} → ${result.toLocaleString('ko-KR')}`);
+                
+                return result;
             } catch (error) {
-                console.error('nextSend 시간 파싱 오류:', error);
+                console.error(`❌ nextSend 시간 파싱 오류 (${nextSendStr}):`, error);
                 return null;
             }
         }
@@ -11553,8 +11588,27 @@
         // 예약에서 이메일 데이터 수집
         async function collectEmailDataFromSchedule(schedule) {
             console.log(`📋 예약에서 이메일 데이터 수집: ${schedule.title}`);
+            console.log(`📋 수신자 그룹: ${schedule.recipients}`);
+            console.log(`📋 originalMembersData 상태:`, originalMembersData ? `${originalMembersData.length}명` : 'null');
+            console.log(`📋 currentMembers 상태:`, currentMembers ? `${currentMembers.length}명` : 'null');
 
             try {
+                // 멤버 데이터가 없으면 다시 가져오기
+                let membersData = originalMembersData || currentMembers;
+                if (!membersData || membersData.length === 0) {
+                    console.log('📋 멤버 데이터가 없어서 다시 가져옵니다...');
+                    try {
+                        const teamData = await getTeamMembers();
+                        if (teamData && teamData.teamMembers) {
+                            membersData = teamData.teamMembers;
+                            console.log(`📋 멤버 데이터 새로 로드: ${membersData.length}명`);
+                        }
+                    } catch (error) {
+                        console.error('❌ 멤버 데이터 가져오기 실패:', error);
+                        return null;
+                    }
+                }
+
                 // 수신자 그룹 파싱
                 const recipients = schedule.recipients.split(', ');
                 const selectedRecipients = [];
@@ -11564,19 +11618,19 @@
                 // 각 수신자 그룹 처리
                 for (const recipient of recipients) {
                     if (recipient === '관리자') {
-                        const admins = originalMembersData ? originalMembersData.filter(member => member.role === 'owner') : [];
+                        const admins = membersData ? membersData.filter(member => member.role === 'owner') : [];
                         const adminEmails = admins.map(admin => admin.email);
                         allRecipientEmails = allRecipientEmails.concat(adminEmails);
                         selectedRecipients.push('관리자');
                         console.log(`✓ 관리자 ${admins.length}명 추가`);
                     } else if (recipient === '전체 멤버') {
-                        const allMembers = originalMembersData ? [...originalMembersData] : [];
+                        const allMembers = membersData ? [...membersData] : [];
                         const allMemberEmails = allMembers.map(member => member.email);
                         allRecipientEmails = allRecipientEmails.concat(allMemberEmails);
                         selectedRecipients.push('전체 멤버');
                         console.log(`✓ 전체 멤버 ${allMembers.length}명 추가`);
                     } else if (recipient === '비활성 멤버') {
-                        const inactiveMembers = originalMembersData ? originalMembersData.filter(member => {
+                        const inactiveMembers = membersData ? membersData.filter(member => {
                             if (member.spendData) {
                                 return member.spendData.premiumRequests === 0;
                             }
