@@ -1545,11 +1545,11 @@
                             <div class="accordion-arrow">▼</div>
                         </div>
                         <div class="accordion-content">
-                            <!-- 자동 리포트 활성화 -->
+                            <!-- 예약 메일 발송 관리 -->
                             <div class="setting-item">
                                 <div>
-                                    <div class="setting-label">자동 리포트 활성화</div>
-                                    <div class="setting-description">정기적으로 이메일 리포트를 자동 발송합니다</div>
+                                    <div class="setting-label">예약 메일 발송 관리</div>
+                                    <div class="setting-description">예약된 메일의 자동 발송을 관리합니다</div>
                                 </div>
                                 <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
                             </div>
@@ -1573,16 +1573,122 @@
                                     <div class="setting-label">발송 시간 설정</div>
                                     <div class="setting-description">리포트를 발송할 구체적인 시간을 설정하세요</div>
                                 </div>
-                                <input type="time" id="email-time-input" value="09:00" style="
-                                    background-color: transparent;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    padding: 8px 12px;
-                                    color: #e1e1e1;
-                                    font-size: 14px;
-                                    font-family: inherit;
-                                    transition: background-color 0.2s ease;
-                                " onfocus="this.style.backgroundColor='#3a3a3a'" onblur="this.style.backgroundColor='transparent'">
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <select id="email-hour-select" style="
+                                        background-color: transparent;
+                                        border: 1px solid #3a3a3a;
+                                        border-radius: 4px;
+                                        padding: 8px 12px;
+                                        color: #e1e1e1;
+                                        font-size: 14px;
+                                        font-family: inherit;
+                                        transition: background-color 0.2s ease;
+                                        min-width: 120px;
+                                        max-height: 200px;
+                                        overflow-y: auto;
+                                    " onfocus="this.style.backgroundColor='#3a3a3a'" onblur="this.style.backgroundColor='transparent'" onchange="updateTimeInput()">
+                                        <option value="00">오전 12시</option>
+                                        <option value="01">오전 1시</option>
+                                        <option value="02">오전 2시</option>
+                                        <option value="03">오전 3시</option>
+                                        <option value="04">오전 4시</option>
+                                        <option value="05">오전 5시</option>
+                                        <option value="06">오전 6시</option>
+                                        <option value="07">오전 7시</option>
+                                        <option value="08">오전 8시</option>
+                                        <option value="09" selected>오전 9시</option>
+                                        <option value="10">오전 10시</option>
+                                        <option value="11">오전 11시</option>
+                                        <option value="12">오후 12시</option>
+                                        <option value="13">오후 1시</option>
+                                        <option value="14">오후 2시</option>
+                                        <option value="15">오후 3시</option>
+                                        <option value="16">오후 4시</option>
+                                        <option value="17">오후 5시</option>
+                                        <option value="18">오후 6시</option>
+                                        <option value="19">오후 7시</option>
+                                        <option value="20">오후 8시</option>
+                                        <option value="21">오후 9시</option>
+                                        <option value="22">오후 10시</option>
+                                        <option value="23">오후 11시</option>
+                                    </select>
+                                    <select id="email-minute-select" style="
+                                        background-color: transparent;
+                                        border: 1px solid #3a3a3a;
+                                        border-radius: 4px;
+                                        padding: 8px 12px;
+                                        color: #e1e1e1;
+                                        font-size: 14px;
+                                        font-family: inherit;
+                                        transition: background-color 0.2s ease;
+                                        min-width: 80px;
+                                        max-height: 200px;
+                                        overflow-y: auto;
+                                    " onfocus="this.style.backgroundColor='#3a3a3a'" onblur="this.style.backgroundColor='transparent'" onchange="updateTimeInput()">
+                                        <option value="00" selected>00분</option>
+                                        <option value="01">01분</option>
+                                        <option value="02">02분</option>
+                                        <option value="03">03분</option>
+                                        <option value="04">04분</option>
+                                        <option value="05">05분</option>
+                                        <option value="06">06분</option>
+                                        <option value="07">07분</option>
+                                        <option value="08">08분</option>
+                                        <option value="09">09분</option>
+                                        <option value="10">10분</option>
+                                        <option value="11">11분</option>
+                                        <option value="12">12분</option>
+                                        <option value="13">13분</option>
+                                        <option value="14">14분</option>
+                                        <option value="15">15분</option>
+                                        <option value="16">16분</option>
+                                        <option value="17">17분</option>
+                                        <option value="18">18분</option>
+                                        <option value="19">19분</option>
+                                        <option value="20">20분</option>
+                                        <option value="21">21분</option>
+                                        <option value="22">22분</option>
+                                        <option value="23">23분</option>
+                                        <option value="24">24분</option>
+                                        <option value="25">25분</option>
+                                        <option value="26">26분</option>
+                                        <option value="27">27분</option>
+                                        <option value="28">28분</option>
+                                        <option value="29">29분</option>
+                                        <option value="30">30분</option>
+                                        <option value="31">31분</option>
+                                        <option value="32">32분</option>
+                                        <option value="33">33분</option>
+                                        <option value="34">34분</option>
+                                        <option value="35">35분</option>
+                                        <option value="36">36분</option>
+                                        <option value="37">37분</option>
+                                        <option value="38">38분</option>
+                                        <option value="39">39분</option>
+                                        <option value="40">40분</option>
+                                        <option value="41">41분</option>
+                                        <option value="42">42분</option>
+                                        <option value="43">43분</option>
+                                        <option value="44">44분</option>
+                                        <option value="45">45분</option>
+                                        <option value="46">46분</option>
+                                        <option value="47">47분</option>
+                                        <option value="48">48분</option>
+                                        <option value="49">49분</option>
+                                        <option value="50">50분</option>
+                                        <option value="51">51분</option>
+                                        <option value="52">52분</option>
+                                        <option value="53">53분</option>
+                                        <option value="54">54분</option>
+                                        <option value="55">55분</option>
+                                        <option value="56">56분</option>
+                                        <option value="57">57분</option>
+                                        <option value="58">58분</option>
+                                        <option value="59">59분</option>
+                                    </select>
+                                    <!-- 숨겨진 time input (기존 로직 호환성을 위해) -->
+                                    <input type="time" id="email-time-input" value="09:00" style="display: none;">
+                                </div>
                             </div>
 
                             <!-- 발송 메시지 입력 -->
@@ -1665,26 +1771,42 @@
                             
                             <!-- 직접 입력 영역 -->
                             <div id="custom-email-input" style="display: none; margin-top: 10px;">
-                                <div style="margin-bottom: 8px;">
-                                    <span style="color: #e1e1e1; font-size: 12px;">직접 입력 이메일 주소 (쉼표로 구분)</span>
+                                <div style="margin-bottom: 15px;">
+                                    <div class="setting-label">직접 입력 이메일 주소</div>
+                                    <div class="setting-description">쉼표로 구분하여 이메일 주소를 직접 입력하세요</div>
                                 </div>
-                                <textarea
-                                    id="custom-emails"
-                                    placeholder="email을 직접 입력 하세요.(example1@samsung.com, example2@samsung.com)"
-                                    style="
-                                        width: 100%;
-                                        min-height: 60px;
-                                        padding: 8px;
-                                        border: 1px solid #3a3a3a;
-                                        border-radius: 4px;
-                                        background-color: transparent;
-                                        color: #e1e1e1;
-                                        font-size: 12px;
-                                        resize: vertical;
-                                        font-family: inherit;
-                                        box-sizing: border-box;
-                                    "
-                                ></textarea>
+                                <div style="
+                                    position: relative;
+                                    background-color: #1a1a1a;
+                                    border: 1px solid #3a3a3a;
+                                    border-radius: 4px;
+                                    transition: all 0.2s ease;
+                                    width: 100%;
+                                    max-width: 800px;
+                                ">
+                                    <textarea
+                                        id="custom-emails"
+                                        placeholder="email을 직접 입력 하세요.(example1@samsung.com, example2@samsung.com)"
+                                        style="
+                                            width: 100%;
+                                            height: 120px;
+                                            padding: 12px;
+                                            border: none;
+                                            background: transparent;
+                                            color: #ff9800;
+                                            font-size: 14px;
+                                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                            line-height: 1.5;
+                                            outline: none;
+                                            resize: vertical;
+                                            min-height: 120px;
+                                            max-height: 200px;
+                                            box-sizing: border-box;
+                                        "
+                                        onfocus="this.parentElement.style.backgroundColor='#2a2a2a'; this.parentElement.style.borderColor='#4a9eff'"
+                                        onblur="this.parentElement.style.backgroundColor='#1a1a1a'; this.parentElement.style.borderColor='#3a3a3a'"
+                                    ></textarea>
+                                </div>
                             </div>
                             
                             <!-- 하단 버튼 -->
