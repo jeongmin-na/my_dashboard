@@ -11044,6 +11044,14 @@
                         emailSchedulerActive = true;
                         console.log('📅 예약 메일 발송 관리 토글 초기화: 활성화 상태');
                         
+                        // 기존 예약 시간 갱신 (페이지 로드 시)
+                        if (window.emailScheduleList && window.emailScheduleList.length > 0) {
+                            console.log('📅 페이지 로드 시 예약 시간 갱신 검사');
+                            window.emailScheduleList.forEach(schedule => {
+                                updateScheduleTimeIfNeeded(schedule);
+                            });
+                        }
+                        
                         // 스케줄러 시작
                         startEmailScheduler();
                     }
@@ -11511,14 +11519,27 @@
             const targetMinute = new Date(targetSendTime);
             targetMinute.setSeconds(0, 0);
             
-            // 분 단위까지 일치하면 발송
-            const shouldSend = currentMinute.getTime() === targetMinute.getTime();
+            // 현재 시간이 목표 시간과 같거나 지났는지 확인 (분 단위)
+            const timeDiff = currentMinute.getTime() - targetMinute.getTime();
+            const shouldSend = timeDiff >= 0 && timeDiff < 60000; // 1분 이내
 
             // 디버깅을 위한 상세 로그
             console.log(`🔍 발송 시간 검사: ${schedule.title}`);
             console.log(`   현재 시간: ${currentTime.toLocaleString('ko-KR')} (분단위: ${currentMinute.toLocaleString('ko-KR')})`);
             console.log(`   목표 시간: ${targetSendTime.toLocaleString('ko-KR')} (분단위: ${targetMinute.toLocaleString('ko-KR')})`);
-            console.log(`   분 단위 일치: ${shouldSend}`);
+            console.log(`   시간 차이: ${timeDiff}ms (${Math.round(timeDiff/1000/60)}분)`);
+            console.log(`   발송 조건: 현재 >= 목표 && 차이 < 1분`);
+            console.log(`   발송 여부: ${shouldSend}`);
+
+            // 목표 시간이 미래라면 추가 정보 제공
+            if (timeDiff < 0) {
+                const remainingTime = Math.abs(timeDiff);
+                const remainingDays = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                const remainingHours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const remainingMinutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                
+                console.log(`   📅 발송까지 남은 시간: ${remainingDays}일 ${remainingHours}시간 ${remainingMinutes}분`);
+            }
 
             if (shouldSend) {
                 console.log(`⏰ 발송 시간 도달: ${schedule.title} (이번 발송: ${targetSendTimeStr}, 현재: ${currentTime.toLocaleString('ko-KR')})`);
@@ -11811,23 +11832,66 @@
                 return;
             }
             
-            // 이번 발송 시간이 현재보다 과거인 경우 갱신
-            if (currentSendTime < now) {
-                console.log(`⏰ 예약 시간 갱신 필요: ${schedule.title}`);
-                console.log(`   현재 시간: ${now.toLocaleString('ko-KR')}`);
-                console.log(`   이번 발송 시간: ${currentSendTime.toLocaleString('ko-KR')}`);
+            // 현재 시간에서 10분 여유를 둠 (시간 차이로 인한 오류 방지)
+            const timeDiffMinutes = (now.getTime() - currentSendTime.getTime()) / (1000 * 60);
+            
+            console.log(`🔍 시간 갱신 검사: ${schedule.title}`);
+            console.log(`   현재 시간: ${now.toLocaleString('ko-KR')}`);
+            console.log(`   이번 발송 시간: ${currentSendTime.toLocaleString('ko-KR')}`);
+            console.log(`   시간 차이: ${Math.round(timeDiffMinutes)}분`);
+            
+            // 이번 발송 시간이 현재보다 10분 이상 과거인 경우 갱신
+            if (timeDiffMinutes > 10) {
+                console.log(`⏰ 예약 시간 갱신 시작: ${schedule.title} (${Math.round(timeDiffMinutes)}분 지남)`);
                 
-                // 이번 발송 <- 다음 발송
-                schedule.currentSend = schedule.nextSend;
+                let updatedCurrentSend = schedule.nextSend;
+                let updatedNextSend = schedule.nextSend;
                 
-                // 다음 발송 <- 다음 발송 + 주기
-                const frequency = getFrequencyValue(schedule.frequency);
-                if (frequency) {
-                    schedule.nextSend = calculateNextSendTimeFromCurrent(schedule.currentSend, frequency);
+                // 다음 발송 시간도 과거인지 확인하고 필요시 여러 번 갱신
+                let iterations = 0;
+                while (iterations < 10) { // 무한 루프 방지
+                    const nextSendTime = parseNextSendTime(updatedCurrentSend);
+                    if (!nextSendTime) break;
+                    
+                    const nextTimeDiffMinutes = (now.getTime() - nextSendTime.getTime()) / (1000 * 60);
+                    
+                    if (nextTimeDiffMinutes <= 10) {
+                        // 이번 발송 시간이 현재에 가까우면 갱신 완료
+                        break;
+                    }
+                    
+                    // 계속 과거이면 다음 주기로 이동
+                    const frequency = getFrequencyValue(schedule.frequency);
+                    if (frequency) {
+                        updatedCurrentSend = calculateNextSendTimeFromCurrent(updatedCurrentSend, frequency);
+                        console.log(`   추가 갱신 ${iterations + 1}: ${updatedCurrentSend}`);
+                    } else {
+                        break;
+                    }
+                    iterations++;
                 }
                 
+                // 최종 다음 발송 시간 계산
+                const frequency = getFrequencyValue(schedule.frequency);
+                if (frequency) {
+                    updatedNextSend = calculateNextSendTimeFromCurrent(updatedCurrentSend, frequency);
+                }
+                
+                // 예약 시간 업데이트
+                schedule.currentSend = updatedCurrentSend;
+                schedule.nextSend = updatedNextSend;
+                
+                console.log(`   ✅ 갱신 완료 (${iterations + 1}번 이동)`);
                 console.log(`   갱신 후 이번 발송: ${schedule.currentSend}`);
                 console.log(`   갱신 후 다음 발송: ${schedule.nextSend}`);
+                
+                // 로컬 저장소에도 저장
+                if (window.emailScheduleList) {
+                    localStorage.setItem('emailScheduleList', JSON.stringify(window.emailScheduleList));
+                    console.log(`   📝 업데이트된 예약 리스트 저장 완료`);
+                }
+            } else {
+                console.log(`   ✅ 시간 갱신 불필요 (차이: ${Math.round(timeDiffMinutes)}분)`);
             }
         }
 
@@ -11957,9 +12021,81 @@
             checkAndSendScheduledEmails();
         }
 
+        // 디버깅: 특정 시간으로 테스트 발송 
+        function testEmailSendingAtTime(scheduleIndex, testTimeStr) {
+            if (!window.emailScheduleList || scheduleIndex >= window.emailScheduleList.length) {
+                console.error('❌ 잘못된 예약 인덱스 또는 예약 리스트 없음');
+                return;
+            }
+
+            const schedule = window.emailScheduleList[scheduleIndex];
+            console.log(`🧪 테스트 발송: ${schedule.title}`);
+            console.log(`🧪 테스트 시간: ${testTimeStr}`);
+
+            // 테스트 시간으로 시뮬레이션
+            const testTime = parseNextSendTime(testTimeStr) || new Date();
+            const shouldSend = shouldSendEmailNow(schedule, testTime);
+            
+            if (shouldSend) {
+                console.log('✅ 테스트 결과: 발송 조건 만족 - 실제 발송 실행');
+                collectEmailDataFromSchedule(schedule).then(emailData => {
+                    if (emailData) {
+                        return sendEmailViaSMTP(emailData);
+                    }
+                }).then(() => {
+                    console.log('✅ 테스트 발송 완료');
+                }).catch(error => {
+                    console.error('❌ 테스트 발송 실패:', error);
+                });
+            } else {
+                console.log('❌ 테스트 결과: 발송 조건 불만족');
+            }
+        }
+
+        // 디버깅: 현재 시간으로 강제 발송 (시간 조건 무시)
+        function forceSendNow(scheduleIndex) {
+            if (!window.emailScheduleList || scheduleIndex >= window.emailScheduleList.length) {
+                console.error('❌ 잘못된 예약 인덱스 또는 예약 리스트 없음');
+                return;
+            }
+
+            const schedule = window.emailScheduleList[scheduleIndex];
+            console.log(`🚀 강제 발송: ${schedule.title} (시간 조건 무시)`);
+
+            collectEmailDataFromSchedule(schedule).then(emailData => {
+                if (emailData) {
+                    return sendEmailViaSMTP(emailData);
+                }
+            }).then(() => {
+                console.log('✅ 강제 발송 완료');
+                // 다음 발송 시간 업데이트
+                updateNextSendTime(schedule);
+            }).catch(error => {
+                console.error('❌ 강제 발송 실패:', error);
+            });
+        }
+
+        // 디버깅: 모든 예약의 시간 갱신 강제 실행
+        function forceUpdateAllScheduleTimes() {
+            if (!window.emailScheduleList || window.emailScheduleList.length === 0) {
+                console.error('❌ 예약 리스트가 없습니다.');
+                return;
+            }
+
+            console.log('🔧 모든 예약 시간 강제 갱신 시작');
+            window.emailScheduleList.forEach((schedule, index) => {
+                console.log(`\n--- 예약 ${index}: ${schedule.title} ---`);
+                updateScheduleTimeIfNeeded(schedule);
+            });
+            console.log('✅ 모든 예약 시간 갱신 완료');
+        }
+
         // 전역 함수로 등록 (콘솔에서 호출 가능)
         window.checkSchedulerStatus = checkSchedulerStatus;
         window.forceCheckScheduledEmails = forceCheckScheduledEmails;
+        window.testEmailSendingAtTime = testEmailSendingAtTime;
+        window.forceSendNow = forceSendNow;
+        window.forceUpdateAllScheduleTimes = forceUpdateAllScheduleTimes;
 
     </script>
 </body>
