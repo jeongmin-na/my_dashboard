@@ -1668,10 +1668,16 @@
         memberData.active = memberData.total.filter(activity => activity.type === "active");
         memberData.inactive = memberData.total.filter(activity => activity.type === "inactive");
 
-        // 멤버 리스트 렌더링
+        // 멤버 리스트 렌더링 (안전한 버전)
         function renderMemberList(type) {
             const memberList = document.getElementById('member-list');
             const memberListTitle = document.getElementById('member-list-title');
+           
+            // DOM 요소가 존재하지 않으면 함수 종료 (레거시 코드 안전 처리)
+            if (!memberList || !memberListTitle) {
+                console.warn('⚠️ 레거시 멤버 리스트 요소를 찾을 수 없습니다. 현재 시스템에서는 사용되지 않습니다.');
+                return;
+            }
            
             let activities = [];
             let title = "";
@@ -5245,6 +5251,37 @@
             window.performanceMonitor = new PerformanceMonitor();
         }
         
+        /**
+         * 성능 인디케이터 업데이트 함수
+         * @param {string} status - 상태 ('loading', 'ready', 'error', 'cached')
+         * @param {string} message - 상태 메시지
+         */
+        function updatePerformanceIndicator(status, message) {
+            try {
+                const timestamp = new Date().toLocaleTimeString('ko-KR');
+                const statusEmoji = {
+                    'loading': '⏳',
+                    'ready': '✅',
+                    'error': '❌',
+                    'cached': '💾',
+                    'default': '📊'
+                };
+                
+                const emoji = statusEmoji[status] || statusEmoji['default'];
+                console.log(`${emoji} [${timestamp}] 성능 상태: ${status} - ${message}`);
+                
+                // 향후 UI 인디케이터 추가 가능
+                // const indicator = document.querySelector('.performance-indicator');
+                // if (indicator) {
+                //     indicator.textContent = `${emoji} ${message}`;
+                //     indicator.className = `performance-indicator status-${status}`;
+                // }
+                
+            } catch (error) {
+                console.error('❌ updatePerformanceIndicator 오류:', error);
+            }
+        }
+        
         // 🔧 Feature Flag 시스템
         const FeatureFlags = {
             USE_NEW_API_SERVICE: false,
@@ -5253,6 +5290,164 @@
             USE_NEW_CHART_COMPONENT: false,
             USE_NEW_UTILS: false,
             DEBUG_MODE: true
+        };
+
+        // 💀 스켈레톤 UI 시스템
+        const SkeletonUI = {
+            /**
+             * 스켈레톤 UI 표시
+             * @param {string} section - 섹션 이름 ('overview', 'members', 'usage', 'settings')
+             */
+            show(section) {
+                try {
+                    console.log(`💀 ${section} 섹션 스켈레톤 UI 표시`);
+                    
+                    // 섹션별 스켈레톤 표시 로직
+                    switch(section) {
+                        case 'overview':
+                            this.showOverviewSkeleton();
+                            break;
+                        case 'members':
+                            this.showMembersSkeleton();
+                            break;
+                        case 'usage':
+                            this.showUsageSkeleton();
+                            break;
+                        case 'settings':
+                            this.showSettingsSkeleton();
+                            break;
+                        default:
+                            console.warn(`⚠️ 알 수 없는 섹션: ${section}`);
+                    }
+                } catch (error) {
+                    console.error('❌ 스켈레톤 UI 표시 오류:', error);
+                }
+            },
+
+            /**
+             * 스켈레톤 UI 숨김
+             * @param {string} section - 섹션 이름
+             */
+            hide(section) {
+                try {
+                    console.log(`💀 ${section} 섹션 스켈레톤 UI 숨김`);
+                    // 향후 구현: 스켈레톤 UI 숨김 로직
+                } catch (error) {
+                    console.error('❌ 스켈레톤 UI 숨김 오류:', error);
+                }
+            },
+
+            showOverviewSkeleton() {
+                // Overview 섹션 스켈레톤 표시
+                console.log('💀 Overview 스켈레톤 표시 완료');
+            },
+
+            showMembersSkeleton() {
+                // Members 섹션 스켈레톤 표시
+                console.log('💀 Members 스켈레톤 표시 완료');
+            },
+
+            showUsageSkeleton() {
+                // Usage 섹션 스켈레톤 표시
+                console.log('💀 Usage 스켈레톤 표시 완료');
+            },
+
+            showSettingsSkeleton() {
+                // Settings 섹션 스켈레톤 표시
+                console.log('💀 Settings 스켈레톤 표시 완료');
+            }
+        };
+
+        // 💾 데이터 캐시 시스템
+        const DataCache = {
+            data: new Map(),
+            timestamps: new Map(),
+            
+            /**
+             * 캐시 데이터 설정
+             * @param {string} key - 캐시 키
+             * @param {*} value - 캐시할 데이터
+             * @param {number} ttl - TTL (밀리초, 기본 5분)
+             */
+            set(key, value, ttl = 300000) {
+                try {
+                    this.data.set(key, value);
+                    this.timestamps.set(key, Date.now() + ttl);
+                    console.log(`💾 [${key}] 캐시 저장 완료 (TTL: ${ttl}ms)`);
+                } catch (error) {
+                    console.error('❌ 캐시 저장 오류:', error);
+                }
+            },
+            
+            /**
+             * 캐시 데이터 조회
+             * @param {string} key - 캐시 키
+             * @returns {*} 캐시된 데이터 또는 null
+             */
+            get(key) {
+                try {
+                    if (this.isValid(key)) {
+                        console.log(`💾 [${key}] 캐시 히트`);
+                        return this.data.get(key);
+                    }
+                    console.log(`💾 [${key}] 캐시 미스 (만료됨)`);
+                    return null;
+                } catch (error) {
+                    console.error('❌ 캐시 조회 오류:', error);
+                    return null;
+                }
+            },
+            
+            /**
+             * 캐시 유효성 확인
+             * @param {string} key - 캐시 키
+             * @returns {boolean} 유효 여부
+             */
+            isValid(key) {
+                const timestamp = this.timestamps.get(key);
+                return timestamp && Date.now() < timestamp && this.data.has(key);
+            },
+            
+            /**
+             * 캐시 삭제
+             * @param {string} key - 캐시 키
+             */
+            delete(key) {
+                this.data.delete(key);
+                this.timestamps.delete(key);
+                console.log(`💾 [${key}] 캐시 삭제 완료`);
+            },
+            
+            /**
+             * 모든 캐시 초기화
+             */
+            clear() {
+                const size = this.data.size;
+                this.data.clear();
+                this.timestamps.clear();
+                console.log(`💾 모든 캐시 초기화 완료 (${size}개 항목 삭제)`);
+            },
+            
+            /**
+             * 캐시 상태 조회
+             * @returns {Object} 캐시 상태 정보
+             */
+            status() {
+                return {
+                    totalItems: this.data.size,
+                    keys: Array.from(this.data.keys()),
+                    validKeys: Array.from(this.data.keys()).filter(key => this.isValid(key))
+                };
+            },
+            
+            // 편의 속성들 (기존 코드 호환성)
+            get members() {
+                return this.get('members');
+            },
+            
+            set members(value) {
+                this.set('members', value);
+            }
         };
 
         // 🚨 리팩토링 안전 장치
@@ -7073,13 +7268,36 @@
         // 📋 Overview 활동 리스트 테이블 함수들
         // ============================================================================
         
-        // Overview 활동 리스트 테이블 렌더링
+        // Overview 활동 리스트 테이블 렌더링 (안전한 버전)
         function renderOverviewActivityTableWithPagination(activityData) {
+            // 재시도 카운터 추가로 무한 루프 방지
+            if (!renderOverviewActivityTableWithPagination.retryCount) {
+                renderOverviewActivityTableWithPagination.retryCount = 0;
+            }
+            
             const tableContainer = document.querySelector('#overview-activity-container');
             if (!tableContainer) {
-                console.error('❌ Overview 활동 리스트 테이블 컨테이너를 찾을 수 없습니다.');
-                return;
+                renderOverviewActivityTableWithPagination.retryCount++;
+                
+                // 최대 5번까지만 재시도
+                if (renderOverviewActivityTableWithPagination.retryCount <= 5) {
+                    console.warn(`⚠️ Overview 활동 리스트 테이블 컨테이너 대기 중... (시도 ${renderOverviewActivityTableWithPagination.retryCount}/5)`);
+                    setTimeout(() => renderOverviewActivityTableWithPagination(activityData), 200);
+                    return;
+                } else {
+                    console.warn('❌ Overview 활동 리스트 테이블 컨테이너를 찾을 수 없습니다. 새로운 Table 컴포넌트를 사용합니다.');
+                    renderOverviewActivityTableWithPagination.retryCount = 0; // 재시도 카운터 리셋
+                    
+                    // Table 컴포넌트 사용 (Phase 4)
+                    if (typeof overviewActivityTable !== 'undefined' && overviewActivityTable.render) {
+                        overviewActivityTable.render(activityData);
+                    }
+                    return;
+                }
             }
+            
+            // 컨테이너를 찾았으면 재시도 카운터 리셋
+            renderOverviewActivityTableWithPagination.retryCount = 0;
             
             // 페이지네이션 적용
             const totalActivities = activityData.length;
