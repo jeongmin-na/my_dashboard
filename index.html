@@ -9174,9 +9174,26 @@
             // 예약 리스트 데이터 (저장된 예약만 표시)
             let scheduleList = [];
             
-            // 저장된 예약 리스트가 있으면 추가
+            // 저장된 예약 리스트가 있으면 추가 (기존 데이터 마이그레이션 포함)
             if (window.emailScheduleList && window.emailScheduleList.length > 0) {
-                scheduleList = scheduleList.concat(window.emailScheduleList);
+                // 기존 데이터에 currentSend 필드가 없는 경우 추가 및 시간 갱신
+                const migratedScheduleList = window.emailScheduleList.map(schedule => {
+                    if (!schedule.currentSend) {
+                        // currentSend가 없으면 nextSend를 currentSend로 복사하고 새로운 nextSend 계산
+                        schedule.currentSend = schedule.nextSend;
+                        const frequency = getFrequencyValue(schedule.frequency);
+                        if (frequency) {
+                            schedule.nextSend = calculateNextSendTimeFromCurrent(schedule.currentSend, frequency);
+                        }
+                        console.log(`📋 기존 예약 데이터 마이그레이션: ${schedule.title}`);
+                    }
+                    
+                    // 시간 갱신: 이번 발송 시간이 과거인 경우 갱신
+                    updateScheduleTimeIfNeeded(schedule);
+                    
+                    return schedule;
+                });
+                scheduleList = scheduleList.concat(migratedScheduleList);
             }
 
             // 모달 HTML 생성
@@ -9278,10 +9295,9 @@
                             <!-- 테이블 헤더 -->
                             <div style="
                                 display: grid;
-                                grid-template-columns: 2fr 1fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.8fr;
+                                grid-template-columns: 2fr 1fr 1.2fr 1.2fr 1.5fr 0.8fr 0.8fr 0.8fr;
                                 gap: 15px;
                                 padding: 15px;
-                                background-color: #1a1a1a;
                                 border-bottom: 1px solid #3a3a3a;
                                 font-weight: 600;
                                 color: #fff;
@@ -9289,9 +9305,9 @@
                             ">
                                 <div>제목</div>
                                 <div>주기</div>
-                                <div>시간</div>
-                                <div>수신자</div>
+                                <div>이번 발송</div>
                                 <div>다음 발송</div>
+                                <div>수신자</div>
                                 <div>활성</div>
                                 <div>비활성</div>
                                 <div>삭제</div>
@@ -9302,7 +9318,7 @@
                                 ${scheduleList.map(item => `
                                     <div class="schedule-item" data-status="${item.status}" style="
                                         display: grid;
-                                        grid-template-columns: 2fr 1fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.8fr;
+                                        grid-template-columns: 2fr 1fr 1.2fr 1.2fr 1.5fr 0.8fr 0.8fr 0.8fr;
                                         gap: 15px;
                                         padding: 15px;
                                         border-bottom: 1px solid #3a3a3a;
@@ -9315,9 +9331,9 @@
                                             <div style="color: #7a7a7a; font-size: 12px;">${item.message}</div>
                                         </div>
                                         <div>${item.frequency}</div>
-                                        <div>${item.time}</div>
-                                        <div>${item.recipients}</div>
+                                        <div style="color: #ff9800; font-weight: 600;">${item.currentSend || item.nextSend}</div>
                                         <div style="color: #7a7a7a;">${item.nextSend}</div>
+                                        <div>${item.recipients}</div>
                                         <div style="text-align: center;">
                                             <input type="radio" name="status-${item.id}" value="active" ${item.status === '활성' ? 'checked' : ''} 
                                                    onchange="updateScheduleStatus(${item.id}, '활성')" style="
