@@ -913,39 +913,28 @@
             border-bottom: 1px solid #3a3a3a;
             display: grid;
             grid-template-columns: 1.5fr 2fr 1fr 1.5fr 1fr 1fr;
-            gap: 20px;
+            gap: 15px;
             font-size: 12px;
             font-weight: 600;
             color: #b1b1b1;
             text-transform: uppercase;
         }
 
-        /* Overview 활동 테이블 스타일 */
-        .overview-activity-header {
-            background-color: #1a1a1a;
-            color: #fff;
-            padding: 15px 20px;
-            margin: 0;
-            border-bottom: 1px solid #3a3a3a;
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        /* Overview 활동 리스트 테이블 전용 (7개 컬럼) */
         .overview-activity-table {
             background-color: #2a2a2a;
             padding: 15px 20px;
             border-bottom: 1px solid #3a3a3a;
             display: grid;
-            grid-template-columns: 1.5fr 2fr 1fr 1.5fr 1fr 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 2.5fr 2fr 3.8fr 2.5fr 1fr 2fr 2fr;
+            gap: 10px 20px;
             font-size: 12px;
             font-weight: 600;
             color: #b1b1b1;
             text-transform: uppercase;
         }
+
+
 
         /* Export CSV 버튼 호버 효과 */
         .export-csv-btn:hover {
@@ -975,6 +964,26 @@
         }
 
         .user-cumulative-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Overview 활동 리스트 테이블 행 전용 (7개 컬럼) */
+        .overview-activity-row {
+            padding: 15px 20px;
+            border-bottom: 1px solid #3a3a3a;
+            display: grid;
+            grid-template-columns: 2.5fr 2fr 3.8fr 2.5fr 1fr 2fr 2fr;
+            gap: 10px 20px;
+            align-items: center;
+            font-size: 14px;
+            background-color: #1a1a1a;
+        }
+
+        .overview-activity-row:hover {
+            background-color: #2a2a2a;
+        }
+
+        .overview-activity-row:last-child {
             border-bottom: none;
         }
 
@@ -1129,7 +1138,9 @@
             .table-row,
             .table-header,
             .user-cumulative-row,
-            .user-cumulative-table {
+            .user-cumulative-table,
+            .overview-activity-table,
+            .overview-activity-row {
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
@@ -1333,30 +1344,31 @@
                         </div>
                     </div>
 
-                    <!-- 멤버 세부 리스트 -->
-                    <div class="overview-member-details">
-                        <div class="overview-activity-header">📋 활동 리스트</div>
+                    <!-- Overview 섹션 활동 리스트 테이블 -->
+                    <div class="user-cumulative-info" style="margin-top: 20px;">
+                        <div class="user-cumulative-header" id="overview-activity-header">📋 활동 리스트</div>
                         <div class="overview-activity-table">
-                            <div>마지막 활동</div>
-                            <div>사용자</div>
-                            <div>상태</div>
-                            <div>활동 유형</div>
-                            <div>요청 수</div>
-                            <div>비용</div>
-                            <div>제한</div>
+                            <div style="text-align: left; padding-left: 0;">마지막 활동</div>
+                            <div style="text-align: left; padding-left: 0;">사용자</div>
+                            <div style="text-align: center;">상태</div>
+                            <div style="text-align: left; padding-left: 0;">활동 유형</div>
+                            <div style="text-align: center;">요청 수</div>
+                            <div style="text-align: right;">비용</div>
+                            <div style="text-align: center;">제한</div>
                         </div>
                         <div id="overview-activity-container">
-                            <!-- 동적으로 생성될 테이블 내용 -->
                             <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a;">
                                 데이터를 불러오는 중...
                             </div>
                         </div>
                         
-                        <!-- Overview 활동리스트 페이지네이션 (Members 스타일) -->
+                        <!-- Overview 활동 리스트 페이지네이션 -->
                         <div id="overview-activity-pagination" style="display: none; padding: 15px 20px; background-color: #2a2a2a; border-top: 1px solid #3a3a3a; text-align: center;">
                             <!-- 숫자 페이지 버튼들이 동적으로 생성됨 -->
                         </div>
                     </div>
+
+
                 </div>
 
                 <!-- Members 섹션 -->
@@ -1426,7 +1438,18 @@
 
                     <!-- 사용자별 누적 정보 -->
                     <div class="user-cumulative-info">
-                        <div class="user-cumulative-header">📊 사용자별 누적 사용량 정보</div>
+                        <div class="user-cumulative-header" id="user-cumulative-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>📊 사용자별 누적 사용량 정보</span>
+                                <select id="userCumulativePageSize" onchange="changeUserCumulativePageSize(this.value)" style="background: #3a3a3a; color: #fff; border: 1px solid #4a4a4a; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
+                                    <option value="10">10개 보기</option>
+                                    <option value="20" selected>20개 보기</option>
+                                    <option value="30">30개 보기</option>
+                                    <option value="50">50개 보기</option>
+                                    <option value="100">100개 보기</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="user-cumulative-table">
                             <div>NAME</div>
                             <div>EMAIL</div>
@@ -1615,199 +1638,132 @@
     </div>
 
     <script>
-        // 멤버 활동 데이터 - Phase 3 실제 데이터 연동 준비
+        // 멤버 활동 데이터
         const memberData = {
-            total: [],     // 실제 API 데이터로 채워질 예정
-            active: [],    // 활성 멤버 필터링 결과
-            inactive: []   // 비활성 멤버 필터링 결과
+            total: [
+                { date: "25년 7월 25일 (오늘)", email: "greenmold@samsung.com", type: "active", kind: "Chat Request", request: "3", spend: "$0.05" },
+                { date: "25년 7월 25일 (오늘)", email: "ck9104.lee@samsung.com", type: "active", kind: "Code Generation", request: "2", spend: "$0.03" },
+                { date: "25년 7월 25일 (오늘)", email: "by07.so@samsung.com", type: "active", kind: "Analysis", request: "5", spend: "$0.08" },
+                { date: "25년 7월 24일 (1일전)", email: "dynamic.choi@samsung.com", type: "inactive", kind: "Chat Request", request: "1", spend: "$0.01" },
+                { date: "25년 7월 24일 (1일전)", email: "darney.jeon@samsung.com", type: "inactive", kind: "Code Review", request: "2", spend: "$0.02" },
+                { date: "25년 7월 24일 (1일전)", email: "j0117.lee@samsung.com", type: "active", kind: "Documentation", request: "4", spend: "$0.04" },
+                { date: "25년 7월 24일 (1일전)", email: "kaeul.kim@samsung.com", type: "active", kind: "Chat Request", request: "6", spend: "$0.06" },
+                { date: "25년 7월 24일 (1일전)", email: "nw.aioffice@samsung.com", type: "inactive", kind: "Analysis", request: "1", spend: "$0.01" },
+                { date: "25년 7월 24일 (1일전)", email: "sh.ryan.park@samsung.com", type: "active", kind: "Code Generation", request: "7", spend: "$0.07" },
+                { date: "25년 7월 24일 (1일전)", email: "sejin.seo@samsung.com", type: "active", kind: "Chat Request", request: "3", spend: "$0.03" },
+                { date: "25년 7월 23일 (2일전)", email: "sol22.lee@samsung.com", type: "inactive", kind: "Documentation", request: "2", spend: "$0.02" },
+                { date: "25년 7월 23일 (2일전)", email: "shee.lim@samsung.com", type: "inactive", kind: "Analysis", request: "1", spend: "$0.01" },
+                { date: "25년 7월 23일 (2일전)", email: "joseph2.jeon@samsung.com", type: "active", kind: "Code Review", request: "5", spend: "$0.05" },
+                { date: "25년 7월 23일 (2일전)", email: "taewoo.bang@samsung.com", type: "inactive", kind: "Chat Request", request: "1", spend: "$0.01" },
+                { date: "25년 7월 23일 (2일전)", email: "baewj@samsung.com", type: "inactive", kind: "Code Generation", request: "3", spend: "$0.03" },
+                { date: "25년 7월 22일 (3일전)", email: "yj7.park@samsung.com", type: "active", kind: "Analysis", request: "4", spend: "$0.04" },
+                { date: "25년 7월 22일 (3일전)", email: "nemo.kim@samsung.com", type: "active", kind: "Chat Request", request: "6", spend: "$0.06" },
+                { date: "25년 7월 22일 (3일전)", email: "ms0402.kim@samsung.com", type: "active", kind: "Documentation", request: "3", spend: "$0.03" },
+                { date: "25년 7월 21일 (4일전)", email: "shx.kim@samsung.com", type: "active", kind: "Code Review", request: "5", spend: "$0.05" },
+                { date: "25년 7월 21일 (4일전)", email: "greenmold@samsung.com", type: "active", kind: "Analysis", request: "8", spend: "$0.08" }
+            ]
         };
 
-        // 실제 데이터가 로드되면 활성/비활성 멤버 활동 분류 함수
-        function updateMemberDataClassification() {
-            if (memberData.total && memberData.total.length > 0) {
-                memberData.active = memberData.total.filter(activity => activity.type === "active");
-                memberData.inactive = memberData.total.filter(activity => activity.type === "inactive");
-                
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.log(`📊 멤버 데이터 분류 완료: 전체 ${memberData.total.length}, 활성 ${memberData.active.length}, 비활성 ${memberData.inactive.length}`);
-                }
-            }
-        }
+        // 활성/비활성 멤버 활동 분류
+        memberData.active = memberData.total.filter(activity => activity.type === "active");
+        memberData.inactive = memberData.total.filter(activity => activity.type === "inactive");
 
-        // 멤버 리스트 렌더링 - Phase 3 안전 장치 추가 (Overview 전용)
+        // 멤버 리스트 렌더링
         function renderMemberList(type) {
-            // Overview 섹션의 올바른 DOM 요소 참조
-            const memberList = document.getElementById('overview-activity-container');
-            const memberListTitle = document.querySelector('.overview-activity-header');
+            const memberList = document.getElementById('member-list');
+            const memberListTitle = document.getElementById('member-list-title');
            
-            // DOM 요소 존재 확인
-            if (!memberList) {
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.warn('⚠️ overview-activity-container 요소를 찾을 수 없습니다.');
-                }
-                return;
-            }
-            
-            if (!memberListTitle) {
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.warn('⚠️ overview-activity-header 요소를 찾을 수 없습니다.');
-                }
-                return;
-            }
-           
-            // 실제 데이터 로딩 여부 확인 - Phase 3 개선
             let activities = [];
             let title = "";
             let icon = "";
-            
-            // 실제 API 데이터가 있는지 확인 (DataCache 또는 전역 변수)
-            const hasRealData = DataCache.isValid('members') || (typeof currentMembers !== 'undefined' && currentMembers.length > 0);
-            
-            if (!hasRealData) {
-                // 실제 데이터가 없으면 로딩 메시지 표시
-                title = "활동 리스트";
-                icon = "📋";
-                memberList.innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a;">
-                        데이터를 불러오는 중입니다...
-                    </div>
-                `;
-                
-                // 제목 업데이트
-                if (FeatureFlags.USE_NEW_UTILS) {
-                    DOMUtils.safeSetText('.overview-activity-header', `${icon} ${title}`);
-                } else {
-                    memberListTitle.textContent = `${icon} ${title}`;
-                }
-                return;
-            }
            
-            // 실제 데이터가 있을 때만 필터링
             switch(type) {
                 case 'active':
-                    activities = memberData.active || [];
+                    activities = memberData.active;
                     title = "활성 멤버 활동 리스트";
                     icon = "🟢";
                     break;
                 case 'inactive':
-                    activities = memberData.inactive || [];
+                    activities = memberData.inactive;
                     title = "비활성 멤버 활동 리스트";
                     icon = "🟠";
                     break;
                 default:
-                    activities = memberData.total || [];
+                    activities = memberData.total;
                     title = "전체 활동 리스트";
                     icon = "📊";
             }
            
-            // DOMUtils 사용 또는 안전한 처리 (Overview 섹션 전용)
-            if (FeatureFlags.USE_NEW_UTILS) {
-                DOMUtils.safeSetText('.overview-activity-header', `${icon} ${title}`);
-            } else {
-                memberListTitle.textContent = `${icon} ${title}`;
-            }
+            memberListTitle.textContent = `${icon} ${title}`;
            
-            // Overview 섹션 테이블 형식에 맞게 내용 업데이트
-            if (activities && activities.length > 0) {
-                // 기존 활동 테이블 스타일 사용 (overview-activity-table과 동일한 그리드 레이아웃)
-                memberList.innerHTML = activities.map(activity => `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; gap: 15px; padding: 12px 20px; border-bottom: 1px solid #3a3a3a; align-items: center;">
-                        <div>${activity.date || '-'}</div>
-                        <div>${activity.email || '-'}</div>
-                        <div>
-                            <span class="status-badge ${activity.type === 'active' ? 'active' : 'inactive'}" style="padding: 2px 8px; border-radius: 12px; font-size: 12px; ${activity.type === 'active' ? 'background-color: #4caf50; color: white;' : 'background-color: #ff9800; color: white;'}">${activity.type === 'active' ? '활성' : '비활성'}</span>
-                        </div>
-                        <div>${activity.kind || 'Chat Request'}</div>
-                        <div>${activity.request || '-'}</div>
-                        <div>${activity.spend || '-'}</div>
-                        <div>-</div>
+            memberList.innerHTML = `
+                <div class="member-list-header">
+                    <div>DATE</div>
+                    <div>EMAIL</div>
+                    <div>TYPE</div>
+                    <div>KIND</div>
+                    <div>REQUEST</div>
+                    <div>SPEND</div>
+                </div>
+                ${activities.map(activity => `
+                    <div class="member-item">
+                        <div class="member-date">${activity.date}</div>
+                        <div class="member-email">${activity.email}</div>
+                        <div class="member-type ${activity.type}">${activity.type === 'active' ? '활성' : '비활성'}</div>
+                        <div class="member-kind">${activity.kind}</div>
+                        <div class="member-request">${activity.request}</div>
+                        <div class="member-spend">${activity.spend}</div>
                     </div>
-                `).join('');
-            } else {
-                memberList.innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a; grid-column: 1 / -1;">
-                        데이터를 불러오는 중입니다...
-                    </div>
-                `;
-            }
+                `).join('')}
+            `;
         }
 
-        // 통계 박스 클릭 이벤트 - Phase 3 안전 장치 추가
+        // 통계 박스 클릭 이벤트
         function initOverviewStats() {
-            try {
-                const statBoxes = document.querySelectorAll('.overview-stat-box');
-               
-                if (statBoxes.length === 0) {
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.warn('⚠️ overview-stat-box 요소들을 찾을 수 없습니다.');
-                    }
-                    return;
-                }
-               
-                statBoxes.forEach(box => {
-                    box.addEventListener('click', function() {
-                        // 모든 박스에서 selected 클래스 제거
-                        statBoxes.forEach(b => b.classList.remove('selected'));
-                       
-                        // 클릭된 박스에 selected 클래스 추가
-                        this.classList.add('selected');
-                       
-                        // 해당 타입의 멤버 리스트 표시
-                        const type = this.getAttribute('data-type');
-                        renderMemberList(type);
-                    });
+            const statBoxes = document.querySelectorAll('.overview-stat-box');
+           
+            statBoxes.forEach(box => {
+                box.addEventListener('click', function() {
+                    // 모든 박스에서 selected 클래스 제거
+                    statBoxes.forEach(b => b.classList.remove('selected'));
+                   
+                    // 클릭된 박스에 selected 클래스 추가
+                    this.classList.add('selected');
+                   
+                    // 해당 타입의 멤버 리스트 표시
+                    const type = this.getAttribute('data-type');
+                    renderMemberList(type);
                 });
-               
-                // 초기 로드 시 전체 멤버 리스트 표시 (DOM 준비 확인 후)
-                setTimeout(() => {
-                    renderMemberList('total');
-                }, 100); // 100ms 지연으로 DOM 준비 대기
-                
-            } catch (error) {
-                console.error('❌ initOverviewStats 오류:', error);
-                updatePerformanceIndicator('error', 'Overview Stats Init Failed');
-            }
+            });
+           
+            // 초기 로드 시 전체 멤버 리스트 표시
+            renderMemberList('total');
         }
 
-        // 현재 필터 상태를 가져오는 함수 - Phase 3 StateManager 적용
+        // 현재 필터 상태를 가져오는 함수 - Phase 1 안전 장치 추가
         function getCurrentFilterState() {
-            if (FeatureFlags.USE_NEW_STATE_MANAGER) {
-                const dateRange = stateManager.getCurrentDateRange('overview');
-                const filterType = stateManager.getState('overview.filterType') || 'total';
-                const members = stateManager.getState('members.data') || [];
-                const rawEventsData = stateManager.getState('overview.activities') || [];
-                
-                return {
-                    dateRange: dateRange,
-                    filterType: filterType,
-                    members: members,
-                    rawEventsData: rawEventsData
-                };
+            let dateRange;
+            if (currentDateRange) {
+                dateRange = currentDateRange;
             } else {
-                // 레거시 로직
-                let dateRange;
-                if (currentDateRange) {
-                    dateRange = currentDateRange;
-                } else {
-                    const filterDays = getCurrentFilterDays();
-                    dateRange = getDateRange(filterDays);
-                }
-                
-                // 안전한 dateRange 객체 보장
-                if (!dateRange || typeof dateRange.startDate === 'undefined' || typeof dateRange.endDate === 'undefined') {
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.warn('⚠️ 유효하지 않은 dateRange, 기본값으로 대체');
-                    }
-                    dateRange = getDateRange(30); // 기본 30일
-                }
-                
-                return {
-                    dateRange: dateRange,
-                    filterType: currentFilterType || 'total',
-                    members: currentMembers || [],
-                    rawEventsData: currentRawEventsData || []
-                };
+                const filterDays = getCurrentFilterDays();
+                dateRange = getDateRange(filterDays);
             }
+            
+            // 안전한 dateRange 객체 보장
+            if (!dateRange || typeof dateRange.startDate === 'undefined' || typeof dateRange.endDate === 'undefined') {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.warn('⚠️ 유효하지 않은 dateRange, 기본값으로 대체');
+                }
+                dateRange = getDateRange(30); // 기본 30일
+            }
+            
+            return {
+                dateRange: dateRange,
+                filterType: currentFilterType || 'total',
+                members: currentMembers || [],
+                rawEventsData: currentRawEventsData || []
+            };
         }
         
         // 필터 상태가 동일한지 비교하는 함수 - Phase 1 수정
@@ -4241,38 +4197,10 @@
                 switch(sectionName) {
                     case 'overview':
                         pageTitle.textContent = 'Dashboard Overview';
-                        // Overview 메뉴 클릭 시 StateManager 기반 필터 상태 복원 및 데이터 새로고침 - Phase 3
+                        // Overview 메뉴 클릭 시 현재 필터 상태 유지하면서 데이터만 새로고침
                         setTimeout(async () => {
                             console.log('=== Overview 메뉴 클릭 시 자동 실제 API 데이터 새로고침 시작 ===');
-                            
-                            if (FeatureFlags.USE_NEW_STATE_MANAGER) {
-                                // StateManager를 통해 Overview 필터 상태 복원
-                                const overviewDays = stateManager.getState('overview.currentDays') || 30;
-                                const overviewDateRange = stateManager.getCurrentDateRange('overview');
-                                
-                                console.log(`🏗️ Overview 섹션 진입: ${overviewDays}일 필터 상태 복원`);
-                                
-                                // 차트 캐시 초기화 (다른 섹션 데이터 오염 방지)
-                                clearChartCache();
-                                
-                                // 필터 기간 표시 즉시 업데이트
-                                updateFilterPeriodDisplay(overviewDateRange.startDate, overviewDateRange.endDate);
-                                
-                                // Overview 버튼 활성화 상태 복원
-                                document.querySelectorAll('#overview .chart-btn').forEach(btn => {
-                                    btn.classList.remove('active');
-                                });
-                                const activeBtn = document.querySelector(`#overview .chart-btn[data-days="${overviewDays}"]`);
-                                if (activeBtn) {
-                                    activeBtn.classList.add('active');
-                                }
-                                
-                                // Overview 전용 데이터 새로고침
-                                await updateOverviewWithCurrentFilter();
-                            } else {
-                                // 레거시 로직
-                                await refreshAllRealData();
-                            }
+                            await refreshAllRealData(); // 자동 새로고침 (현재 필터 상태 유지)
                         }, 100);
                         break;
                     case 'members':
@@ -4336,13 +4264,15 @@
             toggle.classList.toggle('off');
         }
 
-        // Overview 통계 카드 클릭 시 멤버 타입별 필터링
+        // Overview 통계 카드 클릭 시 멤버 타입별 필터링 (StateManager 어댑터 적용)
         function filterOverviewMembersByType(type) {
             console.log(`=== Overview 통계 카드 클릭: ${type} ===`);
             
             // 선택 상태 업데이트
             updateOverviewSelection(type);
-            currentFilterType = type;
+            
+            // StateManager 어댑터를 통한 상태 업데이트
+            setOverviewFilterType(type);
             
             // 멤버 데이터 필터링 및 표시
             filterAndDisplayMembers(type);
@@ -4436,6 +4366,23 @@
             
             // 필터링된 활동 데이터로 리스트 업데이트
             updateActivityList(filteredActivities);
+            
+            // Overview 활동 리스트 테이블도 업데이트
+            currentOverviewActivityFilterType = type;
+            currentOverviewActivityPage = 1; // 필터 변경시 첫 페이지로 이동
+            
+            // 통계 카드 활성화 상태 업데이트
+            document.querySelectorAll('.overview-stat-box').forEach(box => {
+                box.classList.remove('active');
+            });
+            document.querySelector(`.overview-stat-box[data-type="${type}"]`)?.classList.add('active');
+            
+            // Overview 활동 리스트 테이블 필터링 및 렌더링
+            if (currentOverviewActivityData && currentOverviewActivityData.length > 0) {
+                const filteredOverviewData = filterActivitiesByType(currentOverviewActivityData, type);
+                renderOverviewActivityTableWithPagination(filteredOverviewData);
+                console.log(`✅ Overview 활동 리스트 필터링 완료: ${type} 타입, ${filteredOverviewData.length}개 항목`);
+            }
             
             console.log(`=== 활동 리스트 필터링 완료: ${type} ===`);
         }
@@ -4671,28 +4618,11 @@
             return filteredActivities;
         }
 
-        // Overview 활동리스트 제목 업데이트 (동적으로 헤더에 포함됨)
+        // Overview 활동리스트 제목 업데이트 (비활성화됨 - 테이블 삭제됨)
         function updateOverviewActivityTitle(type, count, totalCount) {
-            // 제목은 renderOverviewActivityTableWithPagination에서 동적으로 생성됨
-            let title, emoji;
-            switch (type) {
-                case 'active':
-                    title = '활성 멤버 활동 리스트';
-                    emoji = '✅';
-                    break;
-                case 'inactive':
-                    title = '비활성 멤버 활동 리스트';
-                    emoji = '💤';
-                    break;
-                case 'total':
-                default:
-                    title = '전체 활동 리스트';
-                    emoji = '📊';
-                    break;
-            }
-           
-            // 동적으로 생성되는 제목에 사용될 기본 정보 반환
-            return { title, emoji };
+            // 활동 리스트 테이블이 삭제되어 제목 업데이트를 건너뜁니다
+            console.log('📋 활동 리스트 테이블이 삭제되어 제목 업데이트를 건너뜁니다.');
+            return { title: '활동 리스트 (삭제됨)', emoji: '🗑️' };
         }
 
         // 현재 Overview 필터 기간을 텍스트로 반환
@@ -4733,63 +4663,36 @@
                     });
                     e.target.classList.add('active');
                    
-                    // Overview 섹션의 필터 버튼인 경우 - Phase 3 StateManager 적용
+                    // Overview 섹션의 필터 버튼인 경우
                     if (parentSection.id === 'overview') {
                         const days = e.target.getAttribute('data-days') || 1;
                         console.log(`Overview 필터 버튼 클릭: ${days}일`);
                         
-                        if (FeatureFlags.USE_NEW_STATE_MANAGER) {
-                            // StateManager를 통한 상태 관리
-                            const dateRange = getDateRange(parseInt(days));
-                            stateManager.setState('overview.currentDays', parseInt(days));
-                            stateManager.setState('overview.dateRange', dateRange);
-                            
-                            // 차트 캐시 초기화 (필터가 변경되었으므로)
-                            clearChartCache();
-                            
-                            // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
-                            updateFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
-                            
-                            // 비동기로 데이터 업데이트
-                            setTimeout(() => {
-                                updateOverviewWithCurrentFilter();
-                            }, 10);
-                        } else {
-                            // 레거시 로직
-                            clearChartCache();
-                            const dateRange = getDateRange(parseInt(days));
-                            updateFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
-                            setTimeout(() => {
-                                updateOverviewWithCurrentFilter();
-                            }, 10);
-                        }
+                        // 차트 캐시 초기화 (필터가 변경되었으므로)
+                        clearChartCache();
+                        
+                        // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
+                        const dateRange = getDateRange(parseInt(days));
+                        updateFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
+                        
+                        // 비동기로 데이터 업데이트
+                        setTimeout(() => {
+                            updateOverviewWithCurrentFilter();
+                        }, 10);
                     }
-                    // Usage 섹션의 필터 버튼인 경우 - Phase 3 StateManager 적용
+                    // Usage 섹션의 필터 버튼인 경우
                     else if (parentSection.id === 'usage') {
                         const days = e.target.getAttribute('data-days') || 30;
                         console.log(`Usage 필터 버튼 클릭: ${days}일`);
                         
-                        if (FeatureFlags.USE_NEW_STATE_MANAGER) {
-                            // StateManager를 통한 Usage 상태 관리
-                            const dateRange = getDateRange(parseInt(days));
-                            stateManager.setState('usage.currentDays', parseInt(days));
-                            stateManager.setState('usage.dateRange', dateRange);
-                            
-                            // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
-                            updateUsageFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
-                            
-                            // 비동기로 데이터 업데이트
-                            setTimeout(() => {
-                                updateUsageWithCurrentFilter(days);
-                            }, 10);
-                        } else {
-                            // 레거시 로직
-                            const dateRange = getDateRange(parseInt(days));
-                            updateUsageFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
-                            setTimeout(() => {
-                                updateUsageWithCurrentFilter(days);
-                            }, 10);
-                        }
+                        // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
+                        const dateRange = getDateRange(parseInt(days));
+                        updateUsageFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
+                        
+                        // 비동기로 데이터 업데이트
+                        setTimeout(() => {
+                            updateUsageWithCurrentFilter(days);
+                        }, 10);
                     }
                 }
             }
@@ -4872,7 +4775,7 @@
             }, 10);
         }
 
-        // 현재 필터 설정으로 Overview 업데이트 - Phase 3 StateManager 적용
+        // 현재 필터 설정으로 Overview 업데이트
         async function updateOverviewWithCurrentFilter() {
             try {
                 console.log('=== 현재 필터로 Overview 업데이트 시작 ===');
@@ -4884,24 +4787,15 @@
                     window.overviewChartInitialized = true;
                 }
                
-                // 날짜 범위 결정 - Phase 3 StateManager 사용
+                // 날짜 범위 결정
                 let dateRange;
-                if (FeatureFlags.USE_NEW_STATE_MANAGER) {
-                    // StateManager를 통해 Overview 섹션의 필터 상태만 가져오기
-                    dateRange = stateManager.getCurrentDateRange('overview');
-                    const currentDays = stateManager.getState('overview.currentDays') || 30;
-                    console.log(`🏗️ StateManager Overview 필터 기간 사용: ${currentDays}일`);
-                    console.log(`🏗️ Overview 날짜 범위:`, dateRange);
+                if (currentDateRange) {
+                    dateRange = currentDateRange;
+                    console.log('사용자 정의 날짜 범위 사용');
                 } else {
-                    // 레거시 로직
-                    if (currentDateRange) {
-                        dateRange = currentDateRange;
-                        console.log('사용자 정의 날짜 범위 사용');
-                    } else {
-                        const filterDays = getCurrentFilterDays();
-                        dateRange = getDateRange(filterDays);
-                        console.log(`기본 필터 기간 사용: ${filterDays}일`);
-                    }
+                    const filterDays = getCurrentFilterDays();
+                    dateRange = getDateRange(filterDays);
+                    console.log(`기본 필터 기간 사용: ${filterDays}일`);
                 }
                 
                 // 필터 기간 표시 업데이트
@@ -4913,7 +4807,8 @@
                     console.error('팀원 데이터를 가져올 수 없습니다.');
                     return;
                 }
-                currentMembers = membersData.teamMembers;
+                // StateManager 어댑터를 통한 멤버 데이터 업데이트
+                setMembersData(membersData.teamMembers);
                
                 // 활동 이벤트 가져오기
                 const eventsData = await getFilteredEvents(dateRange.startDate, dateRange.endDate);
@@ -4938,10 +4833,12 @@
                
                 if (eventsData && eventsData.usageEvents) {
                     console.log(`✅ ${eventsData.usageEvents.length}건의 활동 이벤트를 가져왔습니다.`);
-                    currentActivities = createActivityListWithLastActivity(eventsData.usageEvents, membersData.teamMembers, memberSpendMap);
+                    // StateManager 어댑터를 통한 활동 데이터 업데이트
+                    const activities = createActivityListWithLastActivity(eventsData.usageEvents, membersData.teamMembers, memberSpendMap);
+                    setOverviewActivities(activities);
                     
-                    // 현재 Raw Events 데이터 업데이트
-                    currentRawEventsData = eventsData.usageEvents;
+                    // StateManager 어댑터를 통한 Raw Events 데이터 업데이트
+                    setUsageRawEvents(eventsData.usageEvents);
                     console.log('🔄 currentRawEventsData 업데이트 완료:', currentRawEventsData.length, '개 이벤트');
                     
                     // 통합 차트 데이터 저장소 업데이트
@@ -4960,14 +4857,16 @@
                     const inactiveMembers = totalMembers - periodActiveMembers;
                    
                     console.log(`통계 계산 결과: 전체 ${totalMembers}명, 활성 ${periodActiveMembers}명, 비활성 ${inactiveMembers}명`);
-                    console.log(`활동 리스트에 실제 표시될 멤버 수: ${currentActivities.length}명`);
+                    console.log(`활동 리스트에 실제 표시될 멤버 수: ${activities.length}명`);
                    
                     // 통계 카드 업데이트
                     updateStatsCards(totalMembers, periodActiveMembers, inactiveMembers);
                    
-                    // 현재 선택된 타입에 따라 필터링
-                    const filteredActivities = filterActivitiesByType(currentActivities, currentFilterType);
-                    currentActivityPage = 1; // 페이지네이션 초기화
+                    // StateManager 어댑터를 통한 필터링
+                    const currentActivitiesData = getOverviewActivities();
+                    const currentFilterTypeData = getOverviewFilterType();
+                    const filteredActivities = filterActivitiesByType(currentActivitiesData, currentFilterTypeData);
+                    setActivityPage(1); // 페이지네이션 초기화
                     updateActivityList(filteredActivities);
                     // 제목은 동적으로 생성됨
                     
@@ -4987,10 +4886,11 @@
                     console.log('✅ Overview 차트 업데이트 완료');
                 } else {
                     console.log('활동 이벤트 데이터가 없습니다.');
-                    currentActivities = [];
+                    // StateManager 어댑터를 통한 빈 데이터 설정
+                    setOverviewActivities([]);
                     const totalMembers = membersData ? membersData.teamMembers.length : 0;
                     updateStatsCards(totalMembers, 0, totalMembers);
-                    currentActivityPage = 1; // 페이지네이션 초기화
+                    setActivityPage(1); // 페이지네이션 초기화
                     updateActivityList([]);
                     
                     // Overview 섹션의 사용량 카드 업데이트 (현재 필터 기간 사용)
@@ -5105,9 +5005,13 @@
             }
         }
 
-        // 전역 변수
+        // 전역 변수 (window 객체에 명시적으로 할당하여 테스트에서 접근 가능)
         let currentFilterType = 'total'; // 현재 선택된 필터 타입
         let currentActivities = []; // 현재 활동 데이터
+        
+        // 테스트 시스템에서 접근할 수 있도록 window 객체에 할당
+        window.currentFilterType = currentFilterType;
+        window.currentActivities = currentActivities;
         let currentMembers = []; // 현재 멤버 데이터
         let currentDateRange = null; // 현재 선택된 날짜 범위 (Overview용)
         let currentUsageDateRange = null; // 현재 선택된 날짜 범위 (Usage용)
@@ -5204,615 +5108,152 @@
         let currentMembersData = []; // 현재 Members 데이터
         let originalMembersData = []; // 원본 멤버 데이터 (필터링용)
 
+        // Overview 활동 리스트 페이지네이션 변수
+        let currentOverviewActivityPage = 1; // 현재 Overview 활동 리스트 페이지
+        let currentOverviewActivityPageSize = 20; // 현재 Overview 활동 리스트 페이지 크기
+        let currentOverviewActivityData = []; // 현재 Overview 활동 리스트 데이터
+        let currentOverviewActivityFilterType = 'total'; // 현재 Overview 활동 리스트 필터 타입 (total, active, inactive)
+
         // ============================================================================
         // 🚀 리팩토링 안전 장치 시스템 (Phase 0)
         // ============================================================================
         
+        // 📊 성능 모니터링 시스템
+        class PerformanceMonitor {
+            constructor() {
+                this.metrics = new Map();
+                this.isEnabled = true;
+            }
+            
+            /**
+             * 성능 측정 시작
+             * @param {string} operationId - 작업 식별자
+             */
+            static start(operationId) {
+                if (!window.performanceMonitor) {
+                    window.performanceMonitor = new PerformanceMonitor();
+                }
+                
+                if (!window.performanceMonitor.isEnabled) return;
+                
+                const sanitizedId = String(operationId).replace(/[^a-zA-Z0-9_가-힣\s-]/g, '');
+                window.performanceMonitor.metrics.set(sanitizedId, {
+                    startTime: performance.now(),
+                    endTime: null,
+                    duration: null,
+                    memoryStart: performance.memory ? performance.memory.usedJSHeapSize : null
+                });
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`⏱️ Performance 측정 시작: ${sanitizedId}`);
+                }
+            }
+            
+            /**
+             * 성능 측정 종료 및 결과 반환
+             * @param {string} operationId - 작업 식별자
+             * @returns {number} 소요 시간 (ms)
+             */
+            static end(operationId) {
+                if (!window.performanceMonitor) {
+                    window.performanceMonitor = new PerformanceMonitor();
+                }
+                
+                if (!window.performanceMonitor.isEnabled) return 0;
+                
+                const sanitizedId = String(operationId).replace(/[^a-zA-Z0-9_가-힣\s-]/g, '');
+                const metric = window.performanceMonitor.metrics.get(sanitizedId);
+                
+                if (!metric) {
+                    console.warn(`⚠️ Performance 측정이 시작되지 않음: ${sanitizedId}`);
+                    return 0;
+                }
+                
+                const endTime = performance.now();
+                const duration = endTime - metric.startTime;
+                const memoryEnd = performance.memory ? performance.memory.usedJSHeapSize : null;
+                
+                // 메트릭 업데이트
+                metric.endTime = endTime;
+                metric.duration = duration;
+                metric.memoryEnd = memoryEnd;
+                metric.memoryDelta = (memoryEnd && metric.memoryStart) ? memoryEnd - metric.memoryStart : null;
+                
+                // 성능 이슈 감지
+                if (duration > 5000) { // 5초 이상
+                    console.warn(`🐌 느린 작업 감지: ${sanitizedId} - ${duration.toFixed(2)}ms`);
+                } else if (duration > 1000) { // 1초 이상
+                    console.warn(`⚠️ 주의 필요: ${sanitizedId} - ${duration.toFixed(2)}ms`);
+                }
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    const memoryInfo = metric.memoryDelta ? ` (메모리: ${(metric.memoryDelta / 1024 / 1024).toFixed(2)}MB)` : '';
+                    console.log(`✅ Performance 측정 완료: ${sanitizedId} - ${duration.toFixed(2)}ms${memoryInfo}`);
+                }
+                
+                return Math.round(duration);
+            }
+            
+            /**
+             * 모든 성능 메트릭 조회
+             * @returns {Object} 성능 메트릭 정보
+             */
+            static getMetrics() {
+                if (!window.performanceMonitor) {
+                    return {};
+                }
+                
+                const results = {};
+                for (const [id, metric] of window.performanceMonitor.metrics.entries()) {
+                    if (metric.duration !== null) {
+                        results[id] = {
+                            duration: metric.duration,
+                            timestamp: metric.endTime,
+                            memoryDelta: metric.memoryDelta
+                        };
+                    }
+                }
+                return results;
+            }
+            
+            /**
+             * 성능 모니터링 활성화/비활성화
+             * @param {boolean} enabled - 활성화 여부
+             */
+            static setEnabled(enabled) {
+                if (!window.performanceMonitor) {
+                    window.performanceMonitor = new PerformanceMonitor();
+                }
+                window.performanceMonitor.isEnabled = enabled;
+                console.log(`📊 PerformanceMonitor ${enabled ? '활성화' : '비활성화'}`);
+            }
+            
+            /**
+             * 성능 메트릭 초기화
+             */
+            static clear() {
+                if (!window.performanceMonitor) {
+                    window.performanceMonitor = new PerformanceMonitor();
+                }
+                window.performanceMonitor.metrics.clear();
+                console.log('🧹 Performance 메트릭 초기화');
+            }
+        }
+        
+        // 전역 PerformanceMonitor 인스턴스 초기화
+        if (!window.performanceMonitor) {
+            window.performanceMonitor = new PerformanceMonitor();
+        }
+        
         // 🔧 Feature Flag 시스템
         const FeatureFlags = {
             USE_NEW_API_SERVICE: false,
-            USE_NEW_STATE_MANAGER: true,  // Phase 3 - 상태 관리 시스템 활성화
-            USE_NEW_TABLE_COMPONENT: false,
+            USE_NEW_STATE_MANAGER: true, // 🚀 Phase 3: StateManager 활성화
+            USE_NEW_TABLE_COMPONENT: true, // 🚀 Phase 4: Table 컴포넌트 활성화
             USE_NEW_CHART_COMPONENT: false,
             USE_NEW_UTILS: false,
             DEBUG_MODE: true
         };
-
-        // 💾 데이터 캐시 시스템 - Phase 3 안전 장치
-        const DataCache = {
-            members: null,
-            spending: null,
-            usage: null,
-            events: null,
-            timestamps: {},
-            
-            // 캐시 유효성 확인 (5분 기준)
-            isValid(key) {
-                if (!this[key] || !this.timestamps[key]) {
-                    return false;
-                }
-                const age = Date.now() - this.timestamps[key];
-                return age < 5 * 60 * 1000; // 5분
-            },
-            
-            // 데이터 저장
-            set(key, data) {
-                this[key] = data;
-                this.timestamps[key] = Date.now();
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.log(`💾 DataCache.${key} 업데이트됨`);
-                }
-            },
-            
-            // 데이터 가져오기
-            get(key) {
-                if (this.isValid(key)) {
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.log(`💾 DataCache.${key} 캐시 히트`);
-                    }
-                    return this[key];
-                }
-                return null;
-            },
-            
-            // 캐시 초기화
-            clear(key) {
-                if (key) {
-                    this[key] = null;
-                    delete this.timestamps[key];
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.log(`💾 DataCache.${key} 삭제됨`);
-                    }
-                } else {
-                    this.members = null;
-                    this.spending = null;
-                    this.usage = null;
-                    this.events = null;
-                    this.timestamps = {};
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.log('💾 전체 DataCache 초기화됨');
-                    }
-                }
-            },
-            
-            // 캐시 상태 정보
-            getStatus() {
-                return {
-                    members: this.isValid('members'),
-                    spending: this.isValid('spending'),
-                    usage: this.isValid('usage'),
-                    events: this.isValid('events')
-                };
-            }
-        };
-
-        // 🏗️ 상태 관리 시스템 - Phase 3 구현
-        class StateManager {
-            constructor() {
-                this.state = {
-                    overview: {
-                        filterType: 'total',
-                        dateRange: null,
-                        currentDays: 30,
-                        activities: [],
-                        charts: {}
-                    },
-                    usage: {
-                        dateRange: null,
-                        currentDays: 30,
-                        rawEvents: [],
-                        currentPage: 1,
-                        pageSize: 20
-                    },
-                    members: {
-                        data: [],
-                        currentPage: 1,
-                        pageSize: 20,
-                        sortField: 'requests',
-                        sortDirection: 'desc'
-                    }
-                };
-                this.listeners = new Map();
-                
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.log('🏗️ StateManager 초기화 완료');
-                }
-            }
-
-            // 상태 가져오기
-            getState(path) {
-                if (!path) return this.state;
-                return path.split('.').reduce((obj, key) => obj?.[key], this.state);
-            }
-
-            // 상태 설정
-            setState(path, value) {
-                const keys = path.split('.');
-                const lastKey = keys.pop();
-                const target = keys.reduce((obj, key) => obj[key], this.state);
-                
-                if (target) {
-                    target[lastKey] = value;
-                    this.notify(path, value);
-                    
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.log(`🏗️ StateManager.setState: ${path} =`, value);
-                    }
-                }
-            }
-
-            // 상태 변경 리스너 등록
-            subscribe(path, callback) {
-                if (!this.listeners.has(path)) {
-                    this.listeners.set(path, []);
-                }
-                this.listeners.get(path).push(callback);
-            }
-
-            // 리스너들에게 변경 알림
-            notify(path, value) {
-                const listeners = this.listeners.get(path);
-                if (listeners) {
-                    listeners.forEach(callback => {
-                        try {
-                            callback(value);
-                        } catch (error) {
-                            console.error(`🚨 StateManager 리스너 오류 (${path}):`, error);
-                        }
-                    });
-                }
-            }
-
-            // 섹션별 현재 날짜 범위 가져오기
-            getCurrentDateRange(section) {
-                const sectionState = this.getState(section);
-                if (sectionState?.dateRange) {
-                    return sectionState.dateRange;
-                }
-                
-                // 기본값으로 현재 일수 기준 계산
-                const days = sectionState?.currentDays || 30;
-                if (FeatureFlags.USE_NEW_UTILS) {
-                    return DateUtils.getDateRange(days);
-                } else {
-                    return getDateRange(days);
-                }
-            }
-
-            // 디버깅용 전체 상태 출력
-            debugState() {
-                console.log('🏗️ StateManager 현재 상태:', JSON.stringify(this.state, null, 2));
-            }
-        }
-
-        // StateManager 인스턴스 생성
-        const stateManager = new StateManager();
-
-        // 📊 Phase 3-1 C: 데이터 모델 클래스들
-        class BaseModel {
-            constructor(data = {}) {
-                this.id = data.id || this.generateId();
-                this.createdAt = data.createdAt || new Date();
-                this.updatedAt = data.updatedAt || new Date();
-            }
-            
-            generateId() {
-                return 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-            }
-            
-            toJSON() {
-                return { ...this };
-            }
-            
-            static validate(data) {
-                return data && typeof data === 'object';
-            }
-            
-            update(data) {
-                Object.assign(this, data);
-                this.updatedAt = new Date();
-                return this;
-            }
-        }
-
-        class TeamMember extends BaseModel {
-            constructor(data = {}) {
-                super(data);
-                this.email = data.email || '';
-                this.name = data.name || this.extractNameFromEmail(this.email);
-                this.requests = data.requests || 0;
-                this.spend = data.spend || 0;
-                this.limit = data.limit || 1;
-                this.role = data.role || 'member';
-                this.isActive = data.isActive !== undefined ? data.isActive : true;
-                this.lastActivity = data.lastActivity || null;
-            }
-            
-            extractNameFromEmail(email) {
-                if (!email) return 'Unknown';
-                const localPart = email.split('@')[0];
-                return localPart.charAt(0).toUpperCase() + localPart.slice(1);
-            }
-            
-            static validate(data) {
-                return super.validate(data) && 
-                       data.email && 
-                       typeof data.email === 'string' &&
-                       data.email.includes('@');
-            }
-            
-            isPremiumUser() {
-                return this.requests > 0;
-            }
-            
-            getUsagePercentage() {
-                if (this.limit <= 0) return 0;
-                return Math.min((this.requests / this.limit) * 100, 100);
-            }
-            
-            getDisplayName() {
-                return this.name || this.email.split('@')[0];
-            }
-            
-            static fromApiData(apiData) {
-                return new TeamMember({
-                    email: apiData.email,
-                    name: apiData.name,
-                    requests: apiData.requests || 0,
-                    spend: apiData.spend || 0,
-                    limit: apiData.limit || 1,
-                    isActive: (apiData.requests || 0) > 0
-                });
-            }
-        }
-
-        class UsageEvent extends BaseModel {
-            constructor(data = {}) {
-                super(data);
-                this.userEmail = data.userEmail || '';
-                this.timestamp = data.timestamp || new Date();
-                this.costs = data.costs || 0;
-                this.eventType = data.eventType || 'unknown';
-                this.details = data.details || {};
-            }
-            
-            static validate(data) {
-                return super.validate(data) && 
-                       data.userEmail && 
-                       data.timestamp;
-            }
-            
-            getFormattedDate() {
-                return new Date(this.timestamp).toLocaleDateString('ko-KR');
-            }
-            
-            getFormattedCost() {
-                return `$${this.costs.toFixed(2)}`;
-            }
-            
-            static fromApiData(apiData) {
-                return new UsageEvent({
-                    userEmail: apiData.userEmail,
-                    timestamp: new Date(apiData.timestamp),
-                    costs: apiData.costs || 0,
-                    eventType: apiData.eventType || 'usage',
-                    details: apiData.details || {}
-                });
-            }
-        }
-
-        class ActivityRecord extends BaseModel {
-            constructor(data = {}) {
-                super(data);
-                this.member = data.member || null;
-                this.events = data.events || [];
-                this.totalRequests = data.totalRequests || 0;
-                this.totalSpend = data.totalSpend || 0;
-                this.lastActivity = data.lastActivity || null;
-            }
-            
-            static validate(data) {
-                return super.validate(data) && 
-                       data.member && 
-                       Array.isArray(data.events);
-            }
-            
-            getActivityLevel() {
-                if (this.totalRequests === 0) return 'inactive';
-                if (this.totalRequests > 100) return 'high';
-                if (this.totalRequests > 50) return 'medium';
-                return 'low';
-            }
-            
-            getFormattedLastActivity() {
-                if (!this.lastActivity) return '활동 없음';
-                return new Date(this.lastActivity).toLocaleDateString('ko-KR');
-            }
-            
-            static fromMemberAndEvents(member, events) {
-                const totalRequests = events.reduce((sum, event) => sum + (event.requests || 0), 0);
-                const totalSpend = events.reduce((sum, event) => sum + (event.costs || 0), 0);
-                const lastActivity = events.length > 0 ? 
-                    new Date(Math.max(...events.map(e => new Date(e.timestamp).getTime()))) : null;
-                
-                return new ActivityRecord({
-                    member: member,
-                    events: events,
-                    totalRequests: totalRequests,
-                    totalSpend: totalSpend,
-                    lastActivity: lastActivity
-                });
-            }
-        }
-
-        class ChartData extends BaseModel {
-            constructor(data = {}) {
-                super(data);
-                this.type = data.type || 'line';
-                this.title = data.title || '';
-                this.datasets = data.datasets || [];
-                this.labels = data.labels || [];
-                this.options = data.options || {};
-            }
-            
-            static validate(data) {
-                return super.validate(data) && 
-                       data.type && 
-                       Array.isArray(data.datasets) &&
-                       Array.isArray(data.labels);
-            }
-            
-            addDataset(dataset) {
-                this.datasets.push(dataset);
-                this.updatedAt = new Date();
-                return this;
-            }
-            
-            setLabels(labels) {
-                this.labels = labels;
-                this.updatedAt = new Date();
-                return this;
-            }
-            
-            static fromUsageEvents(events, type = 'daily') {
-                const groupedData = {};
-                
-                events.forEach(event => {
-                    const date = new Date(event.timestamp).toLocaleDateString('ko-KR');
-                    if (!groupedData[date]) {
-                        groupedData[date] = {
-                            requests: 0,
-                            spend: 0,
-                            count: 0
-                        };
-                    }
-                    groupedData[date].requests += event.requests || 0;
-                    groupedData[date].spend += event.costs || 0;
-                    groupedData[date].count += 1;
-                });
-                
-                const labels = Object.keys(groupedData).sort();
-                const datasets = [
-                    {
-                        label: '요청 수',
-                        data: labels.map(date => groupedData[date].requests),
-                        borderColor: '#4a9eff',
-                        backgroundColor: 'rgba(74, 158, 255, 0.1)'
-                    },
-                    {
-                        label: '지출 ($)',
-                        data: labels.map(date => groupedData[date].spend),
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                    }
-                ];
-                
-                return new ChartData({
-                    type: 'line',
-                    title: `${type} 사용량 추이`,
-                    datasets: datasets,
-                    labels: labels,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                });
-            }
-        }
-
-        class ModelFactory {
-            static createTeamMember(data) {
-                if (!TeamMember.validate(data)) {
-                    throw new Error('유효하지 않은 팀 멤버 데이터');
-                }
-                return TeamMember.fromApiData(data);
-            }
-            
-            static createUsageEvent(data) {
-                if (!UsageEvent.validate(data)) {
-                    throw new Error('유효하지 않은 사용량 이벤트 데이터');
-                }
-                return UsageEvent.fromApiData(data);
-            }
-            
-            static createActivityRecord(member, events) {
-                if (!member || !Array.isArray(events)) {
-                    throw new Error('유효하지 않은 활동 기록 데이터');
-                }
-                return ActivityRecord.fromMemberAndEvents(member, events);
-            }
-            
-            static createChartData(events, type = 'daily') {
-                if (!Array.isArray(events)) {
-                    throw new Error('유효하지 않은 차트 데이터');
-                }
-                return ChartData.fromUsageEvents(events, type);
-            }
-            
-            static createFromApiResponse(apiData, type) {
-                switch (type) {
-                    case 'member':
-                        return this.createTeamMember(apiData);
-                    case 'event':
-                        return this.createUsageEvent(apiData);
-                    case 'chart':
-                        return this.createChartData(apiData);
-                    default:
-                        throw new Error(`알 수 없는 모델 타입: ${type}`);
-                }
-            }
-        }
-
-        // 🧪 모델 테스트 시스템
-        class ModelTestSuite {
-            constructor() {
-                this.testResults = [];
-                this.totalTests = 0;
-                this.passedTests = 0;
-            }
-            
-            runTest(testName, testFn) {
-                this.totalTests++;
-                try {
-                    const result = testFn();
-                    if (result) {
-                        this.passedTests++;
-                        this.testResults.push({ name: testName, status: 'PASS', result });
-                        console.log(`✅ ${testName} - PASS`);
-                    } else {
-                        this.testResults.push({ name: testName, status: 'FAIL', result });
-                        console.log(`❌ ${testName} - FAIL`);
-                    }
-                } catch (error) {
-                    this.testResults.push({ name: testName, status: 'ERROR', error: error.message });
-                    console.log(`🚨 ${testName} - ERROR:`, error.message);
-                }
-            }
-            
-            runAllTests() {
-                console.log('🧪 Phase 3-1 C 모델 클래스 테스트 시작...');
-                
-                // BaseModel 테스트
-                this.runTest('BaseModel 생성 테스트', () => {
-                    const model = new BaseModel({ test: 'data' });
-                    return model.id && model.createdAt && model.updatedAt;
-                });
-                
-                this.runTest('BaseModel validate 테스트', () => {
-                    return BaseModel.validate({ test: 'data' }) && !BaseModel.validate(null);
-                });
-                
-                // TeamMember 테스트
-                this.runTest('TeamMember 생성 테스트', () => {
-                    const member = new TeamMember({
-                        email: 'test@samsung.com',
-                        requests: 100,
-                        spend: 5.5,
-                        limit: 10
-                    });
-                    return member.email === 'test@samsung.com' && 
-                           member.requests === 100 && 
-                           member.isPremiumUser();
-                });
-                
-                this.runTest('TeamMember API 데이터 변환 테스트', () => {
-                    const apiData = { email: 'test@samsung.com', requests: 50, spend: 2.5, limit: 5 };
-                    const member = TeamMember.fromApiData(apiData);
-                    return member instanceof TeamMember && member.getUsagePercentage() === 100;
-                });
-                
-                this.runTest('TeamMember 이름 추출 테스트', () => {
-                    const member = new TeamMember({ email: 'greenmold@samsung.com' });
-                    return member.getDisplayName() === 'Greenmold';
-                });
-                
-                // UsageEvent 테스트
-                this.runTest('UsageEvent 생성 테스트', () => {
-                    const event = new UsageEvent({
-                        userEmail: 'test@samsung.com',
-                        timestamp: new Date(),
-                        costs: 1.5,
-                        eventType: 'chat'
-                    });
-                    return event.userEmail === 'test@samsung.com' && event.costs === 1.5;
-                });
-                
-                // ActivityRecord 테스트
-                this.runTest('ActivityRecord 생성 테스트', () => {
-                    const member = new TeamMember({ email: 'test@samsung.com', requests: 10 });
-                    const events = [
-                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 1.0, requests: 5 },
-                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 0.5, requests: 5 }
-                    ];
-                    const record = ActivityRecord.fromMemberAndEvents(member, events);
-                    return record.member.email === 'test@samsung.com' && record.totalSpend === 1.5;
-                });
-                
-                // ChartData 테스트
-                this.runTest('ChartData 생성 테스트', () => {
-                    const events = [
-                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 1.0, requests: 5 },
-                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 0.5, requests: 3 }
-                    ];
-                    const chartData = ChartData.fromUsageEvents(events);
-                    return chartData.type === 'line' && chartData.datasets.length === 2;
-                });
-                
-                // ModelFactory 테스트
-                this.runTest('ModelFactory 팀 멤버 생성 테스트', () => {
-                    const apiData = { email: 'test@samsung.com', requests: 25, spend: 1.25 };
-                    const member = ModelFactory.createTeamMember(apiData);
-                    return member instanceof TeamMember && member.email === 'test@samsung.com';
-                });
-                
-                // 실제 대시보드 데이터 호환성 테스트
-                if (typeof currentMembers !== 'undefined' && currentMembers.length > 0) {
-                    this.runTest('실제 대시보드 currentMembers 호환성 테스트', () => {
-                        const firstMember = currentMembers[0];
-                        console.log('테스트 중인 멤버 데이터:', firstMember);
-                        
-                        if (TeamMember.validate(firstMember)) {
-                            const member = TeamMember.fromApiData(firstMember);
-                            return member instanceof TeamMember && member.email;
-                        }
-                        return false;
-                    });
-                } else {
-                    console.log('ℹ️ currentMembers 데이터가 아직 로드되지 않았습니다.');
-                }
-                
-                // 테스트 결과 출력
-                this.printResults();
-            }
-            
-            printResults() {
-                console.log('\n📊 Phase 3-1 C 모델 클래스 테스트 결과:');
-                console.log(`총 테스트: ${this.totalTests}개`);
-                console.log(`통과: ${this.passedTests}개`);
-                console.log(`실패: ${this.totalTests - this.passedTests}개`);
-                console.log(`성공률: ${((this.passedTests / this.totalTests) * 100).toFixed(1)}%`);
-                
-                if (this.passedTests === this.totalTests) {
-                    console.log('🎉 모든 테스트 통과! 모델 클래스가 정상적으로 작동합니다.');
-                    console.log('✅ Phase 3-1 C 완료: 데이터 모델 클래스 구현 성공');
-                } else {
-                    console.log('⚠️ 일부 테스트 실패. 문제가 있는 부분을 확인해주세요.');
-                    this.testResults.filter(r => r.status !== 'PASS').forEach(result => {
-                        console.log(`❌ ${result.name}: ${result.error || 'Failed'}`);
-                    });
-                }
-                
-                return {
-                    totalTests: this.totalTests,
-                    passedTests: this.passedTests,
-                    successRate: (this.passedTests / this.totalTests) * 100,
-                    results: this.testResults
-                };
-            }
-        }
-
-        // ModelTestSuite 인스턴스 생성
-        const modelTestSuite = new ModelTestSuite();
 
         // 🚨 리팩토링 안전 장치
         const RefactoringSafety = {
@@ -6442,76 +5883,6 @@
         // 성능 최적화 시스템 (2025.07.29 추가)
         // ============================================================================
 
-        // 📊 성능 모니터링 시스템 (기존 코드와 호환성 유지)
-        const PerformanceMonitor = {
-            timers: new Map(),
-            
-            start(label) {
-                this.timers.set(label, performance.now());
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.log(`⏱️ 성능 측정 시작: ${label}`);
-                }
-            },
-            
-            end(label) {
-                const startTime = this.timers.get(label);
-                if (startTime) {
-                    const duration = performance.now() - startTime;
-                    this.timers.delete(label);
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.log(`⏱️ 성능 측정 완료: ${label} - ${duration.toFixed(2)}ms`);
-                    }
-                    return duration;
-                }
-                console.warn(`⚠️ 성능 측정 타이머를 찾을 수 없습니다: ${label}`);
-                return 0;
-            },
-            
-            getTimers() {
-                return Object.fromEntries(this.timers);
-            }
-        };
-
-        // 🔧 성능 인디케이터 함수 (기존 코드와 호환성 유지) - Phase 3 안전 장치
-        function updatePerformanceIndicator(status, message) {
-            try {
-                if (FeatureFlags.DEBUG_MODE) {
-                    const statusEmojis = {
-                        'loading': '⏳',
-                        'ready': '✅',
-                        'error': '❌',
-                        'cached': '💾'
-                    };
-                    
-                    const emoji = statusEmojis[status] || '🔄';
-                    console.log(`${emoji} 성능 상태: ${status} - ${message}`);
-                }
-                
-                // 실제 UI 인디케이터가 있다면 업데이트
-                const indicator = document.querySelector('.performance-indicator');
-                if (indicator && FeatureFlags.USE_NEW_UTILS) {
-                    DOMUtils.safeSetText('.performance-indicator', `${status}: ${message}`);
-                }
-            } catch (error) {
-                console.error('❌ 성능 인디케이터 업데이트 오류:', error);
-            }
-        }
-
-        // 💀 SkeletonUI - 스켈레톤 로딩 UI (기존 코드와 호환성 유지)
-        const SkeletonUI = {
-            show(sectionId) {
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.log(`💀 스켈레톤 UI 표시: ${sectionId}`);
-                }
-            },
-            
-            hide(sectionId) {
-                if (FeatureFlags.DEBUG_MODE) {
-                    console.log(`💀 스켈레톤 UI 숨김: ${sectionId}`);
-                }
-            }
-        };
-
 
 
 
@@ -6866,9 +6237,9 @@
             try {
                 console.log('=== 실제 Cursor Admin API 데이터로 Overview 초기 로드 시작 ===');
                
-                // 초기화
-                currentFilterType = 'total';
-                currentDateRange = null;
+                // 초기화 - StateManager 어댑터 사용
+                setOverviewFilterType('total');
+                setOverviewDateRange(null);
                
                 // 현재 필터로 업데이트
                 await updateOverviewWithCurrentFilter();
@@ -7252,99 +6623,16 @@
             }
         }
 
-        // 활동 리스트 업데이트 (Members 스타일 페이지네이션)
+        // 활동 리스트 업데이트 (Overview 활동 리스트 테이블 사용)
         function updateActivityList(activities) {
-            currentActivityData = activities; // 데이터 저장
-            renderOverviewActivityTableWithPagination(activities);
-        }
-
-        // Overview 활동리스트 테이블 렌더링 (Members 스타일)
-        function renderOverviewActivityTableWithPagination(activities) {
-            // 헤더 업데이트
-            const headerElement = document.querySelector('.overview-activity-header');
-            if (headerElement) {
-                if (!activities || activities.length === 0) {
-                    headerElement.innerHTML = '📋 활동 리스트';
-                } else {
-                    const totalActivities = activities.length;
-                    const totalPages = Math.ceil(totalActivities / currentActivityPageSize);
-                    const startIndex = (currentActivityPage - 1) * currentActivityPageSize;
-                    const endIndex = Math.min(startIndex + currentActivityPageSize, totalActivities);
-                    
-                    // 현재 필터 타입에 따른 제목 결정
-                    const titleInfo = updateOverviewActivityTitle(currentFilterType, totalActivities, totalActivities);
-                    const periodText = getCurrentOverviewPeriodText();
-                    
-                    headerElement.innerHTML = `
-                        <span>${titleInfo.emoji} ${titleInfo.title} (${periodText})(${startIndex + 1}-${endIndex} of ${totalActivities})</span>
-                        <select id="overviewActivityPageSize" onchange="changeOverviewActivityPageSize(this.value)" style="background: #3a3a3a; color: #fff; border: 1px solid #4a4a4a; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
-                            <option value="10" ${currentActivityPageSize === 10 ? 'selected' : ''}>10개 보기</option>
-                            <option value="20" ${currentActivityPageSize === 20 ? 'selected' : ''}>20개 보기</option>
-                            <option value="30" ${currentActivityPageSize === 30 ? 'selected' : ''}>30개 보기</option>
-                            <option value="50" ${currentActivityPageSize === 50 ? 'selected' : ''}>50개 보기</option>
-                            <option value="100" ${currentActivityPageSize === 100 ? 'selected' : ''}>100개 보기</option>
-                        </select>
-                    `;
-                }
-            }
+            console.log(`📋 활동 리스트 업데이트: ${activities.length}개 항목`);
             
-            if (!activities || activities.length === 0) {
-                const container = document.getElementById('overview-activity-container');
-                if (container) {
-                    container.innerHTML = `
-                        <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a;">
-                            활동 데이터가 없습니다.
-                        </div>
-                    `;
-                }
-                // 페이지네이션 숨기기
-                const pagination = document.getElementById('overview-activity-pagination');
-                if (pagination) pagination.style.display = 'none';
-                return;
-            }
-
-            // 페이지네이션 계산
-            const totalActivities = activities.length;
-            const totalPages = Math.ceil(totalActivities / currentActivityPageSize);
-            const startIndex = (currentActivityPage - 1) * currentActivityPageSize;
-            const endIndex = Math.min(startIndex + currentActivityPageSize, totalActivities);
-            const pageActivities = activities.slice(startIndex, endIndex);
-
-            console.log(`📄 Overview 활동리스트 페이지네이션: ${startIndex + 1}-${endIndex} of ${totalActivities} (페이지 ${currentActivityPage}/${totalPages})`);
-
-            // 테이블 내용만 업데이트
-            const tableContent = pageActivities.map(activity => `
-                <div class="member-item">
-                    <div class="member-date">${activity.date}</div>
-                    <div class="member-email clickable-email" title="View usage for ${activity.email}" onclick="navigateToUsageWithEmail('${activity.email}')">${activity.email}</div>
-                    <div class="member-type ${activity.type}">${activity.type === 'active' ? '활성' : '비활성'}</div>
-                    <div class="member-kind">${activity.kind}</div>
-                    <div class="member-request">${activity.request}</div>
-                    <div class="member-spend">${activity.spend}</div>
-                    <div class="member-limit">${activity.limit || '$0'}</div>
-                </div>
-            `).join('');
-
-            // 컨테이너에 테이블 내용만 삽입
-            const container = document.getElementById('overview-activity-container');
-            if (container) {
-                container.innerHTML = tableContent;
-            }
-
-            // 페이지네이션 업데이트
-            const paginationContainer = document.getElementById('overview-activity-pagination');
-            if (paginationContainer && totalPages > 1) {
-                paginationContainer.innerHTML = generateOverviewActivityPagination(totalPages);
-                paginationContainer.style.display = 'block';
-            } else if (paginationContainer) {
-                paginationContainer.style.display = 'none';
-            }
-           
-            // 통계 업데이트
-            const activeCount = activities.filter(a => a.type === 'active').length;
-            const totalRequests = activities.reduce((sum, a) => sum + (typeof a.request === 'number' ? a.request : 0), 0);
-           
-            console.log(`📊 Overview 활동 리스트 업데이트: 총 ${activities.length}명, 활성 ${activeCount}명, 총 요청 ${totalRequests}건 (페이지 ${currentActivityPage}/${totalPages})`);
+            // 현재 Overview 활동 리스트 데이터 업데이트
+            currentOverviewActivityData = activities;
+            
+            // 테이블 렌더링
+            const filteredData = filterActivitiesByType(activities, currentOverviewActivityFilterType);
+            renderOverviewActivityTableWithPagination(filteredData);
         }
 
 
@@ -7706,60 +6994,23 @@
             return pagination;
         }
 
-        // Overview 활동리스트 페이지네이션 생성 (Members와 동일)
+        // Overview 활동리스트 페이지네이션 생성 (비활성화됨 - 테이블 삭제됨)
         function generateOverviewActivityPagination(totalPages) {
-            let pagination = '';
-            
-            // 이전 버튼
-            if (currentActivityPage > 1) {
-                pagination += `<button onclick="changeOverviewActivityPage(${currentActivityPage - 1})" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">‹</button>`;
-            }
-            
-            // 페이지 번호들
-            let startPage = Math.max(1, currentActivityPage - 2);
-            let endPage = Math.min(totalPages, currentActivityPage + 2);
-            
-            // 첫 페이지가 범위에 없으면 추가
-            if (startPage > 1) {
-                pagination += `<button onclick="changeOverviewActivityPage(1)" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">1</button>`;
-                if (startPage > 2) {
-                    pagination += `<span style="color: #7a7a7a; padding: 0 5px;">...</span>`;
-                }
-            }
-            
-            // 현재 범위의 페이지들
-            for (let i = startPage; i <= endPage; i++) {
-                const isActive = i === currentActivityPage;
-                pagination += `<button onclick="changeOverviewActivityPage(${i})" style="background: ${isActive ? '#4a9eff' : '#3a3a3a'}; border: 1px solid ${isActive ? '#4a9eff' : '#4a4a4a'}; color: ${isActive ? 'white' : '#e1e1e1'}; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: ${isActive ? '600' : 'normal'}; margin: 0 2px;">${i}</button>`;
-            }
-            
-            // 마지막 페이지가 범위에 없으면 추가
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    pagination += `<span style="color: #7a7a7a; padding: 0 5px;">...</span>`;
-                }
-                pagination += `<button onclick="changeOverviewActivityPage(${totalPages})" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">${totalPages}</button>`;
-            }
-            
-            // 다음 버튼
-            if (currentActivityPage < totalPages) {
-                pagination += `<button onclick="changeOverviewActivityPage(${currentActivityPage + 1})" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">›</button>`;
-            }
-            
-            return pagination;
+            // 활동 리스트 테이블이 삭제되어 페이지네이션을 생성하지 않음
+            console.log('📋 활동 리스트 테이블이 삭제되어 페이지네이션 생성을 건너뜁니다.');
+            return '';
         }
 
-        // Overview 활동리스트 페이지 변경
+        // Overview 활동리스트 페이지 변경 (비활성화됨 - 테이블 삭제됨)
         function changeOverviewActivityPage(page) {
-            currentActivityPage = page;
-            renderOverviewActivityTableWithPagination(currentActivityData);
+            // 활동 리스트 테이블이 삭제되어 페이지 변경을 건너뜁니다
+            console.log('📋 활동 리스트 테이블이 삭제되어 페이지 변경을 건너뜁니다.');
         }
 
-        // Overview 활동리스트 페이지 크기 변경
+        // Overview 활동리스트 페이지 크기 변경 (비활성화됨 - 테이블 삭제됨)
         function changeOverviewActivityPageSize(pageSize) {
-            currentActivityPageSize = parseInt(pageSize);
-            currentActivityPage = 1; // 페이지 크기 변경시 첫 페이지로 이동
-            renderOverviewActivityTableWithPagination(currentActivityData);
+            // 활동 리스트 테이블이 삭제되어 페이지 크기 변경을 건너뜁니다
+            console.log('📋 활동 리스트 테이블이 삭제되어 페이지 크기 변경을 건너뜁니다.');
         }
 
         // Members 페이지네이션 생성 (All Raw Events와 동일)
@@ -7816,6 +7067,175 @@
             currentMembersPageSize = parseInt(pageSize);
             currentMembersPage = 1; // 페이지 크기 변경시 첫 페이지로 이동
             renderMembersTableWithPagination(currentMembersData);
+        }
+
+        // ============================================================================
+        // 📋 Overview 활동 리스트 테이블 함수들
+        // ============================================================================
+        
+        // Overview 활동 리스트 테이블 렌더링
+        function renderOverviewActivityTableWithPagination(activityData) {
+            const tableContainer = document.querySelector('#overview-activity-container');
+            if (!tableContainer) {
+                console.error('❌ Overview 활동 리스트 테이블 컨테이너를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 페이지네이션 적용
+            const totalActivities = activityData.length;
+            const totalPages = Math.ceil(totalActivities / currentOverviewActivityPageSize);
+            const startIndex = (currentOverviewActivityPage - 1) * currentOverviewActivityPageSize;
+            const endIndex = Math.min(startIndex + currentOverviewActivityPageSize, totalActivities);
+            const pageActivities = activityData.slice(startIndex, endIndex);
+            
+            console.log(`📄 Overview 활동 리스트 페이지네이션: ${startIndex + 1}-${endIndex} of ${totalActivities} (페이지 ${currentOverviewActivityPage}/${totalPages})`);
+           
+            // 테이블 제목 동적 생성
+            const getTableTitle = () => {
+                if (currentOverviewActivityFilterType === 'active') {
+                    return `📋 활성 멤버 리스트 (${startIndex + 1}-${endIndex} of ${totalActivities})`;
+                } else if (currentOverviewActivityFilterType === 'inactive') {
+                    return `📋 비활성 멤버 리스트 (${startIndex + 1}-${endIndex} of ${totalActivities})`;
+                } else {
+                    return `📋 전체 멤버 활동 리스트 (${startIndex + 1}-${endIndex} of ${totalActivities})`;
+                }
+            };
+
+            // 테이블 HTML 생성
+            if (pageActivities.length > 0) {
+                const tableHtml = pageActivities.map(activity => {
+                    // createActivityListWithLastActivity 함수의 데이터 구조에 맞춰 변환
+                    const lastActivity = activity.date || '없음';
+                    const requestCount = activity.request || 0;
+                    const requestColor = requestCount > 100 ? '#4caf50' :
+                                       requestCount > 20 ? '#ff9800' :
+                                       requestCount > 0 ? '#2196f3' : '#f44336';
+                    
+                    // spend가 이미 문자열로 포맷팅된 경우와 숫자인 경우 모두 처리
+                    const costDisplay = typeof activity.spend === 'string' ? activity.spend : 
+                                       `$${(activity.spend || 0).toFixed(2)}`;
+                   
+                    // 상태 표시 (활성/비활성)
+                    const statusBadge = activity.type === 'active' ? 
+                        '<span class="role-badge" style="background-color: #4caf50; color: white;">활성</span>' :
+                        '<span class="role-badge" style="background-color: #ff9800; color: white;">비활성</span>';
+                    
+                    return `
+                        <div class="overview-activity-row">
+                            <div style="text-align: left; padding-left: 0;">${lastActivity}</div>
+                            <div class="clickable-email" title="View usage for ${activity.email}" onclick="navigateToUsageWithEmail('${activity.email}')" style="text-align: left; padding-left: 0;">${activity.email}</div>
+                            <div style="text-align: center;">${statusBadge}</div>
+                            <div style="text-align: left; padding-left: 0;">${activity.kind || 'General'}</div>
+                            <div style="color: ${requestColor}; font-weight: 600; text-align: center;">${requestCount}</div>
+                            <div style="text-align: right;">${costDisplay}</div>
+                            <div style="text-align: center;">${activity.limit || '무제한'}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                tableContainer.innerHTML = tableHtml;
+            } else {
+                tableContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a; grid-column: 1 / -1;">활동 데이터가 없습니다.</div>';
+            }
+            
+            // 헤더 제목 업데이트 (드롭박스 포함)
+            const headerElement = document.getElementById('overview-activity-header');
+            if (headerElement) {
+                headerElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>${getTableTitle()}</span>
+                        <select id="overviewActivityPageSize" onchange="changeOverviewActivityPageSize(this.value)" style="background: #3a3a3a; color: #fff; border: 1px solid #4a4a4a; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
+                            <option value="10" ${currentOverviewActivityPageSize === 10 ? 'selected' : ''}>10개 보기</option>
+                            <option value="20" ${currentOverviewActivityPageSize === 20 ? 'selected' : ''}>20개 보기</option>
+                            <option value="30" ${currentOverviewActivityPageSize === 30 ? 'selected' : ''}>30개 보기</option>
+                            <option value="50" ${currentOverviewActivityPageSize === 50 ? 'selected' : ''}>50개 보기</option>
+                            <option value="100" ${currentOverviewActivityPageSize === 100 ? 'selected' : ''}>100개 보기</option>
+                        </select>
+                    </div>
+                `;
+            }
+            
+            // 페이지네이션 표시/숨김
+            const paginationContainer = document.getElementById('overview-activity-pagination');
+            if (paginationContainer) {
+                if (totalActivities > currentOverviewActivityPageSize) {
+                    paginationContainer.style.display = 'block';
+                    paginationContainer.innerHTML = generateOverviewActivityPagination(totalPages);
+                } else {
+                    paginationContainer.style.display = 'none';
+                }
+            }
+            
+            console.log(`✅ Overview 활동 리스트 테이블 업데이트 완료: 페이지 ${currentOverviewActivityPage}/${totalPages}, ${pageActivities.length}개 활동 표시`);
+        }
+        
+        // Overview 활동 리스트 페이지네이션 생성
+        function generateOverviewActivityPagination(totalPages) {
+            let pagination = '';
+            
+            // 이전 버튼
+            if (currentOverviewActivityPage > 1) {
+                pagination += `<button onclick="changeOverviewActivityPage(${currentOverviewActivityPage - 1})" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">‹</button>`;
+            }
+            
+            // 페이지 번호들
+            let startPage = Math.max(1, currentOverviewActivityPage - 2);
+            let endPage = Math.min(totalPages, currentOverviewActivityPage + 2);
+            
+            // 첫 페이지가 범위에 없으면 추가
+            if (startPage > 1) {
+                pagination += `<button onclick="changeOverviewActivityPage(1)" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">1</button>`;
+                if (startPage > 2) {
+                    pagination += `<span style="color: #7a7a7a; padding: 0 5px;">...</span>`;
+                }
+            }
+            
+            // 현재 범위의 페이지들
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === currentOverviewActivityPage;
+                pagination += `<button onclick="changeOverviewActivityPage(${i})" style="background: ${isActive ? '#4a9eff' : '#3a3a3a'}; border: 1px solid ${isActive ? '#4a9eff' : '#4a4a4a'}; color: ${isActive ? 'white' : '#e1e1e1'}; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: ${isActive ? '600' : 'normal'}; margin: 0 2px;">${i}</button>`;
+            }
+            
+            // 마지막 페이지가 범위에 없으면 추가
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pagination += `<span style="color: #7a7a7a; padding: 0 5px;">...</span>`;
+                }
+                pagination += `<button onclick="changeOverviewActivityPage(${totalPages})" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">${totalPages}</button>`;
+            }
+            
+            // 다음 버튼
+            if (currentOverviewActivityPage < totalPages) {
+                pagination += `<button onclick="changeOverviewActivityPage(${currentOverviewActivityPage + 1})" style="background: #3a3a3a; border: 1px solid #4a4a4a; color: #e1e1e1; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin: 0 2px;">›</button>`;
+            }
+            
+            return pagination;
+        }
+
+        // Overview 활동 리스트 페이지 변경
+        function changeOverviewActivityPage(page) {
+            currentOverviewActivityPage = page;
+            renderOverviewActivityTableWithPagination(currentOverviewActivityData);
+        }
+        
+        // Overview 활동 리스트 페이지 크기 변경
+        function changeOverviewActivityPageSize(pageSize) {
+            currentOverviewActivityPageSize = parseInt(pageSize);
+            currentOverviewActivityPage = 1; // 페이지 크기 변경시 첫 페이지로 이동
+            renderOverviewActivityTableWithPagination(currentOverviewActivityData);
+        }
+
+
+
+        // 활동 데이터 필터링 헬퍼 함수
+        function filterActivitiesByType(activities, type) {
+            if (type === 'active') {
+                return activities.filter(activity => activity.type === 'active' || (activity.request && activity.request > 0));
+            } else if (type === 'inactive') {
+                return activities.filter(activity => activity.type === 'inactive' || (activity.request === 0));
+            } else {
+                return activities; // 전체
+            }
         }
 
         // 검색창 X 버튼 표시/숨김 토글
@@ -9143,10 +8563,21 @@
             });
             
             // 헤더 업데이트
-            const headerElement = document.querySelector('.user-cumulative-info .user-cumulative-header');
+            const headerElement = document.getElementById('user-cumulative-header');
             if (headerElement) {
                 if (!userInfos || userInfos.length === 0) {
-                    headerElement.innerHTML = '📊 사용자별 누적 사용량 정보';
+                    headerElement.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>📊 사용자별 누적 사용량 정보</span>
+                            <select id="userCumulativePageSize" onchange="changeUserCumulativePageSize(this.value)" style="background: #3a3a3a; color: #fff; border: 1px solid #4a4a4a; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
+                                <option value="10" ${currentUserCumulativePageSize === 10 ? 'selected' : ''}>10개 보기</option>
+                                <option value="20" ${currentUserCumulativePageSize === 20 ? 'selected' : ''}>20개 보기</option>
+                                <option value="30" ${currentUserCumulativePageSize === 30 ? 'selected' : ''}>30개 보기</option>
+                                <option value="50" ${currentUserCumulativePageSize === 50 ? 'selected' : ''}>50개 보기</option>
+                                <option value="100" ${currentUserCumulativePageSize === 100 ? 'selected' : ''}>100개 보기</option>
+                            </select>
+                        </div>
+                    `;
                 } else {
                     const totalUsers = userInfos.length;
                     const totalPages = Math.ceil(totalUsers / currentUserCumulativePageSize);
@@ -9983,29 +9414,26 @@
             window.RollbackManager = RollbackManager;
             window.FeatureFlags = FeatureFlags;
             
+            // Overview 캐싱 테스트를 위한 필수 함수들 전역 노출
+            window.filterActivitiesByType = filterActivitiesByType;
+            window.updateActivityList = updateActivityList;
+            window.filterOverviewMembersByType = filterOverviewMembersByType;
+            window.renderOverviewActivityTableWithPagination = renderOverviewActivityTableWithPagination;
+            
             // Phase 1 유틸리티 전역 노출 (디버깅용)
             window.DateUtils = DateUtils;
             window.Formatters = Formatters;
             window.Validators = Validators;
             window.DOMUtils = DOMUtils;
             
-            // DataCache 전역 노출
-            window.DataCache = DataCache;
-            
-            // Phase 3 StateManager 전역 노출
-            window.stateManager = stateManager;
-            
-            // Phase 3-1 C 모델 클래스 및 테스트 시스템 전역 노출
-            window.modelTestSuite = modelTestSuite;
-            window.BaseModel = BaseModel;
-            window.TeamMember = TeamMember;
-            window.UsageEvent = UsageEvent;
-            window.ActivityRecord = ActivityRecord;
-            window.ChartData = ChartData;
-            window.ModelFactory = ModelFactory;
-            
             // Phase 2 API 서비스 초기화 및 전역 노출
             window.apiService = new ApiService(API_CONFIG);
+            
+            // Phase 4 Table 컴포넌트 전역 노출 (디버깅용)
+            window.TableComponent = TableComponent;
+            window.overviewActivityTable = overviewActivityTable;
+            window.membersTable = membersTable;
+            window.userCumulativeTable = userCumulativeTable;
             window.teamService = new TeamService(window.apiService);
             
             // API 서비스 인터셉터 추가 (로깅 및 모니터링)
@@ -10023,17 +9451,17 @@
                 return response;
             });
             
-            // Phase 1, 2, 3 완료 스냅샷 생성
+            // Phase 1, 2, 3, 4 완료 스냅샷 생성
             RollbackManager.createSnapshot('phase1-complete', '유틸리티 함수 분리 완료');
             RollbackManager.createSnapshot('phase2-complete', 'API 서비스 계층 구현 완료');
-            RollbackManager.createSnapshot('phase3-complete', '상태 관리 시스템 및 필터 분리 완료');
+            RollbackManager.createSnapshot('phase3-complete', 'StateManager 상태 관리 시스템 도입 완료');
+            RollbackManager.createSnapshot('phase4-week1-start', 'Table 컴포넌트 리팩토링 시작');
             
             console.log('✅ 리팩토링 안전 장치 초기화 완료');
             console.log('✅ Phase 1 유틸리티 함수 분리 완료');
             console.log('✅ Phase 2 API 서비스 계층 구현 완료');
-            console.log('✅ Phase 3 상태 관리 시스템 및 필터 분리 완료');
-            console.log('✅ Phase 3-1 C 데이터 모델 클래스 구현 완료');
-            console.log('🧪 모델 테스트 실행: modelTestSuite.runAllTests()');
+            console.log('✅ Phase 3 StateManager 상태 관리 시스템 활성화됨');
+            console.log('🚀 Phase 4 Table 컴포넌트 리팩토링 시작됨');
             console.log('📋 사용 가능한 명령어:');
             console.log('  - RefactoringSafety.compareWithBaseline() : 성능 비교');
             console.log('  - RollbackManager.listSnapshots() : 스냅샷 목록');
@@ -10047,6 +9475,18 @@
             console.log('  - Validators.isValidEmail(email) : 이메일 검증');
             console.log('  - DOMUtils.safeSetText(selector, text) : 안전한 텍스트 설정');
             console.log('  - DOMUtils.waitForElement(selector) : 요소 준비 대기');
+            console.log('🔄 Phase 3 StateManager:');
+            console.log('  - stateManager.getState("overview.filterType") : 상태 조회');
+            console.log('  - stateManager.setState("overview.filterType", "active") : 상태 설정');
+            console.log('  - stateManager.subscribe("overview.activities", callback) : 상태 구독');
+            console.log('  - stateManager.dumpState() : 전체 상태 덤프');
+            console.log('  - getOverviewFilterType() : Overview 필터 타입 조회 (어댑터)');
+            console.log('  - setOverviewFilterType("active") : Overview 필터 타입 설정 (어댑터)');
+            console.log('📊 Phase 4 Table 컴포넌트:');
+            console.log('  - overviewActivityTable.render() : Overview 활동 테이블 렌더링');
+            console.log('  - membersTable.updateData(newData) : Members 테이블 데이터 업데이트');
+            console.log('  - userCumulativeTable.updateConfig(config) : 설정 업데이트');
+            console.log('  - new TableComponent(config) : 새 테이블 인스턴스 생성');
             console.log('🌐 Phase 2 새 API 서비스:');
             console.log('  - apiService.get(endpoint) : GET 요청');
             console.log('  - apiService.post(endpoint, data) : POST 요청');
@@ -10055,7 +9495,6 @@
             console.log('  - teamService.getAllFilteredEvents(start, end) : 모든 이벤트 수집');
             console.log('🔧 새 유틸리티 활성화: FeatureFlags.USE_NEW_UTILS = true');
             console.log('🔧 새 API 서비스 활성화: FeatureFlags.USE_NEW_API_SERVICE = true');
-            console.log('🏗️ 새 상태 관리 시스템 활성화: FeatureFlags.USE_NEW_STATE_MANAGER = true');
             
             PerformanceMonitor.start('페이지 전체 로드');
             console.log('🚀 최적화된 대시보드 초기화 시작');
@@ -10066,18 +9505,10 @@
                 updatePerformanceIndicator('loading', 'UI 초기화');
                 console.log('💀 스켈레톤 UI 표시 완료');
                
-                // 2단계: 기본 UI 초기화 (즉시) - Phase 3 안전 장치
-                try {
-                    initOverviewStats();
-                    if (FeatureFlags.DEBUG_MODE) {
-                        console.log('✅ Overview 통계 초기화 완료');
-                    }
-                } catch (error) {
-                    console.error('❌ Overview 통계 초기화 실패:', error);
-                    updatePerformanceIndicator('error', 'Overview Stats Init Failed');
-                }
+                // 2단계: 기본 UI 초기화 (즉시)
+                initOverviewStats();
                
-                // Overview 필터 기본값을 30일로 설정 - Phase 3 StateManager 적용
+                // Overview 필터 기본값을 30일로 설정
                 document.querySelectorAll('#overview .chart-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -10086,20 +9517,6 @@
                 // 초기 필터 기간 표시 설정 (30일)
                 const initialDateRange = getDateRange(30);
                 updateFilterPeriodDisplay(initialDateRange.startDate, initialDateRange.endDate);
-                
-                // StateManager에 섹션별 초기 상태 설정
-                if (FeatureFlags.USE_NEW_STATE_MANAGER) {
-                    // Overview 섹션 초기 상태 (30일)
-                    stateManager.setState('overview.currentDays', 30);
-                    stateManager.setState('overview.dateRange', initialDateRange);
-                    console.log('🏗️ StateManager Overview 초기 상태 설정: 30일');
-                    
-                    // Usage 섹션 초기 상태 (30일)
-                    const usageInitialDateRange = getDateRange(30);
-                    stateManager.setState('usage.currentDays', 30);
-                    stateManager.setState('usage.dateRange', usageInitialDateRange);
-                    console.log('🏗️ StateManager Usage 초기 상태 설정: 30일');
-                }
                
                 createOverviewChart(); // 빈 차트 먼저 표시
                 window.overviewChartInitialized = true; // 차트 초기화 플래그 설정
@@ -10110,21 +9527,14 @@
                 // 3단계: 백그라운드에서 데이터 로드 시작 (비동기)
                 console.log('📡 백그라운드 데이터 로드 시작...');
                
-                // 캐시 확인 및 즉시 사용 가능한 데이터가 있다면 먼저 표시 - Phase 3 안전 장치
-                try {
-                    if (DataCache.isValid('members') && DataCache.members) {
-                        console.log('🚀 캐시된 멤버 데이터로 즉시 기본 UI 업데이트');
-                        updatePerformanceIndicator('cached', '캐시 사용');
-                        const totalMembers = DataCache.members.teamMembers?.length || 0;
-                        if (typeof updateStatsCards === 'function') {
-                            updateStatsCards(totalMembers, 0, 0); // 기본값으로 먼저 표시
-                        }
-                    } else {
-                        updatePerformanceIndicator('loading', 'API 호출');
-                    }
-                } catch (cacheError) {
-                    console.error('❌ 캐시 확인 중 오류:', cacheError);
-                    updatePerformanceIndicator('error', 'Cache Check Failed');
+                // 캐시 확인 및 즉시 사용 가능한 데이터가 있다면 먼저 표시
+                if (DataCache.isValid('members') && DataCache.members) {
+                    console.log('🚀 캐시된 멤버 데이터로 즉시 기본 UI 업데이트');
+                    updatePerformanceIndicator('cached', '캐시 사용');
+                    const totalMembers = DataCache.members.teamMembers?.length || 0;
+                    updateStatsCards(totalMembers, 0, 0); // 기본값으로 먼저 표시
+                } else {
+                    updatePerformanceIndicator('loading', 'API 호출');
                 }
                
                 // 4단계: 실제 API 데이터 로드 및 업데이트
@@ -10136,7 +9546,7 @@
                     box.classList.remove('selected');
                 });
                 document.querySelector('.overview-stat-box[data-type="total"]').classList.add('selected');
-                currentFilterType = 'total';
+                setOverviewFilterType('total'); // StateManager 어댑터 사용
                 
                 // 날짜 입력 필드 변경 시 자동 새로고침 이벤트 리스너 추가
                 setupAutoRefreshEvents();
@@ -10471,6 +9881,1831 @@
                 await refreshAllRealData(); // 자동 새로고침
             }, 100);
         });
+
+        // ===============================================
+        // 🏗️ Phase 3: 상태 관리 시스템 (StateManager)
+        // ===============================================
+
+        /**
+         * 중앙화된 상태 관리 시스템
+         * 전역 변수들을 구조화하고 상태 변경 추적 및 이벤트 시스템 제공
+         */
+        class StateManager {
+            constructor() {
+                this.state = {
+                    overview: {
+                        filterType: 'total',
+                        dateRange: null,
+                        activities: [],
+                        charts: {
+                            cached: {},
+                            lastUpdated: null
+                        }
+                    },
+                    members: {
+                        data: [],
+                        originalData: [],
+                        currentPage: 1,
+                        pageSize: 20,
+                        sortField: 'requests',
+                        sortDirection: 'desc'
+                    },
+                    usage: {
+                        dateRange: null,
+                        rawEvents: [],
+                        currentPage: 1,
+                        pageSize: 10,
+                        isLoaded: false,
+                        isLoading: false,
+                        userCumulative: {
+                            page: 1,
+                            pageSize: 20,
+                            data: [],
+                            startDate: null,
+                            endDate: null
+                        }
+                    },
+                    activities: {
+                        currentPage: 1,
+                        pageSize: 20,
+                        data: []
+                    },
+                    charts: {
+                        dataStore: {
+                            members: [],
+                            rawEvents: [],
+                            spendingData: null,
+                            usageData: null,
+                            lastUpdated: null
+                        }
+                    }
+                };
+                
+                this.listeners = new Map();
+                this.history = [];
+                this.maxHistorySize = 50;
+                
+                // 레거시 지원을 위한 어댑터 모드
+                this.legacyMode = true;
+                
+                console.log('🏗️ StateManager 초기화 완료');
+            }
+
+            /**
+             * 상태 값 조회
+             * @param {string} path - 점으로 구분된 경로 (예: 'overview.filterType')
+             * @returns {*} 상태 값
+             */
+            getState(path) {
+                return path.split('.').reduce((obj, key) => obj?.[key], this.state);
+            }
+
+            /**
+             * 상태 값 설정
+             * @param {string} path - 점으로 구분된 경로
+             * @param {*} value - 설정할 값
+             * @param {boolean} silent - 이벤트 발생 억제 여부
+             */
+            setState(path, value, silent = false) {
+                const keys = path.split('.');
+                const lastKey = keys.pop();
+                const target = keys.reduce((obj, key) => {
+                    if (!(key in obj)) obj[key] = {};
+                    return obj[key];
+                }, this.state);
+                
+                const oldValue = target[lastKey];
+                target[lastKey] = value;
+                
+                // 히스토리 추가
+                this.addToHistory(path, oldValue, value);
+                
+                // 레거시 변수 동기화
+                if (this.legacyMode) {
+                    this.syncToLegacy(path, value);
+                }
+                
+                // 이벤트 발생
+                if (!silent) {
+                    this.notify(path, value, oldValue);
+                }
+                
+                console.log(`🔄 State updated: ${path} =`, value);
+            }
+
+            /**
+             * 상태 변경 구독
+             * @param {string} path - 구독할 경로
+             * @param {function} callback - 변경 시 호출될 콜백
+             */
+            subscribe(path, callback) {
+                if (!this.listeners.has(path)) {
+                    this.listeners.set(path, []);
+                }
+                this.listeners.get(path).push(callback);
+                
+                // 현재 값으로 즉시 호출
+                const currentValue = this.getState(path);
+                if (currentValue !== undefined) {
+                    callback(currentValue, undefined);
+                }
+            }
+
+            /**
+             * 구독 해제
+             * @param {string} path - 구독 해제할 경로
+             * @param {function} callback - 제거할 콜백
+             */
+            unsubscribe(path, callback) {
+                const listeners = this.listeners.get(path);
+                if (listeners) {
+                    const index = listeners.indexOf(callback);
+                    if (index > -1) {
+                        listeners.splice(index, 1);
+                    }
+                }
+            }
+
+            /**
+             * 이벤트 알림
+             * @param {string} path - 변경된 경로
+             * @param {*} newValue - 새 값
+             * @param {*} oldValue - 이전 값
+             */
+            notify(path, newValue, oldValue) {
+                // 정확한 경로 리스너
+                this.listeners.get(path)?.forEach(callback => {
+                    try {
+                        callback(newValue, oldValue);
+                    } catch (error) {
+                        console.error(`❌ State listener error for ${path}:`, error);
+                    }
+                });
+                
+                // 상위 경로 리스너들에게도 알림
+                const pathParts = path.split('.');
+                for (let i = pathParts.length - 1; i > 0; i--) {
+                    const parentPath = pathParts.slice(0, i).join('.');
+                    this.listeners.get(parentPath)?.forEach(callback => {
+                        try {
+                            callback(this.getState(parentPath), undefined);
+                        } catch (error) {
+                            console.error(`❌ State listener error for parent ${parentPath}:`, error);
+                        }
+                    });
+                }
+            }
+
+            /**
+             * 히스토리에 변경 사항 추가
+             * @param {string} path - 변경된 경로
+             * @param {*} oldValue - 이전 값
+             * @param {*} newValue - 새 값
+             */
+            addToHistory(path, oldValue, newValue) {
+                this.history.push({
+                    timestamp: Date.now(),
+                    path,
+                    oldValue,
+                    newValue
+                });
+                
+                // 히스토리 크기 제한
+                if (this.history.length > this.maxHistorySize) {
+                    this.history.shift();
+                }
+            }
+
+            /**
+             * 레거시 전역 변수와 동기화
+             * @param {string} path - 상태 경로
+             * @param {*} value - 값
+             */
+            syncToLegacy(path, value) {
+                try {
+                    switch (path) {
+                        case 'overview.filterType':
+                            window.currentFilterType = value;
+                            if (typeof currentFilterType !== 'undefined') currentFilterType = value;
+                            break;
+                        case 'overview.activities':
+                            window.currentActivities = value;
+                            if (typeof currentActivities !== 'undefined') currentActivities = value;
+                            break;
+                        case 'overview.dateRange':
+                            if (typeof currentDateRange !== 'undefined') currentDateRange = value;
+                            break;
+                        case 'members.data':
+                            if (typeof currentMembers !== 'undefined') currentMembers = value;
+                            break;
+                        case 'members.originalData':
+                            if (typeof originalMembersData !== 'undefined') originalMembersData = value;
+                            break;
+                        case 'members.currentPage':
+                            if (typeof currentMembersPage !== 'undefined') currentMembersPage = value;
+                            break;
+                        case 'members.pageSize':
+                            if (typeof currentMembersPageSize !== 'undefined') currentMembersPageSize = value;
+                            break;
+                        case 'usage.dateRange':
+                            if (typeof currentUsageDateRange !== 'undefined') currentUsageDateRange = value;
+                            break;
+                        case 'usage.rawEvents':
+                            if (typeof currentRawEventsData !== 'undefined') currentRawEventsData = value;
+                            break;
+                        case 'usage.currentPage':
+                            if (typeof currentRawEventsPage !== 'undefined') currentRawEventsPage = value;
+                            break;
+                        case 'usage.pageSize':
+                            if (typeof currentRawEventsPageSize !== 'undefined') currentRawEventsPageSize = value;
+                            break;
+                        case 'usage.isLoaded':
+                            if (typeof isUsageDataLoaded !== 'undefined') isUsageDataLoaded = value;
+                            break;
+                        case 'usage.isLoading':
+                            if (typeof isUsageLoading !== 'undefined') isUsageLoading = value;
+                            break;
+                        case 'activities.currentPage':
+                            if (typeof currentActivityPage !== 'undefined') currentActivityPage = value;
+                            break;
+                        case 'activities.pageSize':
+                            if (typeof currentActivityPageSize !== 'undefined') currentActivityPageSize = value;
+                            break;
+                        case 'activities.data':
+                            if (typeof currentActivityData !== 'undefined') currentActivityData = value;
+                            break;
+                        case 'usage.userCumulative.page':
+                            if (typeof currentUserCumulativePage !== 'undefined') currentUserCumulativePage = value;
+                            break;
+                        case 'usage.userCumulative.pageSize':
+                            if (typeof currentUserCumulativePageSize !== 'undefined') currentUserCumulativePageSize = value;
+                            break;
+                        case 'usage.userCumulative.data':
+                            if (typeof currentUserCumulativeData !== 'undefined') currentUserCumulativeData = value;
+                            break;
+                        case 'usage.userCumulative.startDate':
+                            if (typeof currentUserCumulativeStartDate !== 'undefined') currentUserCumulativeStartDate = value;
+                            break;
+                        case 'usage.userCumulative.endDate':
+                            if (typeof currentUserCumulativeEndDate !== 'undefined') currentUserCumulativeEndDate = value;
+                            break;
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Legacy sync failed for ${path}:`, error);
+                }
+            }
+
+            /**
+             * 레거시 모드에서 전역 변수 변경을 StateManager로 동기화
+             */
+            initLegacySync() {
+                if (!this.legacyMode) return;
+                
+                // 전역 변수들을 StateManager로 초기 동기화
+                this.setState('overview.filterType', window.currentFilterType || 'total', true);
+                this.setState('overview.activities', window.currentActivities || [], true);
+                this.setState('overview.dateRange', currentDateRange, true);
+                this.setState('members.data', currentMembers || [], true);
+                this.setState('members.originalData', originalMembersData || [], true);
+                this.setState('members.currentPage', currentMembersPage || 1, true);
+                this.setState('members.pageSize', currentMembersPageSize || 20, true);
+                this.setState('usage.dateRange', currentUsageDateRange, true);
+                this.setState('usage.rawEvents', currentRawEventsData || [], true);
+                this.setState('usage.currentPage', currentRawEventsPage || 1, true);
+                this.setState('usage.pageSize', currentRawEventsPageSize || 10, true);
+                this.setState('usage.isLoaded', isUsageDataLoaded || false, true);
+                this.setState('usage.isLoading', isUsageLoading || false, true);
+                this.setState('activities.currentPage', currentActivityPage || 1, true);
+                this.setState('activities.pageSize', currentActivityPageSize || 20, true);
+                this.setState('activities.data', currentActivityData || [], true);
+                this.setState('usage.userCumulative.page', currentUserCumulativePage || 1, true);
+                this.setState('usage.userCumulative.pageSize', currentUserCumulativePageSize || 20, true);
+                this.setState('usage.userCumulative.data', currentUserCumulativeData || [], true);
+                this.setState('usage.userCumulative.startDate', currentUserCumulativeStartDate, true);
+                this.setState('usage.userCumulative.endDate', currentUserCumulativeEndDate, true);
+                
+                console.log('🔄 레거시 동기화 완료');
+            }
+
+            /**
+             * 상태 히스토리 조회
+             * @param {number} limit - 조회할 항목 수
+             * @returns {Array} 히스토리 배열
+             */
+            getHistory(limit = 10) {
+                return this.history.slice(-limit);
+            }
+
+            /**
+             * 특정 상태로 롤백
+             * @param {number} steps - 롤백할 단계 수
+             */
+            rollback(steps = 1) {
+                if (steps > this.history.length) {
+                    console.warn('❌ 롤백할 히스토리가 부족합니다');
+                    return false;
+                }
+                
+                for (let i = 0; i < steps; i++) {
+                    const lastChange = this.history.pop();
+                    if (lastChange) {
+                        this.setState(lastChange.path, lastChange.oldValue, true);
+                        console.log(`⏪ 롤백: ${lastChange.path}`);
+                    }
+                }
+                
+                return true;
+            }
+
+            /**
+             * 전체 상태 덤프 (디버깅용)
+             */
+            dumpState() {
+                console.log('📊 StateManager 현재 상태:', JSON.parse(JSON.stringify(this.state)));
+                console.log('📋 히스토리 (최근 10개):', this.getHistory(10));
+                console.log('👂 활성 리스너:', Array.from(this.listeners.keys()));
+            }
+
+            /**
+             * 상태 초기화
+             */
+            reset() {
+                this.state = {
+                    overview: { filterType: 'total', dateRange: null, activities: [], charts: {} },
+                    members: { data: [], originalData: [], currentPage: 1, pageSize: 20 },
+                    usage: { dateRange: null, rawEvents: [], currentPage: 1, pageSize: 10, isLoaded: false, isLoading: false },
+                    activities: { currentPage: 1, pageSize: 20, data: [] },
+                    charts: { dataStore: { members: [], rawEvents: [], spendingData: null, usageData: null, lastUpdated: null } }
+                };
+                this.history = [];
+                this.listeners.clear();
+                console.log('🔄 StateManager 초기화됨');
+            }
+        }
+
+        // StateManager 인스턴스 생성 (Feature Flag 적용)
+        let stateManager = null;
+        if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+            stateManager = new StateManager();
+            stateManager.initLegacySync();
+            
+            // 전역 접근을 위해 노출
+            window.stateManager = stateManager;
+            
+            console.log('✅ StateManager 활성화됨 (Feature Flag)');
+        } else {
+            console.log('⚠️ StateManager 비활성화됨 (Feature Flag)');
+        }
+
+        // ===============================================
+        // 🔄 Phase 3: StateManager 어댑터 함수들
+        // ===============================================
+
+        /**
+         * StateManager를 사용하는 어댑터 함수들
+         * 기존 코드와의 호환성을 유지하면서 점진적으로 StateManager 사용
+         */
+
+        // Overview 관련 어댑터 함수들
+        function setOverviewFilterType(type) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('overview.filterType', type);
+            } else {
+                currentFilterType = type;
+                window.currentFilterType = type;
+            }
+        }
+
+        function getOverviewFilterType() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('overview.filterType');
+            } else {
+                return currentFilterType;
+            }
+        }
+
+        function setOverviewActivities(activities) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('overview.activities', activities);
+            } else {
+                currentActivities = activities;
+                window.currentActivities = activities;
+            }
+        }
+
+        function getOverviewActivities() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('overview.activities');
+            } else {
+                return currentActivities;
+            }
+        }
+
+        function setOverviewDateRange(dateRange) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('overview.dateRange', dateRange);
+            } else {
+                currentDateRange = dateRange;
+            }
+        }
+
+        function getOverviewDateRange() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('overview.dateRange');
+            } else {
+                return currentDateRange;
+            }
+        }
+
+        // Members 관련 어댑터 함수들
+        function setMembersData(data) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('members.data', data);
+            } else {
+                currentMembers = data;
+            }
+        }
+
+        function getMembersData() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('members.data');
+            } else {
+                return currentMembers;
+            }
+        }
+
+        function setMembersPage(page) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('members.currentPage', page);
+            } else {
+                currentMembersPage = page;
+            }
+        }
+
+        function getMembersPage() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('members.currentPage');
+            } else {
+                return currentMembersPage;
+            }
+        }
+
+        // Usage 관련 어댑터 함수들
+        function setUsageRawEvents(events) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('usage.rawEvents', events);
+            } else {
+                currentRawEventsData = events;
+            }
+        }
+
+        function getUsageRawEvents() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('usage.rawEvents');
+            } else {
+                return currentRawEventsData;
+            }
+        }
+
+        function setUsageLoading(isLoading) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('usage.isLoading', isLoading);
+            } else {
+                isUsageLoading = isLoading;
+            }
+        }
+
+        function getUsageLoading() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('usage.isLoading');
+            } else {
+                return isUsageLoading;
+            }
+        }
+
+        function setUsageLoaded(isLoaded) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('usage.isLoaded', isLoaded);
+            } else {
+                isUsageDataLoaded = isLoaded;
+            }
+        }
+
+        function getUsageLoaded() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('usage.isLoaded');
+            } else {
+                return isUsageDataLoaded;
+            }
+        }
+
+        // Activities 관련 어댑터 함수들
+        function setActivityData(data) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('activities.data', data);
+            } else {
+                currentActivityData = data;
+            }
+        }
+
+        function getActivityData() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('activities.data');
+            } else {
+                return currentActivityData;
+            }
+        }
+
+        function setActivityPage(page) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.setState('activities.currentPage', page);
+            } else {
+                currentActivityPage = page;
+            }
+        }
+
+        function getActivityPage() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getState('activities.currentPage');
+            } else {
+                return currentActivityPage;
+            }
+        }
+
+        // ===============================================
+        // 📊 Phase 4: Table 컴포넌트 시스템
+        // ===============================================
+
+        /**
+         * 재사용 가능한 Table 컴포넌트
+         * 모든 테이블 렌더링을 표준화하고 중복 제거
+         */
+        class TableComponent {
+            constructor(config) {
+                this.config = {
+                    containerId: config.containerId,
+                    columns: config.columns || [],
+                    data: config.data || [],
+                    pagination: config.pagination || { enabled: false, pageSize: 20, currentPage: 1 },
+                    sorting: config.sorting || { enabled: false, field: null, direction: 'asc' },
+                    onRowClick: config.onRowClick || null,
+                    onSort: config.onSort || null,
+                    emptyMessage: config.emptyMessage || '데이터가 없습니다.',
+                    className: config.className || 'data-table',
+                    showHeader: config.showHeader !== false,
+                    showPagination: config.showPagination !== false
+                };
+                
+                this.container = document.getElementById(this.config.containerId);
+                if (!this.container) {
+                    console.error(`❌ Table 컨테이너를 찾을 수 없습니다: ${this.config.containerId}`);
+                }
+                
+                this.sortField = this.config.sorting.field;
+                this.sortDirection = this.config.sorting.direction;
+            }
+
+            /**
+             * 테이블 렌더링
+             */
+            render() {
+                if (!this.container) return;
+
+                // 빈 데이터 처리
+                if (!this.config.data || this.config.data.length === 0) {
+                    this.renderEmpty();
+                    return;
+                }
+
+                // 정렬 처리
+                const sortedData = this.applySorting();
+                
+                // 페이지네이션 처리
+                const paginatedData = this.applyPagination(sortedData);
+                
+                // 테이블 구조 생성
+                const tableHtml = this.buildTableHtml(paginatedData, sortedData);
+                
+                this.container.innerHTML = tableHtml;
+                
+                // 이벤트 리스너 추가
+                this.attachEventListeners();
+                
+                console.log(`📊 Table 렌더링 완료: ${this.config.containerId} (${paginatedData.length}/${this.config.data.length}행)`);
+            }
+
+            /**
+             * 빈 데이터 렌더링
+             */
+            renderEmpty() {
+                this.container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a; border-radius: 4px;">
+                        ${this.config.emptyMessage}
+                    </div>
+                `;
+            }
+
+            /**
+             * 정렬 적용
+             */
+            applySorting() {
+                if (!this.config.sorting.enabled || !this.sortField) {
+                    return [...this.config.data];
+                }
+
+                return [...this.config.data].sort((a, b) => {
+                    const aVal = this.getNestedValue(a, this.sortField);
+                    const bVal = this.getNestedValue(b, this.sortField);
+                    
+                    let comparison = 0;
+                    
+                    if (typeof aVal === 'number' && typeof bVal === 'number') {
+                        comparison = aVal - bVal;
+                    } else {
+                        comparison = String(aVal).localeCompare(String(bVal));
+                    }
+                    
+                    return this.sortDirection === 'desc' ? -comparison : comparison;
+                });
+            }
+
+            /**
+             * 페이지네이션 적용
+             */
+            applyPagination(data) {
+                if (!this.config.pagination.enabled) {
+                    return data;
+                }
+
+                const startIndex = (this.config.pagination.currentPage - 1) * this.config.pagination.pageSize;
+                const endIndex = startIndex + this.config.pagination.pageSize;
+                
+                return data.slice(startIndex, endIndex);
+            }
+
+            /**
+             * 테이블 HTML 생성
+             */
+            buildTableHtml(paginatedData, allData) {
+                let html = '';
+                
+                // 헤더 추가
+                if (this.config.showHeader) {
+                    html += this.buildHeaderHtml(allData);
+                }
+                
+                // 테이블 헤더 컬럼
+                html += '<div class="table-header">';
+                this.config.columns.forEach(column => {
+                    const sortable = this.config.sorting.enabled && column.sortable;
+                    const sortIcon = sortable ? this.getSortIcon(column.key) : '';
+                    const sortClass = sortable ? 'sortable' : '';
+                    
+                    html += `<div class="${sortClass}" ${sortable ? `data-sort="${column.key}"` : ''} style="cursor: ${sortable ? 'pointer' : 'default'};">
+                        ${column.label} ${sortIcon}
+                    </div>`;
+                });
+                html += '</div>';
+                
+                // 테이블 본문
+                paginatedData.forEach(row => {
+                    html += '<div class="table-row">';
+                    this.config.columns.forEach(column => {
+                        const value = column.render ? 
+                            column.render(row, this.getNestedValue(row, column.key)) : 
+                            this.getNestedValue(row, column.key);
+                        html += `<div>${value}</div>`;
+                    });
+                    html += '</div>';
+                });
+                
+                // 페이지네이션 추가
+                if (this.config.showPagination && this.config.pagination.enabled) {
+                    html += this.buildPaginationHtml(allData);
+                }
+                
+                return html;
+            }
+
+            /**
+             * 헤더 HTML 생성 (제목, 페이지 크기 선택 등)
+             */
+            buildHeaderHtml(allData) {
+                if (!this.config.pagination.enabled) return '';
+                
+                const totalItems = allData.length;
+                const totalPages = Math.ceil(totalItems / this.config.pagination.pageSize);
+                const startIndex = (this.config.pagination.currentPage - 1) * this.config.pagination.pageSize;
+                const endIndex = Math.min(startIndex + this.config.pagination.pageSize, totalItems);
+                
+                return `
+                    <div class="table-header-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span class="table-title">📊 ${this.config.title || '데이터 테이블'} (${startIndex + 1}-${endIndex} of ${totalItems})</span>
+                        <select class="page-size-selector" style="background: #3a3a3a; color: #fff; border: 1px solid #4a4a4a; padding: 5px 10px; border-radius: 4px; font-size: 12px;">
+                            <option value="10" ${this.config.pagination.pageSize === 10 ? 'selected' : ''}>10개 보기</option>
+                            <option value="20" ${this.config.pagination.pageSize === 20 ? 'selected' : ''}>20개 보기</option>
+                            <option value="30" ${this.config.pagination.pageSize === 30 ? 'selected' : ''}>30개 보기</option>
+                            <option value="50" ${this.config.pagination.pageSize === 50 ? 'selected' : ''}>50개 보기</option>
+                            <option value="100" ${this.config.pagination.pageSize === 100 ? 'selected' : ''}>100개 보기</option>
+                        </select>
+                    </div>
+                `;
+            }
+
+            /**
+             * 페이지네이션 HTML 생성
+             */
+            buildPaginationHtml(allData) {
+                const totalPages = Math.ceil(allData.length / this.config.pagination.pageSize);
+                
+                if (totalPages <= 1) return '';
+                
+                let html = '<div class="pagination-controls" style="margin-top: 10px; text-align: center;">';
+                
+                // 이전 버튼
+                if (this.config.pagination.currentPage > 1) {
+                    html += `<button class="page-btn" data-page="${this.config.pagination.currentPage - 1}">« 이전</button>`;
+                }
+                
+                // 페이지 번호들
+                const startPage = Math.max(1, this.config.pagination.currentPage - 2);
+                const endPage = Math.min(totalPages, this.config.pagination.currentPage + 2);
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === this.config.pagination.currentPage;
+                    html += `<button class="page-btn ${isActive ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                }
+                
+                // 다음 버튼
+                if (this.config.pagination.currentPage < totalPages) {
+                    html += `<button class="page-btn" data-page="${this.config.pagination.currentPage + 1}">다음 »</button>`;
+                }
+                
+                html += '</div>';
+                
+                return html;
+            }
+
+            /**
+             * 정렬 아이콘 반환
+             */
+            getSortIcon(columnKey) {
+                if (this.sortField === columnKey) {
+                    return this.sortDirection === 'asc' ? '↑' : '↓';
+                }
+                return '↕';
+            }
+
+            /**
+             * 중첩 객체 값 접근
+             */
+            getNestedValue(obj, path) {
+                return path.split('.').reduce((o, p) => o && o[p], obj);
+            }
+
+            /**
+             * 이벤트 리스너 연결
+             */
+            attachEventListeners() {
+                if (!this.container) return;
+                
+                // 정렬 이벤트
+                if (this.config.sorting.enabled) {
+                    const sortableHeaders = this.container.querySelectorAll('[data-sort]');
+                    sortableHeaders.forEach(header => {
+                        header.addEventListener('click', (e) => {
+                            const field = e.target.getAttribute('data-sort');
+                            this.handleSort(field);
+                        });
+                    });
+                }
+                
+                // 페이지네이션 이벤트
+                if (this.config.pagination.enabled) {
+                    const pageButtons = this.container.querySelectorAll('.page-btn');
+                    pageButtons.forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const page = parseInt(e.target.getAttribute('data-page'));
+                            this.handlePageChange(page);
+                        });
+                    });
+                    
+                    // 페이지 크기 변경 이벤트
+                    const pageSizeSelector = this.container.querySelector('.page-size-selector');
+                    if (pageSizeSelector) {
+                        pageSizeSelector.addEventListener('change', (e) => {
+                            this.handlePageSizeChange(parseInt(e.target.value));
+                        });
+                    }
+                }
+                
+                // 행 클릭 이벤트
+                if (this.config.onRowClick) {
+                    const rows = this.container.querySelectorAll('.table-row');
+                    rows.forEach((row, index) => {
+                        row.addEventListener('click', () => {
+                            const rowData = this.config.data[index];
+                            this.config.onRowClick(rowData);
+                        });
+                    });
+                }
+            }
+
+            /**
+             * 정렬 처리
+             */
+            handleSort(field) {
+                if (this.sortField === field) {
+                    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.sortField = field;
+                    this.sortDirection = 'asc';
+                }
+                
+                if (this.config.onSort) {
+                    this.config.onSort(field, this.sortDirection);
+                }
+                
+                this.render();
+            }
+
+            /**
+             * 페이지 변경 처리
+             */
+            handlePageChange(page) {
+                this.config.pagination.currentPage = page;
+                this.render();
+            }
+
+            /**
+             * 페이지 크기 변경 처리
+             */
+            handlePageSizeChange(pageSize) {
+                this.config.pagination.pageSize = pageSize;
+                this.config.pagination.currentPage = 1; // 첫 페이지로 리셋
+                this.render();
+            }
+
+            /**
+             * 데이터 업데이트
+             */
+            updateData(newData) {
+                this.config.data = newData || [];
+                this.config.pagination.currentPage = 1; // 첫 페이지로 리셋
+                this.render();
+            }
+
+            /**
+             * 컬럼 설정 업데이트
+             */
+            updateColumns(newColumns) {
+                this.config.columns = newColumns || [];
+                this.render();
+            }
+
+            /**
+             * 전체 설정 업데이트
+             */
+            updateConfig(newConfig) {
+                this.config = { ...this.config, ...newConfig };
+                this.render();
+            }
+        }
+
+        // ===============================================
+        // 📊 Table 컴포넌트 어댑터 함수들
+        // ===============================================
+
+        // 전역 Table 컴포넌트 인스턴스들
+        let overviewActivityTable = null;
+        let membersTable = null;
+        let userCumulativeTable = null;
+
+        /**
+         * Overview 활동 리스트 Table 컴포넌트 어댑터
+         */
+        function renderOverviewActivityTableWithTableComponent(activities) {
+            // 활동 리스트 테이블이 삭제되어 더 이상 렌더링하지 않음
+            console.log('📋 활동 리스트 테이블이 삭제되어 Table Component 렌더링을 건너뜁니다.');
+        }
+
+        /**
+         * Members Table 컴포넌트 어댑터
+         */
+        function renderMembersTableWithTableComponent(membersWithSpending) {
+            if (!FeatureFlags.USE_NEW_TABLE_COMPONENT) {
+                // Legacy 함수 호출
+                return renderMembersTableWithPagination(membersWithSpending);
+            }
+
+            const config = {
+                containerId: 'members-table-container',
+                title: getMembersTableTitle(),
+                columns: [
+                    { key: 'name', label: 'NAME', sortable: true, render: (row) => row.name || 'Unnamed' },
+                    { 
+                        key: 'email', 
+                        label: 'EMAIL', 
+                        sortable: true,
+                        render: (row) => `<div class="clickable-email" title="View usage for ${row.email}" onclick="navigateToUsageWithEmail('${row.email}')">${row.email}</div>`
+                    },
+                    { 
+                        key: 'spendData.premiumRequests', 
+                        label: 'PREMIUM REQUESTS', 
+                        sortable: true,
+                        render: (row) => {
+                            const requests = row.spendData?.premiumRequests || 0;
+                            const color = requests > 100 ? '#4caf50' :
+                                         requests > 20 ? '#ff9800' :
+                                         requests > 0 ? '#2196f3' : '#f44336';
+                            return `<span style="color: ${color}; font-weight: 600;">${requests}</span>`;
+                        }
+                    },
+                    { 
+                        key: 'spendData.spend', 
+                        label: 'SPEND', 
+                        sortable: true,
+                        render: (row) => `$${(row.spendData?.spend || 0).toFixed(2)}`
+                    },
+                    { 
+                        key: 'role', 
+                        label: 'ROLE', 
+                        sortable: true,
+                        render: (row) => {
+                            const roleBadgeClass = row.role === 'owner' ? 'admin' : '';
+                            const roleText = row.role === 'owner' ? 'Admin' : 'Member';
+                            return `<span class="role-badge ${roleBadgeClass}">${roleText}</span>`;
+                        }
+                    },
+                    { key: 'actions', label: '', sortable: false, render: () => '⋯' }
+                ],
+                data: membersWithSpending || [],
+                pagination: { 
+                    enabled: true, 
+                    pageSize: currentMembersPageSize || 20, 
+                    currentPage: currentMembersPage || 1 
+                },
+                sorting: { enabled: true, field: 'spendData.premiumRequests', direction: 'desc' },
+                emptyMessage: '멤버 데이터가 없습니다.',
+                onRowClick: (row) => {
+                    if (row.email) {
+                        navigateToUsageWithEmail(row.email);
+                    }
+                }
+            };
+
+            if (!membersTable) {
+                membersTable = new TableComponent(config);
+            } else {
+                membersTable.updateConfig(config);
+            }
+
+            membersTable.render();
+            
+            console.log(`✅ Members Table Component 렌더링 완료: ${membersWithSpending?.length || 0}개 항목`);
+        }
+
+        /**
+         * User Cumulative Table 컴포넌트 어댑터
+         */
+        function renderUserCumulativeTableWithTableComponent(userInfos, startDate, endDate) {
+            if (!FeatureFlags.USE_NEW_TABLE_COMPONENT) {
+                // Legacy 함수 호출
+                return renderUserCumulativeTableWithPagination(userInfos, startDate, endDate);
+            }
+
+            const config = {
+                containerId: 'user-cumulative-wrapper',
+                title: `사용자별 누적 사용량 정보 (${new Date(startDate).toLocaleDateString()} ~ ${new Date(endDate).toLocaleDateString()})`,
+                columns: [
+                    { key: 'name', label: 'NAME', sortable: true },
+                    { 
+                        key: 'email', 
+                        label: 'EMAIL', 
+                        sortable: true,
+                        render: (row) => `<div class="user-email clickable-email" title="View usage for ${row.email}" onclick="navigateToUsageWithEmail('${row.email}')">${row.email}</div>`
+                    },
+                    { 
+                        key: 'role', 
+                        label: 'ROLE', 
+                        sortable: true,
+                        render: (row) => {
+                            const roleBadgeClass = row.role === 'owner' ? 'admin' : '';
+                            const roleText = row.role === 'owner' ? 'Admin' : 'Member';
+                            return `<span class="role-badge ${roleBadgeClass}">${roleText}</span>`;
+                        }
+                    },
+                    { key: 'periodRequests', label: 'REQUEST', sortable: true, render: (row) => `<span style="font-weight: 600;">${row.periodRequests}</span>` },
+                    { key: 'spend', label: 'SPEND', sortable: true, render: (row) => `$${row.spend.toFixed(2)}` },
+                    { key: 'lastActivity', label: 'LAST ACTIVITY', sortable: true }
+                ],
+                data: userInfos || [],
+                pagination: { 
+                    enabled: true, 
+                    pageSize: currentUserCumulativePageSize || 20, 
+                    currentPage: currentUserCumulativePage || 1 
+                },
+                sorting: { enabled: true, field: 'periodRequests', direction: 'desc' },
+                emptyMessage: '사용량 데이터가 없습니다.',
+                onRowClick: (row) => {
+                    if (row.email) {
+                        navigateToUsageWithEmail(row.email);
+                    }
+                }
+            };
+
+            if (!userCumulativeTable) {
+                userCumulativeTable = new TableComponent(config);
+            } else {
+                userCumulativeTable.updateConfig(config);
+            }
+
+            userCumulativeTable.render();
+            
+            console.log(`✅ User Cumulative Table Component 렌더링 완료: ${userInfos?.length || 0}개 항목`);
+        }
+
+        /**
+         * Overview 활동 리스트 제목 생성
+         */
+        function getOverviewActivityTitle() {
+            // 활동 리스트 테이블이 삭제되어 제목을 반환하지 않음
+            console.log('📋 활동 리스트 테이블이 삭제되어 제목 생성을 건너뜁니다.');
+            return '활동 리스트 (삭제됨)';
+        }
+
+        /**
+         * Members 테이블 제목 생성
+         */
+        function getMembersTableTitle() {
+            const filterType = getOverviewFilterType();
+            if (filterType === 'active') {
+                return '👥 활성 멤버 보기';
+            } else if (filterType === 'inactive') {
+                return '👥 비활성 멤버 보기';
+            } else {
+                return '👥 전체 멤버 보기';
+            }
+        }
+
+        // 상태 변경 이벤트 구독 헬퍼
+        function subscribeToOverviewChanges(callback) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.subscribe('overview', callback);
+                return true;
+            } else {
+                console.warn('⚠️ StateManager가 비활성화됨 - 이벤트 구독 불가');
+                return false;
+            }
+        }
+
+        function subscribeToMembersChanges(callback) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.subscribe('members', callback);
+                return true;
+            } else {
+                console.warn('⚠️ StateManager가 비활성화됨 - 이벤트 구독 불가');
+                return false;
+            }
+        }
+
+        function subscribeToUsageChanges(callback) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.subscribe('usage', callback);
+                return true;
+            } else {
+                console.warn('⚠️ StateManager가 비활성화됨 - 이벤트 구독 불가');
+                return false;
+            }
+        }
+
+        // 디버깅 및 개발 도구
+        function dumpApplicationState() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                stateManager.dumpState();
+            } else {
+                console.log('📊 레거시 전역 변수 상태:');
+                console.log('currentFilterType:', currentFilterType);
+                console.log('currentActivities:', currentActivities?.length || 0, '개');
+                console.log('currentMembers:', currentMembers?.length || 0, '개');
+                console.log('currentDateRange:', currentDateRange);
+                console.log('isUsageDataLoaded:', isUsageDataLoaded);
+                console.log('isUsageLoading:', isUsageLoading);
+            }
+        }
+
+        // 상태 히스토리 조회
+        function getStateHistory(limit = 10) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.getHistory(limit);
+            } else {
+                console.warn('⚠️ StateManager가 비활성화됨 - 히스토리 없음');
+                return [];
+            }
+        }
+
+        // 상태 롤백
+        function rollbackState(steps = 1) {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER && stateManager) {
+                return stateManager.rollback(steps);
+            } else {
+                console.warn('⚠️ StateManager가 비활성화됨 - 롤백 불가');
+                return false;
+            }
+        }
+
+        // 전역 접근을 위한 함수들 노출
+        if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+            window.setOverviewFilterType = setOverviewFilterType;
+            window.getOverviewFilterType = getOverviewFilterType;
+            window.setOverviewActivities = setOverviewActivities;
+            window.getOverviewActivities = getOverviewActivities;
+            window.dumpApplicationState = dumpApplicationState;
+            window.getStateHistory = getStateHistory;
+            window.rollbackState = rollbackState;
+            
+            console.log('✅ StateManager 어댑터 함수들 전역 노출 완료');
+        }
+
+        // ===============================================
+        // 🧪 Overview 캐싱 및 통계 카드 연동 테스트 시스템
+        // ===============================================
+
+        // 테스트 결과 저장
+        const OverviewCachingTests = {
+            results: {},
+            startTime: null,
+            originalFetch: null,
+            networkCalls: [],
+            
+            // 테스트 초기화
+            init() {
+                console.log('🧪 Overview 캐싱 테스트 시스템 초기화');
+                this.startTime = Date.now();
+                this.networkCalls = [];
+                this.results = {};
+                
+                // fetch 모니터링 설정
+                if (!this.originalFetch) {
+                    this.originalFetch = window.fetch;
+                    window.fetch = (...args) => {
+                        this.networkCalls.push({
+                            url: args[0],
+                            timestamp: Date.now(),
+                            stack: new Error().stack
+                        });
+                        return this.originalFetch.apply(window, args);
+                    };
+                }
+                
+                return this;
+            },
+            
+            // 네트워크 모니터링 리셋
+            resetNetworkMonitoring() {
+                this.networkCalls = [];
+                console.log('🔄 네트워크 모니터링 리셋');
+            },
+            
+            // 테스트 1: 초기 캐싱 검증
+            testInitialCaching() {
+                console.log('🧪 테스트 1: 초기 캐싱 검증');
+                
+                const test = {
+                    name: 'initialCaching',
+                    passed: false,
+                    details: {}
+                };
+                
+                try {
+                    // StateManager 또는 legacy 방식으로 데이터 확인
+                    let activitiesData, filterTypeData;
+                    
+                    if (FeatureFlags.USE_NEW_STATE_MANAGER && window.stateManager) {
+                        // StateManager를 통한 데이터 접근
+                        activitiesData = window.stateManager.getState('overview.activities');
+                        filterTypeData = window.stateManager.getState('overview.filterType');
+                        
+                        test.details.usingStateManager = true;
+                        test.details.stateManagerExists = !!window.stateManager;
+                    } else {
+                        // Legacy 방식으로 데이터 접근
+                        activitiesData = window.currentActivities;
+                        filterTypeData = window.currentFilterType;
+                        
+                        test.details.usingStateManager = false;
+                    }
+                    
+                    // currentActivities 존재 확인
+                    test.details.currentActivitiesExists = Array.isArray(activitiesData);
+                    test.details.currentActivitiesLength = activitiesData ? activitiesData.length : 0;
+                    
+                    // 데이터 구조 검증
+                    if (activitiesData && activitiesData.length > 0) {
+                        const sampleActivity = activitiesData[0];
+                        test.details.hasRequiredFields = !!(
+                            sampleActivity.email && 
+                            sampleActivity.type && 
+                            sampleActivity.hasOwnProperty('request')
+                        );
+                    }
+                    
+                    // currentFilterType 존재 확인
+                    test.details.filterTypeExists = typeof filterTypeData === 'string';
+                    test.details.filterTypeValue = filterTypeData;
+                    
+                    // 통과 조건
+                    test.passed = test.details.currentActivitiesExists && 
+                                 test.details.currentActivitiesLength > 0 && 
+                                 test.details.hasRequiredFields && 
+                                 test.details.filterTypeExists;
+                    
+                    console.log(`✅ 초기 캐싱 테스트: ${test.passed ? 'PASS' : 'FAIL'}`, test.details);
+                    
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 초기 캐싱 테스트 실패:', error);
+                }
+                
+                this.results.initialCaching = test;
+                return test;
+            },
+            
+            // 테스트 2: 통계 카드 클릭 시 API 호출 없음 검증
+            async testStatCardClickNoAPI() {
+                console.log('🧪 테스트 2: 통계 카드 클릭 시 API 호출 없음 검증');
+                
+                const test = {
+                    name: 'statCardClickNoAPI',
+                    passed: false,
+                    details: {}
+                };
+                
+                try {
+                    // 네트워크 모니터링 시작
+                    this.resetNetworkMonitoring();
+                    
+                    const statBoxes = document.querySelectorAll('.overview-stat-box');
+                    test.details.statBoxesFound = statBoxes.length;
+                    
+                    if (statBoxes.length > 0) {
+                        // 각 통계 카드 클릭 테스트
+                        const testTypes = ['total', 'active', 'inactive'];
+                        test.details.clickTests = {};
+                        
+                        for (const type of testTypes) {
+                            const networkCallsBefore = this.networkCalls.length;
+                            
+                            // 통계 카드 클릭 시뮬레이션
+                            if (window.filterOverviewMembersByType) {
+                                await window.filterOverviewMembersByType(type);
+                            }
+                            
+                            // 50ms 대기 (비동기 호출 감지)
+                            await new Promise(resolve => setTimeout(resolve, 50));
+                            
+                            const networkCallsAfter = this.networkCalls.length;
+                            const newCalls = networkCallsAfter - networkCallsBefore;
+                            
+                            test.details.clickTests[type] = {
+                                networkCallsBefore,
+                                networkCallsAfter,
+                                newNetworkCalls: newCalls,
+                                passed: newCalls === 0
+                            };
+                            
+                            console.log(`📊 ${type} 카드 클릭: ${newCalls === 0 ? 'PASS' : 'FAIL'} (API 호출: ${newCalls}개)`);
+                        }
+                        
+                        // 모든 클릭 테스트가 통과해야 함
+                        test.passed = Object.values(test.details.clickTests).every(clickTest => clickTest.passed);
+                    }
+                    
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 통계 카드 클릭 테스트 실패:', error);
+                }
+                
+                this.results.statCardClickNoAPI = test;
+                return test;
+            },
+            
+            // 테스트 3: 필터링 성능 검증
+            async testFilteringPerformance() {
+                console.log('🧪 테스트 3: 필터링 성능 검증');
+                
+                const test = {
+                    name: 'filteringPerformance',
+                    passed: false,
+                    details: {}
+                };
+                
+                try {
+                    const testTypes = ['total', 'active', 'inactive'];
+                    test.details.performanceTests = {};
+                    
+                    for (const type of testTypes) {
+                        const startTime = performance.now();
+                        
+                        // 필터링 실행
+                        if (window.filterOverviewMembersByType) {
+                            await window.filterOverviewMembersByType(type);
+                        }
+                        
+                        const endTime = performance.now();
+                        const duration = endTime - startTime;
+                        
+                        test.details.performanceTests[type] = {
+                            duration: duration,
+                            passed: duration < 100 // 100ms 이내
+                        };
+                        
+                        console.log(`⚡ ${type} 필터링 성능: ${duration.toFixed(2)}ms ${duration < 100 ? 'PASS' : 'FAIL'}`);
+                    }
+                    
+                    // 모든 성능 테스트가 통과해야 함
+                    test.passed = Object.values(test.details.performanceTests).every(perfTest => perfTest.passed);
+                    
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 필터링 성능 테스트 실패:', error);
+                }
+                
+                this.results.filteringPerformance = test;
+                return test;
+            },
+            
+            // 테스트 4: 데이터 일관성 검증
+            testDataConsistency() {
+                console.log('🧪 테스트 4: 데이터 일관성 검증');
+                
+                const test = {
+                    name: 'dataConsistency',
+                    passed: false,
+                    details: {}
+                };
+                
+                try {
+                    if (!window.currentActivities || window.currentActivities.length === 0) {
+                        test.details.error = 'currentActivities가 비어있음';
+                        test.passed = false;
+                        return test;
+                    }
+                    
+                    const totalData = window.currentActivities;
+                    const activeData = totalData.filter(activity => activity.type === 'active' && activity.request > 0);
+                    const inactiveData = totalData.filter(activity => activity.type === 'inactive');
+                    
+                    test.details.totalCount = totalData.length;
+                    test.details.activeCount = activeData.length;
+                    test.details.inactiveCount = inactiveData.length;
+                    
+                    // 데이터 무결성 검증
+                    test.details.dataIntegrityChecks = {
+                        totalNotEmpty: totalData.length > 0,
+                        activeSubsetOfTotal: activeData.every(item => totalData.includes(item)),
+                        inactiveSubsetOfTotal: inactiveData.every(item => totalData.includes(item)),
+                        noOverlap: activeData.filter(item => inactiveData.includes(item)).length === 0
+                    };
+                    
+                    // 필수 필드 검증
+                    test.details.fieldValidation = {
+                        allHaveEmail: totalData.every(item => item.email),
+                        allHaveType: totalData.every(item => item.type),
+                        allHaveRequest: totalData.every(item => item.hasOwnProperty('request'))
+                    };
+                    
+                    // 통과 조건
+                    test.passed = Object.values(test.details.dataIntegrityChecks).every(check => check) &&
+                                 Object.values(test.details.fieldValidation).every(check => check);
+                    
+                    console.log(`🔍 데이터 일관성 테스트: ${test.passed ? 'PASS' : 'FAIL'}`, test.details);
+                    
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 데이터 일관성 테스트 실패:', error);
+                }
+                
+                this.results.dataConsistency = test;
+                return test;
+            },
+            
+            // 전체 테스트 실행
+            async runAllTests() {
+                console.log('🚀 Overview 캐싱 및 통계 카드 연동 전체 테스트 시작');
+                const startTime = Date.now();
+                
+                try {
+                    // 테스트 실행
+                    this.testInitialCaching();
+                    await this.testStatCardClickNoAPI();
+                    await this.testFilteringPerformance();
+                    this.testDataConsistency();
+                    
+                    // 결과 분석
+                    const allTests = Object.values(this.results);
+                    const passedTests = allTests.filter(test => test.passed);
+                    const failedTests = allTests.filter(test => !test.passed);
+                    
+                    const summary = {
+                        totalTests: allTests.length,
+                        passedTests: passedTests.length,
+                        failedTests: failedTests.length,
+                        successRate: (passedTests.length / allTests.length * 100).toFixed(1),
+                        duration: Date.now() - startTime,
+                        allPassed: failedTests.length === 0
+                    };
+                    
+                    console.log(`📊 테스트 요약:`, summary);
+                    
+                    if (summary.allPassed) {
+                        console.log('✅ 모든 테스트 통과! Overview 캐싱 규칙이 준수되고 있습니다.');
+                    } else {
+                        console.error('❌ 일부 테스트 실패! 즉시 수정이 필요합니다.');
+                        console.error('실패한 테스트:', failedTests.map(test => test.name));
+                    }
+                    
+                    // 전역 접근을 위해 결과 저장
+                    window.OverviewCachingTestResults = {
+                        summary,
+                        details: this.results,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    return summary;
+                    
+                } catch (error) {
+                    console.error('🚨 테스트 실행 중 치명적 오류:', error);
+                    return { allPassed: false, error: error.message };
+                }
+            },
+            
+            // 연속 모니터링 (개발 모드)
+            startContinuousMonitoring() {
+                console.log('🔄 Overview 캐싱 연속 모니터링 시작');
+                
+                // 5분마다 테스트 실행
+                setInterval(async () => {
+                    console.log('⏰ 정기 캐싱 규칙 검증 실행');
+                    const result = await this.runAllTests();
+                    
+                    if (!result.allPassed) {
+                        console.error('🚨 정기 검증에서 문제 발견! 즉시 확인 필요');
+                        // 필요시 알림 또는 자동 복구 로직 추가 가능
+                    }
+                }, 5 * 60 * 1000); // 5분
+            }
+        };
+
+        // 전역 접근을 위해 노출
+        window.OverviewCachingTests = OverviewCachingTests;
+
+        // 페이지 로드 후 자동 테스트 실행 (개발 모드)
+        if (window.FeatureFlags && window.FeatureFlags.DEBUG_MODE) {
+            setTimeout(async () => {
+                console.log('🔧 DEBUG 모드: Overview 캐싱 테스트 자동 실행');
+                
+                // 데이터 로딩 완료 대기
+                let retries = 0;
+                while ((!window.currentActivities || window.currentActivities.length === 0) && retries < 10) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    retries++;
+                }
+                
+                if (window.currentActivities && window.currentActivities.length > 0) {
+                    OverviewCachingTests.init();
+                    const result = await OverviewCachingTests.runAllTests();
+                    
+                    if (result.allPassed) {
+                        console.log('✅ 자동 테스트 완료: Overview 캐싱 규칙 모두 준수');
+                    } else {
+                        console.error('❌ 자동 테스트 실패: 긴급 수정 필요');
+                    }
+                    
+                    // 연속 모니터링 시작 (DEBUG 모드에서만)
+                    OverviewCachingTests.startContinuousMonitoring();
+                } else {
+                    console.warn('⚠️ 데이터 로딩 대기 시간 초과 - 테스트 건너뜀');
+                }
+            }, 3000); // 3초 후 실행
+        }
+
+        // 수동 테스트 실행 명령어 (콘솔에서 사용)
+        window.runOverviewCachingTests = async () => {
+            OverviewCachingTests.init();
+            return await OverviewCachingTests.runAllTests();
+        };
+
+        // ===============================================
+        // 🧪 Phase 3: StateManager 테스트 시스템
+        // ===============================================
+
+        /**
+         * StateManager 기능 검증을 위한 테스트 시스템
+         */
+        const StateManagerTests = {
+            results: {},
+
+            // 테스트 1: StateManager 초기화 검증
+            testStateManagerInitialization() {
+                console.log('🧪 테스트 1: StateManager 초기화 검증');
+                
+                const test = {
+                    name: 'stateManagerInitialization',
+                    passed: false,
+                    details: {}
+                };
+
+                try {
+                    if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                        test.details.featureFlagEnabled = true;
+                        test.details.stateManagerExists = !!window.stateManager;
+                        test.details.hasState = !!window.stateManager?.state;
+                        test.details.hasOverviewState = !!window.stateManager?.state?.overview;
+                        test.details.hasMembersState = !!window.stateManager?.state?.members;
+                        test.details.hasUsageState = !!window.stateManager?.state?.usage;
+
+                        test.passed = test.details.stateManagerExists && 
+                                     test.details.hasState && 
+                                     test.details.hasOverviewState && 
+                                     test.details.hasMembersState && 
+                                     test.details.hasUsageState;
+                    } else {
+                        test.details.featureFlagEnabled = false;
+                        test.details.reason = 'StateManager Feature Flag 비활성화됨';
+                        test.passed = true; // Feature Flag가 꺼져있으면 정상
+                    }
+
+                    console.log(`✅ StateManager 초기화 테스트: ${test.passed ? 'PASS' : 'FAIL'}`, test.details);
+
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ StateManager 초기화 테스트 실패:', error);
+                }
+
+                this.results.stateManagerInitialization = test;
+                return test;
+            },
+
+            // 테스트 2: 어댑터 함수 검증
+            testAdapterFunctions() {
+                console.log('🧪 테스트 2: 어댑터 함수 검증');
+                
+                const test = {
+                    name: 'adapterFunctions',
+                    passed: false,
+                    details: {}
+                };
+
+                try {
+                    const requiredFunctions = [
+                        'setOverviewFilterType', 'getOverviewFilterType',
+                        'setOverviewActivities', 'getOverviewActivities',
+                        'setOverviewDateRange', 'getOverviewDateRange',
+                        'setMembersData', 'getMembersData',
+                        'setUsageRawEvents', 'getUsageRawEvents'
+                    ];
+
+                    test.details.functionTests = {};
+                    let allFunctionsExist = true;
+
+                    requiredFunctions.forEach(funcName => {
+                        const exists = typeof window[funcName] === 'function';
+                        test.details.functionTests[funcName] = exists;
+                        if (!exists) allFunctionsExist = false;
+                    });
+
+                    test.details.allFunctionsExist = allFunctionsExist;
+                    test.passed = allFunctionsExist;
+
+                    console.log(`✅ 어댑터 함수 테스트: ${test.passed ? 'PASS' : 'FAIL'}`, test.details);
+
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 어댑터 함수 테스트 실패:', error);
+                }
+
+                this.results.adapterFunctions = test;
+                return test;
+            },
+
+            // 테스트 3: 상태 동기화 검증
+            async testStateSynchronization() {
+                console.log('🧪 테스트 3: 상태 동기화 검증');
+                
+                const test = {
+                    name: 'stateSynchronization',
+                    passed: false,
+                    details: {}
+                };
+
+                try {
+                    if (!FeatureFlags.USE_NEW_STATE_MANAGER) {
+                        test.details.reason = 'StateManager Feature Flag 비활성화됨';
+                        test.passed = true;
+                        return test;
+                    }
+
+                    // 테스트 데이터
+                    const testFilterType = 'active';
+                    const testActivities = [{ test: 'data' }];
+
+                    // 어댑터를 통한 상태 설정
+                    setOverviewFilterType(testFilterType);
+                    setOverviewActivities(testActivities);
+
+                    // StateManager에서 직접 조회
+                    const stateFilterType = window.stateManager.getState('overview.filterType');
+                    const stateActivities = window.stateManager.getState('overview.activities');
+
+                    // 어댑터를 통한 조회
+                    const adapterFilterType = getOverviewFilterType();
+                    const adapterActivities = getOverviewActivities();
+
+                    test.details.stateManagerSync = {
+                        filterType: stateFilterType === testFilterType,
+                        activities: JSON.stringify(stateActivities) === JSON.stringify(testActivities)
+                    };
+
+                    test.details.adapterSync = {
+                        filterType: adapterFilterType === testFilterType,
+                        activities: JSON.stringify(adapterActivities) === JSON.stringify(testActivities)
+                    };
+
+                    test.details.legacySync = {
+                        filterType: window.currentFilterType === testFilterType,
+                        activities: JSON.stringify(window.currentActivities) === JSON.stringify(testActivities)
+                    };
+
+                    // 모든 동기화가 정상인지 확인
+                    test.passed = Object.values(test.details.stateManagerSync).every(Boolean) &&
+                                 Object.values(test.details.adapterSync).every(Boolean) &&
+                                 Object.values(test.details.legacySync).every(Boolean);
+
+                    console.log(`✅ 상태 동기화 테스트: ${test.passed ? 'PASS' : 'FAIL'}`, test.details);
+
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 상태 동기화 테스트 실패:', error);
+                }
+
+                this.results.stateSynchronization = test;
+                return test;
+            },
+
+            // 테스트 4: 히스토리 및 롤백 기능 검증
+            async testHistoryAndRollback() {
+                console.log('🧪 테스트 4: 히스토리 및 롤백 기능 검증');
+                
+                const test = {
+                    name: 'historyAndRollback',
+                    passed: false,
+                    details: {}
+                };
+
+                try {
+                    if (!FeatureFlags.USE_NEW_STATE_MANAGER) {
+                        test.details.reason = 'StateManager Feature Flag 비활성화됨';
+                        test.passed = true;
+                        return test;
+                    }
+
+                    // 초기 상태 저장
+                    const initialFilterType = getOverviewFilterType();
+                    
+                    // 상태 변경
+                    setOverviewFilterType('inactive');
+                    const changedFilterType = getOverviewFilterType();
+                    
+                    // 히스토리 조회
+                    const history = getStateHistory(5);
+                    test.details.historyLength = history.length;
+                    test.details.hasHistoryEntries = history.length > 0;
+                    
+                    // 롤백 테스트
+                    const rollbackResult = rollbackState(1);
+                    const rolledBackFilterType = getOverviewFilterType();
+                    
+                    test.details.rollbackWorked = rollbackResult && (rolledBackFilterType === initialFilterType);
+                    test.details.initialState = initialFilterType;
+                    test.details.changedState = changedFilterType;
+                    test.details.rolledBackState = rolledBackFilterType;
+
+                    test.passed = test.details.hasHistoryEntries && test.details.rollbackWorked;
+
+                    console.log(`✅ 히스토리 및 롤백 테스트: ${test.passed ? 'PASS' : 'FAIL'}`, test.details);
+
+                } catch (error) {
+                    test.passed = false;
+                    test.details.error = error.message;
+                    console.error('❌ 히스토리 및 롤백 테스트 실패:', error);
+                }
+
+                this.results.historyAndRollback = test;
+                return test;
+            },
+
+            // 전체 테스트 실행
+            async runAllTests() {
+                console.log('🚀 StateManager 전체 테스트 시작');
+                const startTime = Date.now();
+
+                try {
+                    // 테스트 실행
+                    this.testStateManagerInitialization();
+                    this.testAdapterFunctions();
+                    await this.testStateSynchronization();
+                    await this.testHistoryAndRollback();
+
+                    // 결과 분석
+                    const allTests = Object.values(this.results);
+                    const passedTests = allTests.filter(test => test.passed);
+                    const failedTests = allTests.filter(test => !test.passed);
+
+                    const summary = {
+                        totalTests: allTests.length,
+                        passedTests: passedTests.length,
+                        failedTests: failedTests.length,
+                        successRate: (passedTests.length / allTests.length * 100).toFixed(1),
+                        duration: Date.now() - startTime,
+                        allPassed: failedTests.length === 0
+                    };
+
+                    console.log(`📊 StateManager 테스트 요약:`, summary);
+
+                    if (summary.allPassed) {
+                        console.log('✅ 모든 StateManager 테스트 통과!');
+                    } else {
+                        console.error('❌ 일부 StateManager 테스트 실패!');
+                        console.error('실패한 테스트:', failedTests.map(test => test.name));
+                    }
+
+                    // 전역 접근을 위해 결과 저장
+                    window.StateManagerTestResults = {
+                        summary,
+                        details: this.results,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    return summary;
+
+                } catch (error) {
+                    console.error('🚨 StateManager 테스트 실행 중 치명적 오류:', error);
+                    return { allPassed: false, error: error.message };
+                }
+            }
+        };
+
+        // 전역 접근을 위해 노출
+        window.StateManagerTests = StateManagerTests;
+
+        // 수동 테스트 실행 명령어
+        window.runStateManagerTests = async () => {
+            return await StateManagerTests.runAllTests();
+        };
+
+        // 캐싱 규칙 위반 감지기
+        window.validateOverviewCachingRules = () => {
+            const violations = [];
+            
+            // 필수 변수 존재 확인
+            if (!window.currentActivities) {
+                violations.push('currentActivities 변수가 존재하지 않음');
+            }
+            
+            if (typeof window.currentFilterType !== 'string') {
+                violations.push('currentFilterType 변수가 올바르지 않음');
+            }
+            
+            // 필수 함수 존재 확인
+            const requiredFunctions = [
+                'filterActivitiesByType',
+                'updateActivityList',
+                'filterOverviewMembersByType',
+                'renderOverviewActivityTableWithPagination'
+            ];
+            
+            requiredFunctions.forEach(funcName => {
+                if (typeof window[funcName] !== 'function') {
+                    violations.push(`필수 함수 ${funcName}이 존재하지 않음`);
+                }
+            });
+            
+            if (violations.length > 0) {
+                console.error('🚨 Overview 캐싱 규칙 위반 감지:', violations);
+                return false;
+            } else {
+                console.log('✅ Overview 캐싱 규칙 모두 준수');
+                return true;
+            }
+        };
 
     </script>
 </body>
