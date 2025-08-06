@@ -2,25 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "app.py",
+      "src": "proxy_server.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "app.py"
-    },
-    {
-      "src": "/health",
-      "dest": "app.py"
+      "dest": "/proxy_server.py"
     },
     {
       "src": "/(.*)",
-      "dest": "app.py"
+      "dest": "/proxy_server.py"
     }
-  ],
-  "env": {
-    "CURSOR_API_KEY": "@cursor_api_key"
-  }
+  ]
 } 
