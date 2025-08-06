@@ -9727,7 +9727,8 @@
                         </div>
 
                         <!-- 하단 버튼 -->
-                        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #3a3a3a; padding-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid #3a3a3a; padding-top: 20px;">
+                            <button onclick="sendEmailFromPreview()" class="analytics-btn" style="padding: 10px 20px;">📧 즉시 발송</button>
                             <button onclick="closeEmailRecipientsModal()" class="chart-btn" style="padding: 10px 20px;">닫기</button>
                         </div>
                     </div>
@@ -11343,7 +11344,7 @@
             // 발송 데이터 준비
             const emailPayload = {
                 to_emails: emailData.allEmails,
-                subject: '[Samsung AI Dashboard] 예약 발송 리포트',
+                subject: '[Samsung AI Dashboard] 즉시 발송 리포트',
                 message: emailData.message,
                 recipients: recipientText,
                 timestamp: emailData.timestamp,
