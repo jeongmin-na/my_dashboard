@@ -18,24 +18,6 @@
             overflow-x: hidden;
         }
 
-        /* 스크롤바 스타일링 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #2a2a2a;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3a3a3a;
-        }
-
         .dashboard-container {
             display: flex;
             height: 100vh;
@@ -1545,47 +1527,25 @@
                             <div class="accordion-arrow">▼</div>
                         </div>
                         <div class="accordion-content">
-                            <!-- 자동 리포트 활성화 -->
                             <div class="setting-item">
                                 <div>
-                                    <div class="setting-label">자동 리포트 활성화</div>
-                                    <div class="setting-description">정기적으로 이메일 리포트를 자동 발송합니다</div>
+                                    <div class="setting-label">자동 리포트 발송</div>
+                                    <div class="setting-description">정기적으로 사용 현황 리포트를 이메일로 발송합니다</div>
                                 </div>
                                 <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
                             </div>
-
-                            <!-- 발송 주기 -->
                             <div class="setting-item">
                                 <div>
                                     <div class="setting-label">발송 주기</div>
-                                    <div class="setting-description">리포트를 발송할 주기를 선택하세요</div>
+                                    <div class="setting-description">리포트 발송 주기를 설정합니다</div>
                                 </div>
-                                <select class="setting-select" id="email-frequency-select" style="background-color: transparent;" onfocus="this.style.backgroundColor='#3a3a3a'" onblur="this.style.backgroundColor='transparent'">
-                                    <option value="daily">매일</option>
-                                    <option value="weekly" selected>매주</option>
-                                    <option value="monthly">매월</option>
+                                <select class="setting-select">
+                                    <option>매일</option>
+                                    <option selected>매주</option>
+                                    <option>매월</option>
+                                    <option>분기별</option>
                                 </select>
                             </div>
-
-                            <!-- 발송 시간 설정 -->
-                            <div class="setting-item">
-                                <div>
-                                    <div class="setting-label">발송 시간 설정</div>
-                                    <div class="setting-description">리포트를 발송할 구체적인 시간을 설정하세요</div>
-                                </div>
-                                <input type="time" id="email-time-input" value="09:00" style="
-                                    background-color: transparent;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    padding: 8px 12px;
-                                    color: #e1e1e1;
-                                    font-size: 14px;
-                                    font-family: inherit;
-                                    transition: background-color 0.2s ease;
-                                " onfocus="this.style.backgroundColor='#3a3a3a'" onblur="this.style.backgroundColor='transparent'">
-                            </div>
-
-                            <!-- 수신자 그룹 -->
                             <div class="setting-item">
                                 <div>
                                     <div class="setting-label">수신자 그룹</div>
@@ -1600,54 +1560,8 @@
                                         <input type="checkbox" style="width: 16px; height: 16px;">
                                         <span style="color: #e1e1e1; font-size: 14px;">전체 멤버</span>
                                     </label>
-                                    <label style="display: flex; align-items: center; gap: 5px;">
-                                        <input type="checkbox" style="width: 16px; height: 16px;">
-                                        <span style="color: #e1e1e1; font-size: 14px;">비활성 멤버</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 5px;">
-                                        <input type="checkbox" style="width: 16px; height: 16px;" onclick="toggleCustomEmailInput(this)">
-                                        <span style="color: #e1e1e1; font-size: 14px;">직접 입력</span>
-                                    </label>
                                 </div>
                             </div>
-                            
-                            <!-- 직접 입력 영역 -->
-                            <div id="custom-email-input" style="display: none; margin-top: 10px;">
-                                <div style="margin-bottom: 8px;">
-                                    <span style="color: #e1e1e1; font-size: 12px;">직접 입력 이메일 주소 (쉼표로 구분)</span>
-                                </div>
-                                <textarea
-                                    id="custom-emails"
-                                    placeholder="example1@samsung.com, example2@samsung.com"
-                                    style="
-                                        width: 100%;
-                                        min-height: 60px;
-                                        padding: 8px;
-                                        border: 1px solid #3a3a3a;
-                                        border-radius: 4px;
-                                        background-color: transparent;
-                                        color: #e1e1e1;
-                                        font-size: 12px;
-                                        resize: vertical;
-                                        font-family: inherit;
-                                        box-sizing: border-box;
-                                    "
-                                ></textarea>
-                            </div>
-                            
-                            <!-- 하단 버튼 -->
-                            <div class="setting-item" style="margin-top: 20px;">
-                                <div>
-                                    <div class="setting-label">설정 관리</div>
-                                    <div class="setting-description">현재 설정을 확인하고 저장합니다</div>
-                                </div>
-                                <div style="display: flex; gap: 10px;">
-                                    <button class="analytics-btn" onclick="showEmailRecipients()">수신자 보기</button>
-                                    <button class="analytics-btn" onclick="saveEmailSettings()">설정 저장</button>
-                                </div>
-                            </div>
-
-
                         </div>
                     </div>
 
@@ -1701,132 +1615,219 @@
     </div>
 
     <script>
-        // 멤버 활동 데이터
+        // 멤버 활동 데이터 - Phase 3 실제 데이터 연동 준비
         const memberData = {
-            total: [
-                { date: "25년 7월 25일 (오늘)", email: "greenmold@samsung.com", type: "active", kind: "Chat Request", request: "3", spend: "$0.05" },
-                { date: "25년 7월 25일 (오늘)", email: "ck9104.lee@samsung.com", type: "active", kind: "Code Generation", request: "2", spend: "$0.03" },
-                { date: "25년 7월 25일 (오늘)", email: "by07.so@samsung.com", type: "active", kind: "Analysis", request: "5", spend: "$0.08" },
-                { date: "25년 7월 24일 (1일전)", email: "dynamic.choi@samsung.com", type: "inactive", kind: "Chat Request", request: "1", spend: "$0.01" },
-                { date: "25년 7월 24일 (1일전)", email: "darney.jeon@samsung.com", type: "inactive", kind: "Code Review", request: "2", spend: "$0.02" },
-                { date: "25년 7월 24일 (1일전)", email: "j0117.lee@samsung.com", type: "active", kind: "Documentation", request: "4", spend: "$0.04" },
-                { date: "25년 7월 24일 (1일전)", email: "kaeul.kim@samsung.com", type: "active", kind: "Chat Request", request: "6", spend: "$0.06" },
-                { date: "25년 7월 24일 (1일전)", email: "nw.aioffice@samsung.com", type: "inactive", kind: "Analysis", request: "1", spend: "$0.01" },
-                { date: "25년 7월 24일 (1일전)", email: "sh.ryan.park@samsung.com", type: "active", kind: "Code Generation", request: "7", spend: "$0.07" },
-                { date: "25년 7월 24일 (1일전)", email: "sejin.seo@samsung.com", type: "active", kind: "Chat Request", request: "3", spend: "$0.03" },
-                { date: "25년 7월 23일 (2일전)", email: "sol22.lee@samsung.com", type: "inactive", kind: "Documentation", request: "2", spend: "$0.02" },
-                { date: "25년 7월 23일 (2일전)", email: "shee.lim@samsung.com", type: "inactive", kind: "Analysis", request: "1", spend: "$0.01" },
-                { date: "25년 7월 23일 (2일전)", email: "joseph2.jeon@samsung.com", type: "active", kind: "Code Review", request: "5", spend: "$0.05" },
-                { date: "25년 7월 23일 (2일전)", email: "taewoo.bang@samsung.com", type: "inactive", kind: "Chat Request", request: "1", spend: "$0.01" },
-                { date: "25년 7월 23일 (2일전)", email: "baewj@samsung.com", type: "inactive", kind: "Code Generation", request: "3", spend: "$0.03" },
-                { date: "25년 7월 22일 (3일전)", email: "yj7.park@samsung.com", type: "active", kind: "Analysis", request: "4", spend: "$0.04" },
-                { date: "25년 7월 22일 (3일전)", email: "nemo.kim@samsung.com", type: "active", kind: "Chat Request", request: "6", spend: "$0.06" },
-                { date: "25년 7월 22일 (3일전)", email: "ms0402.kim@samsung.com", type: "active", kind: "Documentation", request: "3", spend: "$0.03" },
-                { date: "25년 7월 21일 (4일전)", email: "shx.kim@samsung.com", type: "active", kind: "Code Review", request: "5", spend: "$0.05" },
-                { date: "25년 7월 21일 (4일전)", email: "greenmold@samsung.com", type: "active", kind: "Analysis", request: "8", spend: "$0.08" }
-            ]
+            total: [],     // 실제 API 데이터로 채워질 예정
+            active: [],    // 활성 멤버 필터링 결과
+            inactive: []   // 비활성 멤버 필터링 결과
         };
 
-        // 활성/비활성 멤버 활동 분류
-        memberData.active = memberData.total.filter(activity => activity.type === "active");
-        memberData.inactive = memberData.total.filter(activity => activity.type === "inactive");
+        // 실제 데이터가 로드되면 활성/비활성 멤버 활동 분류 함수
+        function updateMemberDataClassification() {
+            if (memberData.total && memberData.total.length > 0) {
+                memberData.active = memberData.total.filter(activity => activity.type === "active");
+                memberData.inactive = memberData.total.filter(activity => activity.type === "inactive");
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`📊 멤버 데이터 분류 완료: 전체 ${memberData.total.length}, 활성 ${memberData.active.length}, 비활성 ${memberData.inactive.length}`);
+                }
+            }
+        }
 
-        // 멤버 리스트 렌더링
+        // 멤버 리스트 렌더링 - Phase 3 안전 장치 추가 (Overview 전용)
         function renderMemberList(type) {
-            const memberList = document.getElementById('member-list');
-            const memberListTitle = document.getElementById('member-list-title');
+            // Overview 섹션의 올바른 DOM 요소 참조
+            const memberList = document.getElementById('overview-activity-container');
+            const memberListTitle = document.querySelector('.overview-activity-header');
            
+            // DOM 요소 존재 확인
+            if (!memberList) {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.warn('⚠️ overview-activity-container 요소를 찾을 수 없습니다.');
+                }
+                return;
+            }
+            
+            if (!memberListTitle) {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.warn('⚠️ overview-activity-header 요소를 찾을 수 없습니다.');
+                }
+                return;
+            }
+           
+            // 실제 데이터 로딩 여부 확인 - Phase 3 개선
             let activities = [];
             let title = "";
             let icon = "";
+            
+            // 실제 API 데이터가 있는지 확인 (DataCache 또는 전역 변수)
+            const hasRealData = DataCache.isValid('members') || (typeof currentMembers !== 'undefined' && currentMembers.length > 0);
+            
+            if (!hasRealData) {
+                // 실제 데이터가 없으면 로딩 메시지 표시
+                title = "활동 리스트";
+                icon = "📋";
+                memberList.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a;">
+                        데이터를 불러오는 중입니다...
+                    </div>
+                `;
+                
+                // 제목 업데이트
+                if (FeatureFlags.USE_NEW_UTILS) {
+                    DOMUtils.safeSetText('.overview-activity-header', `${icon} ${title}`);
+                } else {
+                    memberListTitle.textContent = `${icon} ${title}`;
+                }
+                return;
+            }
            
+            // 실제 데이터가 있을 때만 필터링
             switch(type) {
                 case 'active':
-                    activities = memberData.active;
+                    activities = memberData.active || [];
                     title = "활성 멤버 활동 리스트";
                     icon = "🟢";
                     break;
                 case 'inactive':
-                    activities = memberData.inactive;
+                    activities = memberData.inactive || [];
                     title = "비활성 멤버 활동 리스트";
                     icon = "🟠";
                     break;
                 default:
-                    activities = memberData.total;
+                    activities = memberData.total || [];
                     title = "전체 활동 리스트";
                     icon = "📊";
             }
            
-            memberListTitle.textContent = `${icon} ${title}`;
-           
-            memberList.innerHTML = `
-                <div class="member-list-header">
-                    <div>DATE</div>
-                    <div>EMAIL</div>
-                    <div>TYPE</div>
-                    <div>KIND</div>
-                    <div>REQUEST</div>
-                    <div>SPEND</div>
-                </div>
-                ${activities.map(activity => `
-                    <div class="member-item">
-                        <div class="member-date">${activity.date}</div>
-                        <div class="member-email">${activity.email}</div>
-                        <div class="member-type ${activity.type}">${activity.type === 'active' ? '활성' : '비활성'}</div>
-                        <div class="member-kind">${activity.kind}</div>
-                        <div class="member-request">${activity.request}</div>
-                        <div class="member-spend">${activity.spend}</div>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        // 통계 박스 클릭 이벤트
-        function initOverviewStats() {
-            const statBoxes = document.querySelectorAll('.overview-stat-box');
-           
-            statBoxes.forEach(box => {
-                box.addEventListener('click', function() {
-                    // 모든 박스에서 selected 클래스 제거
-                    statBoxes.forEach(b => b.classList.remove('selected'));
-                   
-                    // 클릭된 박스에 selected 클래스 추가
-                    this.classList.add('selected');
-                   
-                    // 해당 타입의 멤버 리스트 표시
-                    const type = this.getAttribute('data-type');
-                    renderMemberList(type);
-                });
-            });
-           
-            // 초기 로드 시 전체 멤버 리스트 표시
-            renderMemberList('total');
-        }
-
-        // 현재 필터 상태를 가져오는 함수
-        function getCurrentFilterState() {
-            let dateRange;
-            if (currentDateRange) {
-                dateRange = currentDateRange;
+            // DOMUtils 사용 또는 안전한 처리 (Overview 섹션 전용)
+            if (FeatureFlags.USE_NEW_UTILS) {
+                DOMUtils.safeSetText('.overview-activity-header', `${icon} ${title}`);
             } else {
-                const filterDays = getCurrentFilterDays();
-                dateRange = getDateRange(filterDays);
+                memberListTitle.textContent = `${icon} ${title}`;
             }
-            
-            return {
-                dateRange: dateRange,
-                filterType: currentFilterType,
-                members: currentMembers,
-                rawEventsData: currentRawEventsData
-            };
+           
+            // Overview 섹션 테이블 형식에 맞게 내용 업데이트
+            if (activities && activities.length > 0) {
+                // 기존 활동 테이블 스타일 사용 (overview-activity-table과 동일한 그리드 레이아웃)
+                memberList.innerHTML = activities.map(activity => `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; gap: 15px; padding: 12px 20px; border-bottom: 1px solid #3a3a3a; align-items: center;">
+                        <div>${activity.date || '-'}</div>
+                        <div>${activity.email || '-'}</div>
+                        <div>
+                            <span class="status-badge ${activity.type === 'active' ? 'active' : 'inactive'}" style="padding: 2px 8px; border-radius: 12px; font-size: 12px; ${activity.type === 'active' ? 'background-color: #4caf50; color: white;' : 'background-color: #ff9800; color: white;'}">${activity.type === 'active' ? '활성' : '비활성'}</span>
+                        </div>
+                        <div>${activity.kind || 'Chat Request'}</div>
+                        <div>${activity.request || '-'}</div>
+                        <div>${activity.spend || '-'}</div>
+                        <div>-</div>
+                    </div>
+                `).join('');
+            } else {
+                memberList.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #7a7a7a; background-color: #1a1a1a; grid-column: 1 / -1;">
+                        데이터를 불러오는 중입니다...
+                    </div>
+                `;
+            }
+        }
+
+        // 통계 박스 클릭 이벤트 - Phase 3 안전 장치 추가
+        function initOverviewStats() {
+            try {
+                const statBoxes = document.querySelectorAll('.overview-stat-box');
+               
+                if (statBoxes.length === 0) {
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.warn('⚠️ overview-stat-box 요소들을 찾을 수 없습니다.');
+                    }
+                    return;
+                }
+               
+                statBoxes.forEach(box => {
+                    box.addEventListener('click', function() {
+                        // 모든 박스에서 selected 클래스 제거
+                        statBoxes.forEach(b => b.classList.remove('selected'));
+                       
+                        // 클릭된 박스에 selected 클래스 추가
+                        this.classList.add('selected');
+                       
+                        // 해당 타입의 멤버 리스트 표시
+                        const type = this.getAttribute('data-type');
+                        renderMemberList(type);
+                    });
+                });
+               
+                // 초기 로드 시 전체 멤버 리스트 표시 (DOM 준비 확인 후)
+                setTimeout(() => {
+                    renderMemberList('total');
+                }, 100); // 100ms 지연으로 DOM 준비 대기
+                
+            } catch (error) {
+                console.error('❌ initOverviewStats 오류:', error);
+                updatePerformanceIndicator('error', 'Overview Stats Init Failed');
+            }
+        }
+
+        // 현재 필터 상태를 가져오는 함수 - Phase 3 StateManager 적용
+        function getCurrentFilterState() {
+            if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                const dateRange = stateManager.getCurrentDateRange('overview');
+                const filterType = stateManager.getState('overview.filterType') || 'total';
+                const members = stateManager.getState('members.data') || [];
+                const rawEventsData = stateManager.getState('overview.activities') || [];
+                
+                return {
+                    dateRange: dateRange,
+                    filterType: filterType,
+                    members: members,
+                    rawEventsData: rawEventsData
+                };
+            } else {
+                // 레거시 로직
+                let dateRange;
+                if (currentDateRange) {
+                    dateRange = currentDateRange;
+                } else {
+                    const filterDays = getCurrentFilterDays();
+                    dateRange = getDateRange(filterDays);
+                }
+                
+                // 안전한 dateRange 객체 보장
+                if (!dateRange || typeof dateRange.startDate === 'undefined' || typeof dateRange.endDate === 'undefined') {
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.warn('⚠️ 유효하지 않은 dateRange, 기본값으로 대체');
+                    }
+                    dateRange = getDateRange(30); // 기본 30일
+                }
+                
+                return {
+                    dateRange: dateRange,
+                    filterType: currentFilterType || 'total',
+                    members: currentMembers || [],
+                    rawEventsData: currentRawEventsData || []
+                };
+            }
         }
         
-        // 필터 상태가 동일한지 비교하는 함수
+        // 필터 상태가 동일한지 비교하는 함수 - Phase 1 수정
         function isFilterStateEqual(filter1, filter2) {
             if (!filter1 || !filter2) return false;
             
-            return filter1.dateRange.startDate.getTime() === filter2.dateRange.startDate.getTime() &&
-                   filter1.dateRange.endDate.getTime() === filter2.dateRange.endDate.getTime() &&
+            // 날짜 비교 시 안전한 처리 (숫자 또는 Date 객체 모두 지원)
+            const getTimestamp = (dateValue) => {
+                if (typeof dateValue === 'number') return dateValue;
+                if (dateValue && typeof dateValue.getTime === 'function') return dateValue.getTime();
+                return dateValue;
+            };
+            
+            const startTime1 = getTimestamp(filter1.dateRange.startDate);
+            const endTime1 = getTimestamp(filter1.dateRange.endDate);
+            const startTime2 = getTimestamp(filter2.dateRange.startDate);
+            const endTime2 = getTimestamp(filter2.dateRange.endDate);
+            
+            return startTime1 === startTime2 &&
+                   endTime1 === endTime2 &&
                    filter1.filterType === filter2.filterType &&
                    filter1.members.length === filter2.members.length &&
                    filter1.rawEventsData.length === filter2.rawEventsData.length;
@@ -4240,10 +4241,38 @@
                 switch(sectionName) {
                     case 'overview':
                         pageTitle.textContent = 'Dashboard Overview';
-                        // Overview 메뉴 클릭 시 현재 필터 상태 유지하면서 데이터만 새로고침
+                        // Overview 메뉴 클릭 시 StateManager 기반 필터 상태 복원 및 데이터 새로고침 - Phase 3
                         setTimeout(async () => {
                             console.log('=== Overview 메뉴 클릭 시 자동 실제 API 데이터 새로고침 시작 ===');
-                            await refreshAllRealData(); // 자동 새로고침 (현재 필터 상태 유지)
+                            
+                            if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                                // StateManager를 통해 Overview 필터 상태 복원
+                                const overviewDays = stateManager.getState('overview.currentDays') || 30;
+                                const overviewDateRange = stateManager.getCurrentDateRange('overview');
+                                
+                                console.log(`🏗️ Overview 섹션 진입: ${overviewDays}일 필터 상태 복원`);
+                                
+                                // 차트 캐시 초기화 (다른 섹션 데이터 오염 방지)
+                                clearChartCache();
+                                
+                                // 필터 기간 표시 즉시 업데이트
+                                updateFilterPeriodDisplay(overviewDateRange.startDate, overviewDateRange.endDate);
+                                
+                                // Overview 버튼 활성화 상태 복원
+                                document.querySelectorAll('#overview .chart-btn').forEach(btn => {
+                                    btn.classList.remove('active');
+                                });
+                                const activeBtn = document.querySelector(`#overview .chart-btn[data-days="${overviewDays}"]`);
+                                if (activeBtn) {
+                                    activeBtn.classList.add('active');
+                                }
+                                
+                                // Overview 전용 데이터 새로고침
+                                await updateOverviewWithCurrentFilter();
+                            } else {
+                                // 레거시 로직
+                                await refreshAllRealData();
+                            }
                         }, 100);
                         break;
                     case 'members':
@@ -4704,36 +4733,63 @@
                     });
                     e.target.classList.add('active');
                    
-                    // Overview 섹션의 필터 버튼인 경우
+                    // Overview 섹션의 필터 버튼인 경우 - Phase 3 StateManager 적용
                     if (parentSection.id === 'overview') {
                         const days = e.target.getAttribute('data-days') || 1;
                         console.log(`Overview 필터 버튼 클릭: ${days}일`);
                         
-                        // 차트 캐시 초기화 (필터가 변경되었으므로)
-                        clearChartCache();
-                        
-                        // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
-                        const dateRange = getDateRange(parseInt(days));
-                        updateFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
-                        
-                        // 비동기로 데이터 업데이트
-                        setTimeout(() => {
-                            updateOverviewWithCurrentFilter();
-                        }, 10);
+                        if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                            // StateManager를 통한 상태 관리
+                            const dateRange = getDateRange(parseInt(days));
+                            stateManager.setState('overview.currentDays', parseInt(days));
+                            stateManager.setState('overview.dateRange', dateRange);
+                            
+                            // 차트 캐시 초기화 (필터가 변경되었으므로)
+                            clearChartCache();
+                            
+                            // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
+                            updateFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
+                            
+                            // 비동기로 데이터 업데이트
+                            setTimeout(() => {
+                                updateOverviewWithCurrentFilter();
+                            }, 10);
+                        } else {
+                            // 레거시 로직
+                            clearChartCache();
+                            const dateRange = getDateRange(parseInt(days));
+                            updateFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
+                            setTimeout(() => {
+                                updateOverviewWithCurrentFilter();
+                            }, 10);
+                        }
                     }
-                    // Usage 섹션의 필터 버튼인 경우
+                    // Usage 섹션의 필터 버튼인 경우 - Phase 3 StateManager 적용
                     else if (parentSection.id === 'usage') {
                         const days = e.target.getAttribute('data-days') || 30;
                         console.log(`Usage 필터 버튼 클릭: ${days}일`);
                         
-                        // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
-                        const dateRange = getDateRange(parseInt(days));
-                        updateUsageFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
-                        
-                        // 비동기로 데이터 업데이트
-                        setTimeout(() => {
-                            updateUsageWithCurrentFilter(days);
-                        }, 10);
+                        if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                            // StateManager를 통한 Usage 상태 관리
+                            const dateRange = getDateRange(parseInt(days));
+                            stateManager.setState('usage.currentDays', parseInt(days));
+                            stateManager.setState('usage.dateRange', dateRange);
+                            
+                            // 즉시 필터 기간 표시 업데이트 (데이터 로딩 전)
+                            updateUsageFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
+                            
+                            // 비동기로 데이터 업데이트
+                            setTimeout(() => {
+                                updateUsageWithCurrentFilter(days);
+                            }, 10);
+                        } else {
+                            // 레거시 로직
+                            const dateRange = getDateRange(parseInt(days));
+                            updateUsageFilterPeriodDisplay(dateRange.startDate, dateRange.endDate);
+                            setTimeout(() => {
+                                updateUsageWithCurrentFilter(days);
+                            }, 10);
+                        }
                     }
                 }
             }
@@ -4816,7 +4872,7 @@
             }, 10);
         }
 
-        // 현재 필터 설정으로 Overview 업데이트
+        // 현재 필터 설정으로 Overview 업데이트 - Phase 3 StateManager 적용
         async function updateOverviewWithCurrentFilter() {
             try {
                 console.log('=== 현재 필터로 Overview 업데이트 시작 ===');
@@ -4828,15 +4884,24 @@
                     window.overviewChartInitialized = true;
                 }
                
-                // 날짜 범위 결정
+                // 날짜 범위 결정 - Phase 3 StateManager 사용
                 let dateRange;
-                if (currentDateRange) {
-                    dateRange = currentDateRange;
-                    console.log('사용자 정의 날짜 범위 사용');
+                if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                    // StateManager를 통해 Overview 섹션의 필터 상태만 가져오기
+                    dateRange = stateManager.getCurrentDateRange('overview');
+                    const currentDays = stateManager.getState('overview.currentDays') || 30;
+                    console.log(`🏗️ StateManager Overview 필터 기간 사용: ${currentDays}일`);
+                    console.log(`🏗️ Overview 날짜 범위:`, dateRange);
                 } else {
-                    const filterDays = getCurrentFilterDays();
-                    dateRange = getDateRange(filterDays);
-                    console.log(`기본 필터 기간 사용: ${filterDays}일`);
+                    // 레거시 로직
+                    if (currentDateRange) {
+                        dateRange = currentDateRange;
+                        console.log('사용자 정의 날짜 범위 사용');
+                    } else {
+                        const filterDays = getCurrentFilterDays();
+                        dateRange = getDateRange(filterDays);
+                        console.log(`기본 필터 기간 사용: ${filterDays}일`);
+                    }
                 }
                 
                 // 필터 기간 표시 업데이트
@@ -5140,8 +5205,1312 @@
         let originalMembersData = []; // 원본 멤버 데이터 (필터링용)
 
         // ============================================================================
+        // 🚀 리팩토링 안전 장치 시스템 (Phase 0)
+        // ============================================================================
+        
+        // 🔧 Feature Flag 시스템
+        const FeatureFlags = {
+            USE_NEW_API_SERVICE: false,
+            USE_NEW_STATE_MANAGER: true,  // Phase 3 - 상태 관리 시스템 활성화
+            USE_NEW_TABLE_COMPONENT: false,
+            USE_NEW_CHART_COMPONENT: false,
+            USE_NEW_UTILS: false,
+            DEBUG_MODE: true
+        };
+
+        // 💾 데이터 캐시 시스템 - Phase 3 안전 장치
+        const DataCache = {
+            members: null,
+            spending: null,
+            usage: null,
+            events: null,
+            timestamps: {},
+            
+            // 캐시 유효성 확인 (5분 기준)
+            isValid(key) {
+                if (!this[key] || !this.timestamps[key]) {
+                    return false;
+                }
+                const age = Date.now() - this.timestamps[key];
+                return age < 5 * 60 * 1000; // 5분
+            },
+            
+            // 데이터 저장
+            set(key, data) {
+                this[key] = data;
+                this.timestamps[key] = Date.now();
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`💾 DataCache.${key} 업데이트됨`);
+                }
+            },
+            
+            // 데이터 가져오기
+            get(key) {
+                if (this.isValid(key)) {
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log(`💾 DataCache.${key} 캐시 히트`);
+                    }
+                    return this[key];
+                }
+                return null;
+            },
+            
+            // 캐시 초기화
+            clear(key) {
+                if (key) {
+                    this[key] = null;
+                    delete this.timestamps[key];
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log(`💾 DataCache.${key} 삭제됨`);
+                    }
+                } else {
+                    this.members = null;
+                    this.spending = null;
+                    this.usage = null;
+                    this.events = null;
+                    this.timestamps = {};
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log('💾 전체 DataCache 초기화됨');
+                    }
+                }
+            },
+            
+            // 캐시 상태 정보
+            getStatus() {
+                return {
+                    members: this.isValid('members'),
+                    spending: this.isValid('spending'),
+                    usage: this.isValid('usage'),
+                    events: this.isValid('events')
+                };
+            }
+        };
+
+        // 🏗️ 상태 관리 시스템 - Phase 3 구현
+        class StateManager {
+            constructor() {
+                this.state = {
+                    overview: {
+                        filterType: 'total',
+                        dateRange: null,
+                        currentDays: 30,
+                        activities: [],
+                        charts: {}
+                    },
+                    usage: {
+                        dateRange: null,
+                        currentDays: 30,
+                        rawEvents: [],
+                        currentPage: 1,
+                        pageSize: 20
+                    },
+                    members: {
+                        data: [],
+                        currentPage: 1,
+                        pageSize: 20,
+                        sortField: 'requests',
+                        sortDirection: 'desc'
+                    }
+                };
+                this.listeners = new Map();
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('🏗️ StateManager 초기화 완료');
+                }
+            }
+
+            // 상태 가져오기
+            getState(path) {
+                if (!path) return this.state;
+                return path.split('.').reduce((obj, key) => obj?.[key], this.state);
+            }
+
+            // 상태 설정
+            setState(path, value) {
+                const keys = path.split('.');
+                const lastKey = keys.pop();
+                const target = keys.reduce((obj, key) => obj[key], this.state);
+                
+                if (target) {
+                    target[lastKey] = value;
+                    this.notify(path, value);
+                    
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log(`🏗️ StateManager.setState: ${path} =`, value);
+                    }
+                }
+            }
+
+            // 상태 변경 리스너 등록
+            subscribe(path, callback) {
+                if (!this.listeners.has(path)) {
+                    this.listeners.set(path, []);
+                }
+                this.listeners.get(path).push(callback);
+            }
+
+            // 리스너들에게 변경 알림
+            notify(path, value) {
+                const listeners = this.listeners.get(path);
+                if (listeners) {
+                    listeners.forEach(callback => {
+                        try {
+                            callback(value);
+                        } catch (error) {
+                            console.error(`🚨 StateManager 리스너 오류 (${path}):`, error);
+                        }
+                    });
+                }
+            }
+
+            // 섹션별 현재 날짜 범위 가져오기
+            getCurrentDateRange(section) {
+                const sectionState = this.getState(section);
+                if (sectionState?.dateRange) {
+                    return sectionState.dateRange;
+                }
+                
+                // 기본값으로 현재 일수 기준 계산
+                const days = sectionState?.currentDays || 30;
+                if (FeatureFlags.USE_NEW_UTILS) {
+                    return DateUtils.getDateRange(days);
+                } else {
+                    return getDateRange(days);
+                }
+            }
+
+            // 디버깅용 전체 상태 출력
+            debugState() {
+                console.log('🏗️ StateManager 현재 상태:', JSON.stringify(this.state, null, 2));
+            }
+        }
+
+        // StateManager 인스턴스 생성
+        const stateManager = new StateManager();
+
+        // 📊 Phase 3-1 C: 데이터 모델 클래스들
+        class BaseModel {
+            constructor(data = {}) {
+                this.id = data.id || this.generateId();
+                this.createdAt = data.createdAt || new Date();
+                this.updatedAt = data.updatedAt || new Date();
+            }
+            
+            generateId() {
+                return 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            }
+            
+            toJSON() {
+                return { ...this };
+            }
+            
+            static validate(data) {
+                return data && typeof data === 'object';
+            }
+            
+            update(data) {
+                Object.assign(this, data);
+                this.updatedAt = new Date();
+                return this;
+            }
+        }
+
+        class TeamMember extends BaseModel {
+            constructor(data = {}) {
+                super(data);
+                this.email = data.email || '';
+                this.name = data.name || this.extractNameFromEmail(this.email);
+                this.requests = data.requests || 0;
+                this.spend = data.spend || 0;
+                this.limit = data.limit || 1;
+                this.role = data.role || 'member';
+                this.isActive = data.isActive !== undefined ? data.isActive : true;
+                this.lastActivity = data.lastActivity || null;
+            }
+            
+            extractNameFromEmail(email) {
+                if (!email) return 'Unknown';
+                const localPart = email.split('@')[0];
+                return localPart.charAt(0).toUpperCase() + localPart.slice(1);
+            }
+            
+            static validate(data) {
+                return super.validate(data) && 
+                       data.email && 
+                       typeof data.email === 'string' &&
+                       data.email.includes('@');
+            }
+            
+            isPremiumUser() {
+                return this.requests > 0;
+            }
+            
+            getUsagePercentage() {
+                if (this.limit <= 0) return 0;
+                return Math.min((this.requests / this.limit) * 100, 100);
+            }
+            
+            getDisplayName() {
+                return this.name || this.email.split('@')[0];
+            }
+            
+            static fromApiData(apiData) {
+                return new TeamMember({
+                    email: apiData.email,
+                    name: apiData.name,
+                    requests: apiData.requests || 0,
+                    spend: apiData.spend || 0,
+                    limit: apiData.limit || 1,
+                    isActive: (apiData.requests || 0) > 0
+                });
+            }
+        }
+
+        class UsageEvent extends BaseModel {
+            constructor(data = {}) {
+                super(data);
+                this.userEmail = data.userEmail || '';
+                this.timestamp = data.timestamp || new Date();
+                this.costs = data.costs || 0;
+                this.eventType = data.eventType || 'unknown';
+                this.details = data.details || {};
+            }
+            
+            static validate(data) {
+                return super.validate(data) && 
+                       data.userEmail && 
+                       data.timestamp;
+            }
+            
+            getFormattedDate() {
+                return new Date(this.timestamp).toLocaleDateString('ko-KR');
+            }
+            
+            getFormattedCost() {
+                return `$${this.costs.toFixed(2)}`;
+            }
+            
+            static fromApiData(apiData) {
+                return new UsageEvent({
+                    userEmail: apiData.userEmail,
+                    timestamp: new Date(apiData.timestamp),
+                    costs: apiData.costs || 0,
+                    eventType: apiData.eventType || 'usage',
+                    details: apiData.details || {}
+                });
+            }
+        }
+
+        class ActivityRecord extends BaseModel {
+            constructor(data = {}) {
+                super(data);
+                this.member = data.member || null;
+                this.events = data.events || [];
+                this.totalRequests = data.totalRequests || 0;
+                this.totalSpend = data.totalSpend || 0;
+                this.lastActivity = data.lastActivity || null;
+            }
+            
+            static validate(data) {
+                return super.validate(data) && 
+                       data.member && 
+                       Array.isArray(data.events);
+            }
+            
+            getActivityLevel() {
+                if (this.totalRequests === 0) return 'inactive';
+                if (this.totalRequests > 100) return 'high';
+                if (this.totalRequests > 50) return 'medium';
+                return 'low';
+            }
+            
+            getFormattedLastActivity() {
+                if (!this.lastActivity) return '활동 없음';
+                return new Date(this.lastActivity).toLocaleDateString('ko-KR');
+            }
+            
+            static fromMemberAndEvents(member, events) {
+                const totalRequests = events.reduce((sum, event) => sum + (event.requests || 0), 0);
+                const totalSpend = events.reduce((sum, event) => sum + (event.costs || 0), 0);
+                const lastActivity = events.length > 0 ? 
+                    new Date(Math.max(...events.map(e => new Date(e.timestamp).getTime()))) : null;
+                
+                return new ActivityRecord({
+                    member: member,
+                    events: events,
+                    totalRequests: totalRequests,
+                    totalSpend: totalSpend,
+                    lastActivity: lastActivity
+                });
+            }
+        }
+
+        class ChartData extends BaseModel {
+            constructor(data = {}) {
+                super(data);
+                this.type = data.type || 'line';
+                this.title = data.title || '';
+                this.datasets = data.datasets || [];
+                this.labels = data.labels || [];
+                this.options = data.options || {};
+            }
+            
+            static validate(data) {
+                return super.validate(data) && 
+                       data.type && 
+                       Array.isArray(data.datasets) &&
+                       Array.isArray(data.labels);
+            }
+            
+            addDataset(dataset) {
+                this.datasets.push(dataset);
+                this.updatedAt = new Date();
+                return this;
+            }
+            
+            setLabels(labels) {
+                this.labels = labels;
+                this.updatedAt = new Date();
+                return this;
+            }
+            
+            static fromUsageEvents(events, type = 'daily') {
+                const groupedData = {};
+                
+                events.forEach(event => {
+                    const date = new Date(event.timestamp).toLocaleDateString('ko-KR');
+                    if (!groupedData[date]) {
+                        groupedData[date] = {
+                            requests: 0,
+                            spend: 0,
+                            count: 0
+                        };
+                    }
+                    groupedData[date].requests += event.requests || 0;
+                    groupedData[date].spend += event.costs || 0;
+                    groupedData[date].count += 1;
+                });
+                
+                const labels = Object.keys(groupedData).sort();
+                const datasets = [
+                    {
+                        label: '요청 수',
+                        data: labels.map(date => groupedData[date].requests),
+                        borderColor: '#4a9eff',
+                        backgroundColor: 'rgba(74, 158, 255, 0.1)'
+                    },
+                    {
+                        label: '지출 ($)',
+                        data: labels.map(date => groupedData[date].spend),
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)'
+                    }
+                ];
+                
+                return new ChartData({
+                    type: 'line',
+                    title: `${type} 사용량 추이`,
+                    datasets: datasets,
+                    labels: labels,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+
+        class ModelFactory {
+            static createTeamMember(data) {
+                if (!TeamMember.validate(data)) {
+                    throw new Error('유효하지 않은 팀 멤버 데이터');
+                }
+                return TeamMember.fromApiData(data);
+            }
+            
+            static createUsageEvent(data) {
+                if (!UsageEvent.validate(data)) {
+                    throw new Error('유효하지 않은 사용량 이벤트 데이터');
+                }
+                return UsageEvent.fromApiData(data);
+            }
+            
+            static createActivityRecord(member, events) {
+                if (!member || !Array.isArray(events)) {
+                    throw new Error('유효하지 않은 활동 기록 데이터');
+                }
+                return ActivityRecord.fromMemberAndEvents(member, events);
+            }
+            
+            static createChartData(events, type = 'daily') {
+                if (!Array.isArray(events)) {
+                    throw new Error('유효하지 않은 차트 데이터');
+                }
+                return ChartData.fromUsageEvents(events, type);
+            }
+            
+            static createFromApiResponse(apiData, type) {
+                switch (type) {
+                    case 'member':
+                        return this.createTeamMember(apiData);
+                    case 'event':
+                        return this.createUsageEvent(apiData);
+                    case 'chart':
+                        return this.createChartData(apiData);
+                    default:
+                        throw new Error(`알 수 없는 모델 타입: ${type}`);
+                }
+            }
+        }
+
+        // 🧪 모델 테스트 시스템
+        class ModelTestSuite {
+            constructor() {
+                this.testResults = [];
+                this.totalTests = 0;
+                this.passedTests = 0;
+            }
+            
+            runTest(testName, testFn) {
+                this.totalTests++;
+                try {
+                    const result = testFn();
+                    if (result) {
+                        this.passedTests++;
+                        this.testResults.push({ name: testName, status: 'PASS', result });
+                        console.log(`✅ ${testName} - PASS`);
+                    } else {
+                        this.testResults.push({ name: testName, status: 'FAIL', result });
+                        console.log(`❌ ${testName} - FAIL`);
+                    }
+                } catch (error) {
+                    this.testResults.push({ name: testName, status: 'ERROR', error: error.message });
+                    console.log(`🚨 ${testName} - ERROR:`, error.message);
+                }
+            }
+            
+            runAllTests() {
+                console.log('🧪 Phase 3-1 C 모델 클래스 테스트 시작...');
+                
+                // BaseModel 테스트
+                this.runTest('BaseModel 생성 테스트', () => {
+                    const model = new BaseModel({ test: 'data' });
+                    return model.id && model.createdAt && model.updatedAt;
+                });
+                
+                this.runTest('BaseModel validate 테스트', () => {
+                    return BaseModel.validate({ test: 'data' }) && !BaseModel.validate(null);
+                });
+                
+                // TeamMember 테스트
+                this.runTest('TeamMember 생성 테스트', () => {
+                    const member = new TeamMember({
+                        email: 'test@samsung.com',
+                        requests: 100,
+                        spend: 5.5,
+                        limit: 10
+                    });
+                    return member.email === 'test@samsung.com' && 
+                           member.requests === 100 && 
+                           member.isPremiumUser();
+                });
+                
+                this.runTest('TeamMember API 데이터 변환 테스트', () => {
+                    const apiData = { email: 'test@samsung.com', requests: 50, spend: 2.5, limit: 5 };
+                    const member = TeamMember.fromApiData(apiData);
+                    return member instanceof TeamMember && member.getUsagePercentage() === 100;
+                });
+                
+                this.runTest('TeamMember 이름 추출 테스트', () => {
+                    const member = new TeamMember({ email: 'greenmold@samsung.com' });
+                    return member.getDisplayName() === 'Greenmold';
+                });
+                
+                // UsageEvent 테스트
+                this.runTest('UsageEvent 생성 테스트', () => {
+                    const event = new UsageEvent({
+                        userEmail: 'test@samsung.com',
+                        timestamp: new Date(),
+                        costs: 1.5,
+                        eventType: 'chat'
+                    });
+                    return event.userEmail === 'test@samsung.com' && event.costs === 1.5;
+                });
+                
+                // ActivityRecord 테스트
+                this.runTest('ActivityRecord 생성 테스트', () => {
+                    const member = new TeamMember({ email: 'test@samsung.com', requests: 10 });
+                    const events = [
+                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 1.0, requests: 5 },
+                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 0.5, requests: 5 }
+                    ];
+                    const record = ActivityRecord.fromMemberAndEvents(member, events);
+                    return record.member.email === 'test@samsung.com' && record.totalSpend === 1.5;
+                });
+                
+                // ChartData 테스트
+                this.runTest('ChartData 생성 테스트', () => {
+                    const events = [
+                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 1.0, requests: 5 },
+                        { userEmail: 'test@samsung.com', timestamp: new Date(), costs: 0.5, requests: 3 }
+                    ];
+                    const chartData = ChartData.fromUsageEvents(events);
+                    return chartData.type === 'line' && chartData.datasets.length === 2;
+                });
+                
+                // ModelFactory 테스트
+                this.runTest('ModelFactory 팀 멤버 생성 테스트', () => {
+                    const apiData = { email: 'test@samsung.com', requests: 25, spend: 1.25 };
+                    const member = ModelFactory.createTeamMember(apiData);
+                    return member instanceof TeamMember && member.email === 'test@samsung.com';
+                });
+                
+                // 실제 대시보드 데이터 호환성 테스트
+                if (typeof currentMembers !== 'undefined' && currentMembers.length > 0) {
+                    this.runTest('실제 대시보드 currentMembers 호환성 테스트', () => {
+                        const firstMember = currentMembers[0];
+                        console.log('테스트 중인 멤버 데이터:', firstMember);
+                        
+                        if (TeamMember.validate(firstMember)) {
+                            const member = TeamMember.fromApiData(firstMember);
+                            return member instanceof TeamMember && member.email;
+                        }
+                        return false;
+                    });
+                } else {
+                    console.log('ℹ️ currentMembers 데이터가 아직 로드되지 않았습니다.');
+                }
+                
+                // 테스트 결과 출력
+                this.printResults();
+            }
+            
+            printResults() {
+                console.log('\n📊 Phase 3-1 C 모델 클래스 테스트 결과:');
+                console.log(`총 테스트: ${this.totalTests}개`);
+                console.log(`통과: ${this.passedTests}개`);
+                console.log(`실패: ${this.totalTests - this.passedTests}개`);
+                console.log(`성공률: ${((this.passedTests / this.totalTests) * 100).toFixed(1)}%`);
+                
+                if (this.passedTests === this.totalTests) {
+                    console.log('🎉 모든 테스트 통과! 모델 클래스가 정상적으로 작동합니다.');
+                    console.log('✅ Phase 3-1 C 완료: 데이터 모델 클래스 구현 성공');
+                } else {
+                    console.log('⚠️ 일부 테스트 실패. 문제가 있는 부분을 확인해주세요.');
+                    this.testResults.filter(r => r.status !== 'PASS').forEach(result => {
+                        console.log(`❌ ${result.name}: ${result.error || 'Failed'}`);
+                    });
+                }
+                
+                return {
+                    totalTests: this.totalTests,
+                    passedTests: this.passedTests,
+                    successRate: (this.passedTests / this.totalTests) * 100,
+                    results: this.testResults
+                };
+            }
+        }
+
+        // ModelTestSuite 인스턴스 생성
+        const modelTestSuite = new ModelTestSuite();
+
+        // 🚨 리팩토링 안전 장치
+        const RefactoringSafety = {
+            version: '1.0.0-refactoring',
+            startTime: Date.now(),
+            baseline: null,
+            
+            // 성능 기준선 캡처
+            captureBaseline() {
+                this.baseline = {
+                    timestamp: Date.now(),
+                    renderTime: this.measureRenderTime(),
+                    memoryUsage: performance.memory?.usedJSHeapSize || 0,
+                    functionalityCheck: this.checkCoreFunctionality()
+                };
+                console.log('📊 성능 기준선 캡처 완료:', this.baseline);
+                return this.baseline;
+            },
+            
+            // 렌더링 시간 측정
+            measureRenderTime() {
+                const start = performance.now();
+                // 가상의 렌더링 테스트
+                const testDiv = document.createElement('div');
+                testDiv.innerHTML = '<div>성능 테스트</div>';
+                document.body.appendChild(testDiv);
+                document.body.removeChild(testDiv);
+                return performance.now() - start;
+            },
+            
+            // 핵심 기능 체크
+            checkCoreFunctionality() {
+                const checks = {
+                    apiConfigExists: typeof API_CONFIG !== 'undefined',
+                    overviewSectionExists: document.getElementById('overview') !== null,
+                    membersSectionExists: document.getElementById('members') !== null,
+                    usageSectionExists: document.getElementById('usage') !== null,
+                    menuItemsExist: document.querySelectorAll('.menu-item').length > 0
+                };
+                
+                const allPassed = Object.values(checks).every(check => check === true);
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('✅ 핵심 기능 체크:', checks, '전체 통과:', allPassed);
+                }
+                
+                return { checks, allPassed };
+            },
+            
+            // 현재 성능과 기준선 비교
+            compareWithBaseline() {
+                if (!this.baseline) {
+                    console.warn('⚠️ 기준선이 설정되지 않았습니다.');
+                    return false;
+                }
+                
+                const current = {
+                    renderTime: this.measureRenderTime(),
+                    memoryUsage: performance.memory?.usedJSHeapSize || 0,
+                    functionalityCheck: this.checkCoreFunctionality()
+                };
+                
+                const performance_degradation = current.renderTime > this.baseline.renderTime * 1.5;
+                const memory_increase = current.memoryUsage > this.baseline.memoryUsage * 1.3;
+                const functionality_broken = !current.functionalityCheck.allPassed;
+                
+                if (performance_degradation || memory_increase || functionality_broken) {
+                    console.error('❌ 성능 또는 기능 저하 감지!', {
+                        performance_degradation,
+                        memory_increase,
+                        functionality_broken,
+                        current,
+                        baseline: this.baseline
+                    });
+                    return false;
+                }
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('✅ 성능 및 기능 정상:', current);
+                }
+                return true;
+            },
+            
+            // 비상 롤백
+            emergencyRollback() {
+                console.log('🚨 비상 롤백 실행!');
+                Object.keys(FeatureFlags).forEach(flag => {
+                    if (flag !== 'DEBUG_MODE') {
+                        FeatureFlags[flag] = false;
+                    }
+                });
+                console.log('🔄 모든 Feature Flag 비활성화 완료');
+                return true;
+            }
+        };
+
+        // 🔄 롤백 매니저
+        const RollbackManager = {
+            snapshots: new Map(),
+            currentPhase: 'phase0',
+            
+            createSnapshot(phase, description) {
+                this.snapshots.set(phase, {
+                    timestamp: Date.now(),
+                    description: description,
+                    featureFlags: {...FeatureFlags},
+                    baseline: RefactoringSafety.baseline
+                });
+                console.log(`📸 ${phase} 스냅샷 생성: ${description}`);
+            },
+            
+            rollback(phase) {
+                const snapshot = this.snapshots.get(phase);
+                if (snapshot) {
+                    Object.assign(FeatureFlags, snapshot.featureFlags);
+                    console.log(`🔄 ${phase} 단계로 롤백 완료`);
+                    location.reload();
+                    return true;
+                }
+                console.error(`❌ ${phase} 스냅샷을 찾을 수 없습니다.`);
+                return false;
+            },
+            
+            listSnapshots() {
+                console.log('📋 사용 가능한 스냅샷:');
+                this.snapshots.forEach((snapshot, phase) => {
+                    console.log(`  - ${phase}: ${snapshot.description} (${new Date(snapshot.timestamp).toLocaleString()})`);
+                });
+            }
+        };
+
+        // ============================================================================
+        // 🧰 Phase 1: 유틸리티 함수 모듈화 (안전 장치 포함)
+        // ============================================================================
+        
+        // 📅 DateUtils - 날짜 관련 유틸리티 함수들
+        const DateUtils = {
+            // 한국 시간대 기준 날짜 범위 생성
+            getDateRange(days = 7) {
+                const now = new Date();
+                const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
+                
+                const endDate = new Date(koreaTime);
+                const startDate = new Date(koreaTime);
+                startDate.setDate(startDate.getDate() - days);
+               
+                return {
+                    startDate: startDate.getTime(),
+                    endDate: endDate.getTime()
+                };
+            },
+            
+            // 날짜 범위를 문자열로 포맷팅
+            formatDateRange(startDate, endDate) {
+                const startDateKorea = new Date(startDate + (9 * 60 * 60 * 1000));
+                const endDateKorea = new Date(endDate + (9 * 60 * 60 * 1000));
+                
+                const startDateStr = startDateKorea.toISOString().split('T')[0];
+                const endDateStr = endDateKorea.toISOString().split('T')[0];
+                
+                return `${startDateStr} ~ ${endDateStr}`;
+            },
+            
+            // 한국 시간대 기준 현재 날짜 문자열
+            getCurrentDateString() {
+                const now = new Date();
+                const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+                return koreaTime.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            },
+            
+            // 두 날짜 사이의 일수 계산
+            getDaysBetween(startDate, endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            },
+            
+            // 날짜를 한국 시간대 기준으로 변환
+            toKoreaTime(date) {
+                return new Date(date.getTime() + (9 * 60 * 60 * 1000));
+            },
+            
+            // epoch timestamp를 한국 시간 기준 날짜 문자열로 변환
+            formatKoreaDate(timestamp, options = {}) {
+                const koreaTime = new Date(timestamp + (9 * 60 * 60 * 1000));
+                const defaultOptions = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                };
+                return koreaTime.toLocaleDateString('ko-KR', { ...defaultOptions, ...options });
+            }
+        };
+
+        // 🎨 Formatters - 데이터 포맷팅 유틸리티 함수들
+        const Formatters = {
+            // 숫자를 천 단위 구분자로 포맷팅
+            number(value) {
+                if (typeof value !== 'number') return value;
+                return value.toLocaleString('ko-KR');
+            },
+            
+            // 통화 포맷팅
+            currency(amount, decimals = 2) {
+                if (typeof amount !== 'number') return '$0.00';
+                return `$${amount.toFixed(decimals)}`;
+            },
+            
+            // 백분율 계산 및 포맷팅
+            percentage(value, total, decimals = 1) {
+                if (total === 0) return '0.0%';
+                return `${((value / total) * 100).toFixed(decimals)}%`;
+            },
+            
+            // 문자열 자르기
+            truncate(str, length = 20) {
+                if (!str || typeof str !== 'string') return '';
+                return str.length > length ? `${str.substring(0, length)}...` : str;
+            },
+            
+            // 이메일에서 이름 부분만 추출
+            extractEmailName(email) {
+                if (!email || typeof email !== 'string') return '';
+                return email.split('@')[0];
+            },
+            
+            // 파일 크기 포맷팅
+            fileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        };
+
+        // ✅ Validators - 데이터 검증 유틸리티 함수들
+        const Validators = {
+            // 이메일 형식 검증
+            isValidEmail(email) {
+                if (!email || typeof email !== 'string') return false;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            },
+            
+            // 날짜 범위 검증
+            isValidDateRange(startDate, endDate) {
+                if (typeof startDate !== 'number' || typeof endDate !== 'number') return false;
+                return startDate <= endDate;
+            },
+            
+            // 페이지 번호 검증
+            isValidPageNumber(page, totalPages) {
+                return page >= 1 && page <= totalPages && Number.isInteger(page);
+            },
+            
+            // 숫자 검증
+            isValidNumber(value, min = null, max = null) {
+                if (typeof value !== 'number' || !Number.isFinite(value)) return false;
+                if (min !== null && value < min) return false;
+                if (max !== null && value > max) return false;
+                return true;
+            },
+            
+            // 배열이 비어있지 않은지 검증
+            isNonEmptyArray(arr) {
+                return Array.isArray(arr) && arr.length > 0;
+            },
+            
+            // 객체가 비어있지 않은지 검증
+            isNonEmptyObject(obj) {
+                return obj && typeof obj === 'object' && Object.keys(obj).length > 0;
+            }
+        };
+
+        // 🔧 DOM 유틸리티 - 안전한 DOM 조작 헬퍼
+        const DOMUtils = {
+            // 요소가 준비될 때까지 기다리기
+            async waitForElement(selector, timeout = 5000) {
+                return new Promise((resolve, reject) => {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        resolve(element);
+                        return;
+                    }
+
+                    const observer = new MutationObserver((mutations) => {
+                        const element = document.querySelector(selector);
+                        if (element) {
+                            observer.disconnect();
+                            resolve(element);
+                        }
+                    });
+
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true
+                    });
+
+                    setTimeout(() => {
+                        observer.disconnect();
+                        reject(new Error(`Element ${selector} not found within ${timeout}ms`));
+                    }, timeout);
+                });
+            },
+            
+            // 안전한 텍스트 설정
+            safeSetText(selector, text) {
+                try {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        element.textContent = text;
+                        return true;
+                    } else {
+                        if (FeatureFlags.DEBUG_MODE) {
+                            console.warn(`⚠️ 요소를 찾을 수 없습니다: ${selector}`);
+                        }
+                        return false;
+                    }
+                } catch (error) {
+                    console.error(`❌ safeSetText 오류 (${selector}):`, error);
+                    return false;
+                }
+            },
+            
+            // ID로 안전한 텍스트 설정
+            safeSetTextById(id, text) {
+                try {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = text;
+                        return true;
+                    } else {
+                        if (FeatureFlags.DEBUG_MODE) {
+                            console.warn(`⚠️ ID 요소를 찾을 수 없습니다: ${id}`);
+                        }
+                        return false;
+                    }
+                } catch (error) {
+                    console.error(`❌ safeSetTextById 오류 (${id}):`, error);
+                    return false;
+                }
+            }
+        };
+
+        // ============================================================================
+        // 🌐 Phase 2: API 서비스 계층 구현 (안전 장치 포함)
+        // ============================================================================
+        
+        // 🔌 ApiService - 중앙화된 API 호출 관리 클래스
+        class ApiService {
+            constructor(config) {
+                this.baseUrl = config.baseUrl;
+                this.apiKey = config.apiKey;
+                this.headers = config.headers;
+                this.interceptors = {
+                    request: [],
+                    response: []
+                };
+                this.retryConfig = {
+                    maxRetries: 2,
+                    retryDelay: 1000,
+                    retryOn: [500, 502, 503, 504] // 재시도할 HTTP 상태 코드
+                };
+                
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('🔌 ApiService 초기화 완료:', {
+                        baseUrl: this.baseUrl,
+                        headers: this.headers,
+                        retryConfig: this.retryConfig
+                    });
+                }
+            }
+            
+            // 요청 인터셉터 추가
+            addRequestInterceptor(interceptor) {
+                this.interceptors.request.push(interceptor);
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('📡 요청 인터셉터 추가됨');
+                }
+            }
+            
+            // 응답 인터셉터 추가
+            addResponseInterceptor(interceptor) {
+                this.interceptors.response.push(interceptor);
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('📡 응답 인터셉터 추가됨');
+                }
+            }
+            
+            // 인터셉터 실행
+            async runInterceptors(type, data) {
+                let result = data;
+                for (const interceptor of this.interceptors[type]) {
+                    try {
+                        result = await interceptor(result);
+                    } catch (error) {
+                        console.error(`❌ ${type} 인터셉터 실행 오류:`, error);
+                    }
+                }
+                return result;
+            }
+            
+            // 기본 HTTP 요청 메서드
+            async request(endpoint, options = {}) {
+                const startTime = Date.now();
+                let attempt = 0;
+                const maxAttempts = this.retryConfig.maxRetries + 1;
+                
+                while (attempt < maxAttempts) {
+                    try {
+                        // 요청 설정 구성
+                        const requestConfig = await this.buildRequestConfig(endpoint, options);
+                        
+                        // 요청 인터셉터 실행
+                        const processedConfig = await this.runInterceptors('request', requestConfig);
+                        
+                        if (FeatureFlags.DEBUG_MODE) {
+                            console.log(`🌐 API 요청 시작 (시도 ${attempt + 1}/${maxAttempts}):`, {
+                                method: processedConfig.method,
+                                url: processedConfig.url,
+                                hasBody: !!processedConfig.body
+                            });
+                        }
+                        
+                        // 실제 API 호출
+                        const response = await fetch(processedConfig.url, processedConfig);
+                        
+                        // 응답 처리
+                        const processedResponse = await this.processResponse(response);
+                        
+                        // 응답 인터셉터 실행
+                        const finalResponse = await this.runInterceptors('response', processedResponse);
+                        
+                        const duration = Date.now() - startTime;
+                        if (FeatureFlags.DEBUG_MODE) {
+                            console.log(`✅ API 응답 성공 (${duration}ms):`, {
+                                status: response.status,
+                                dataSize: JSON.stringify(finalResponse).length
+                            });
+                        }
+                        
+                        return finalResponse;
+                        
+                    } catch (error) {
+                        attempt++;
+                        const duration = Date.now() - startTime;
+                        
+                        if (this.shouldRetry(error, attempt, maxAttempts)) {
+                            console.warn(`⚠️ API 호출 실패, 재시도 중 (${attempt}/${maxAttempts}):`, error.message);
+                            await this.delay(this.retryConfig.retryDelay * attempt);
+                            continue;
+                        } else {
+                            console.error(`❌ API 호출 최종 실패 (${duration}ms):`, error);
+                            throw error;
+                        }
+                    }
+                }
+            }
+            
+            // 요청 설정 구성
+            async buildRequestConfig(endpoint, options) {
+                const credentials = `${this.apiKey}:`;
+                const encodedCredentials = btoa(credentials);
+                
+                const config = {
+                    method: options.method || 'GET',
+                    url: `${this.baseUrl}${endpoint}`,
+                    headers: {
+                        ...this.headers,
+                        'Authorization': `Basic ${encodedCredentials}`,
+                        ...options.headers
+                    }
+                };
+                
+                // POST 데이터 처리
+                if (options.data && (config.method === 'POST' || config.method === 'PUT')) {
+                    config.body = JSON.stringify(options.data);
+                }
+                
+                return config;
+            }
+            
+            // 응답 처리
+            async processResponse(response) {
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    const error = new Error(`API 호출 실패: ${response.status} - ${response.statusText}\n${errorText}`);
+                    error.status = response.status;
+                    error.statusText = response.statusText;
+                    error.response = response;
+                    throw error;
+                }
+                
+                const result = await response.json();
+                
+                // API 응답에 오류가 있는지 확인
+                if (result.error) {
+                    const error = new Error(`API 오류: ${result.error} - ${result.message}`);
+                    error.apiError = result.error;
+                    error.apiMessage = result.message;
+                    throw error;
+                }
+                
+                return result;
+            }
+            
+            // 재시도 여부 결정
+            shouldRetry(error, attempt, maxAttempts) {
+                if (attempt >= maxAttempts) return false;
+                
+                // 네트워크 오류인 경우 재시도
+                if (error.name === 'TypeError' || error.name === 'NetworkError') {
+                    return true;
+                }
+                
+                // 특정 HTTP 상태 코드인 경우 재시도
+                if (error.status && this.retryConfig.retryOn.includes(error.status)) {
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            // 지연 함수
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            // GET 요청 편의 메서드
+            async get(endpoint, options = {}) {
+                return this.request(endpoint, { ...options, method: 'GET' });
+            }
+            
+            // POST 요청 편의 메서드
+            async post(endpoint, data, options = {}) {
+                return this.request(endpoint, { ...options, method: 'POST', data });
+            }
+            
+            // PUT 요청 편의 메서드
+            async put(endpoint, data, options = {}) {
+                return this.request(endpoint, { ...options, method: 'PUT', data });
+            }
+            
+            // DELETE 요청 편의 메서드
+            async delete(endpoint, options = {}) {
+                return this.request(endpoint, { ...options, method: 'DELETE' });
+            }
+        }
+
+        // 🏭 TeamService - 팀 관련 API 전문 서비스
+        class TeamService {
+            constructor(apiService) {
+                this.api = apiService;
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('👥 TeamService 초기화 완료');
+                }
+            }
+            
+            // 팀 멤버 목록 조회
+            async getMembers() {
+                return this.api.get('/teams/members');
+            }
+            
+            // 팀 지출 데이터 조회
+            async getSpendingData(page = 1, pageSize = 1000) {
+                return this.api.post('/teams/spend', { page, pageSize });
+            }
+            
+            // 사용량 데이터 조회
+            async getUsageData(startDate, endDate) {
+                return this.api.post('/teams/daily-usage-data', { startDate, endDate });
+            }
+            
+            // 필터링된 이벤트 조회
+            async getFilteredEvents(startDate, endDate, page = 1, pageSize = 1000) {
+                return this.api.post('/teams/filtered-usage-events', {
+                    startDate,
+                    endDate,
+                    page,
+                    pageSize
+                });
+            }
+            
+            // 모든 이벤트 페이지 수집 (대용량 데이터 처리)
+            async getAllFilteredEvents(startDate, endDate) {
+                const allEvents = [];
+                let currentPage = 1;
+                let totalPages = 1;
+                
+                try {
+                    do {
+                        const response = await this.getFilteredEvents(startDate, endDate, currentPage, 1000);
+                        
+                        if (response.usageEvents && response.usageEvents.length > 0) {
+                            allEvents.push(...response.usageEvents);
+                        }
+                        
+                        totalPages = response.totalPages || 1;
+                        currentPage++;
+                        
+                        if (FeatureFlags.DEBUG_MODE) {
+                            console.log(`📄 이벤트 페이지 ${currentPage - 1}/${totalPages} 수집 완료 (${response.usageEvents?.length || 0}개)`);
+                        }
+                        
+                    } while (currentPage <= totalPages);
+                    
+                    return {
+                        totalUsageEventsCount: allEvents.length,
+                        usageEvents: allEvents,
+                        period: { startDate, endDate }
+                    };
+                    
+                } catch (error) {
+                    console.error('❌ 이벤트 수집 실패:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // ============================================================================
         // 성능 최적화 시스템 (2025.07.29 추가)
         // ============================================================================
+
+        // 📊 성능 모니터링 시스템 (기존 코드와 호환성 유지)
+        const PerformanceMonitor = {
+            timers: new Map(),
+            
+            start(label) {
+                this.timers.set(label, performance.now());
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`⏱️ 성능 측정 시작: ${label}`);
+                }
+            },
+            
+            end(label) {
+                const startTime = this.timers.get(label);
+                if (startTime) {
+                    const duration = performance.now() - startTime;
+                    this.timers.delete(label);
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log(`⏱️ 성능 측정 완료: ${label} - ${duration.toFixed(2)}ms`);
+                    }
+                    return duration;
+                }
+                console.warn(`⚠️ 성능 측정 타이머를 찾을 수 없습니다: ${label}`);
+                return 0;
+            },
+            
+            getTimers() {
+                return Object.fromEntries(this.timers);
+            }
+        };
+
+        // 🔧 성능 인디케이터 함수 (기존 코드와 호환성 유지) - Phase 3 안전 장치
+        function updatePerformanceIndicator(status, message) {
+            try {
+                if (FeatureFlags.DEBUG_MODE) {
+                    const statusEmojis = {
+                        'loading': '⏳',
+                        'ready': '✅',
+                        'error': '❌',
+                        'cached': '💾'
+                    };
+                    
+                    const emoji = statusEmojis[status] || '🔄';
+                    console.log(`${emoji} 성능 상태: ${status} - ${message}`);
+                }
+                
+                // 실제 UI 인디케이터가 있다면 업데이트
+                const indicator = document.querySelector('.performance-indicator');
+                if (indicator && FeatureFlags.USE_NEW_UTILS) {
+                    DOMUtils.safeSetText('.performance-indicator', `${status}: ${message}`);
+                }
+            } catch (error) {
+                console.error('❌ 성능 인디케이터 업데이트 오류:', error);
+            }
+        }
+
+        // 💀 SkeletonUI - 스켈레톤 로딩 UI (기존 코드와 호환성 유지)
+        const SkeletonUI = {
+            show(sectionId) {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`💀 스켈레톤 UI 표시: ${sectionId}`);
+                }
+            },
+            
+            hide(sectionId) {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`💀 스켈레톤 UI 숨김: ${sectionId}`);
+                }
+            }
+        };
 
 
 
@@ -5160,47 +6529,65 @@
             }
         };
 
-        // API 호출 함수 (실제 API 호출)
+        // 🌐 API 호출 함수 (실제 API 호출) - Phase 2 어댑터
         async function callAPI(endpoint, method = 'GET', data = null) {
-            try {
-                // Basic Auth 설정
-                const credentials = `${API_CONFIG.apiKey}:`;
-                const encodedCredentials = btoa(credentials);
-                
-                const options = {
-                    method: method,
-                    headers: {
-                        ...API_CONFIG.headers,
-                        'Authorization': `Basic ${encodedCredentials}`
+            if (FeatureFlags.USE_NEW_API_SERVICE) {
+                // 새로운 ApiService 사용
+                try {
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log(`🌐 새로운 ApiService 사용: ${method} ${endpoint}`);
                     }
-                };
-
-                if (data && method === 'POST') {
-                    options.body = JSON.stringify(data);
+                    
+                    const options = { method };
+                    if (data) options.data = data;
+                    
+                    return await window.apiService.request(endpoint, options);
+                } catch (error) {
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.error('❌ 새로운 ApiService 오류:', error);
+                    }
+                    throw error;
                 }
+            } else {
+                // 기존 로직 유지
+                try {
+                    const credentials = `${API_CONFIG.apiKey}:`;
+                    const encodedCredentials = btoa(credentials);
+                    
+                    const options = {
+                        method: method,
+                        headers: {
+                            ...API_CONFIG.headers,
+                            'Authorization': `Basic ${encodedCredentials}`
+                        }
+                    };
 
-                console.log(`실제 Cursor Admin API 호출: ${method} ${API_CONFIG.baseUrl}${endpoint}`, data);
-               
-                const response = await fetch(API_CONFIG.baseUrl + endpoint, options);
-               
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API 호출 실패: ${response.status} - ${response.statusText}\n${errorText}`);
-                }
+                    if (data && method === 'POST') {
+                        options.body = JSON.stringify(data);
+                    }
 
-                const result = await response.json();
-                console.log('실제 API 응답 데이터:', result);
-               
-                // API 응답에 오류가 있는지 확인
-                if (result.error) {
-                    throw new Error(`API 오류: ${result.error} - ${result.message}`);
+                    console.log(`실제 Cursor Admin API 호출: ${method} ${API_CONFIG.baseUrl}${endpoint}`, data);
+                   
+                    const response = await fetch(API_CONFIG.baseUrl + endpoint, options);
+                   
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API 호출 실패: ${response.status} - ${response.statusText}\n${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('실제 API 응답 데이터:', result);
+                   
+                    if (result.error) {
+                        throw new Error(`API 오류: ${result.error} - ${result.message}`);
+                    }
+                   
+                    return result;
+                   
+                } catch (error) {
+                    console.error('API 호출 오류:', error);
+                    throw error;
                 }
-               
-                return result;
-               
-            } catch (error) {
-                console.error('API 호출 오류:', error);
-                throw error; // 오류를 다시 던져서 호출자가 처리하도록 함
             }
         }
 
@@ -5219,65 +6606,115 @@
             }
         }
 
-        // 팀원 정보 가져오기
+        // 👥 팀원 정보 가져오기 - Phase 2 어댑터
         async function getTeamMembers() {
-            return await callAPI('/teams/members');
-        }
-
-        // 사용량 데이터 가져오기
-        async function getUsageData(startDate, endDate) {
-            return await callAPI('/teams/daily-usage-data', 'POST', {
-                startDate: startDate,
-                endDate: endDate
-            });
-        }
-
-        // 팀 지출 데이터 가져오기 (전체 멤버)
-        async function getTeamSpendingData() {
-            try {
-                console.log('🔍 전체 멤버 지출 데이터 가져오기 시작...');
-                
-                // 직접 큰 pageSize로 모든 멤버 데이터 요청
-                console.log('📡 API 호출: /teams/spend (pageSize: 1000)');
-                const spendingData = await callAPI('/teams/spend', 'POST', {
-                    page: 1,
-                    pageSize: 1000
-                });
-                
-                if (!spendingData || !spendingData.teamMemberSpend) {
-                    throw new Error('지출 데이터를 가져올 수 없습니다.');
+            if (FeatureFlags.USE_NEW_API_SERVICE) {
+                // 새로운 TeamService 사용
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('👥 새로운 TeamService.getMembers 사용');
                 }
-                
-                const retrievedCount = spendingData.teamMemberSpend.length;
-                const totalMembers = spendingData.totalMembers || retrievedCount;
-                const totalPages = spendingData.totalPages || 1;
-                
-                console.log(`✅ 지출 데이터 조회 완료:`);
-                console.log(`   - 조회된 멤버: ${retrievedCount}명`);
-                console.log(`   - 전체 멤버: ${totalMembers}명`);
-                console.log(`   - 전체 페이지: ${totalPages}페이지`);
-                
-                // 모든 데이터를 가져왔는지 확인
-                if (retrievedCount < totalMembers && totalPages > 1) {
-                    console.log('⚠️ 추가 데이터가 있습니다. 더 큰 pageSize로 재요청...');
+                return await window.teamService.getMembers();
+            } else {
+                return await callAPI('/teams/members');
+            }
+        }
+
+        // 📊 사용량 데이터 가져오기 - Phase 2 어댑터
+        async function getUsageData(startDate, endDate) {
+            if (FeatureFlags.USE_NEW_API_SERVICE) {
+                // 새로운 TeamService 사용
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('📊 새로운 TeamService.getUsageData 사용');
+                }
+                return await window.teamService.getUsageData(startDate, endDate);
+            } else {
+                return await callAPI('/teams/daily-usage-data', 'POST', {
+                    startDate: startDate,
+                    endDate: endDate
+                });
+            }
+        }
+
+        // 💰 팀 지출 데이터 가져오기 (전체 멤버) - Phase 2 어댑터
+        async function getTeamSpendingData() {
+            if (FeatureFlags.USE_NEW_API_SERVICE) {
+                // 새로운 TeamService 사용
+                try {
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log('💰 새로운 TeamService.getSpendingData 사용');
+                    }
                     
-                    const largerData = await callAPI('/teams/spend', 'POST', {
-                        page: 1,
-                        pageSize: Math.max(totalMembers + 100, 2000) // 여유있게 설정
-                    });
+                    // 먼저 작은 페이지로 시도
+                    const initialData = await window.teamService.getSpendingData(1, 1000);
                     
-                    if (largerData && largerData.teamMemberSpend && largerData.teamMemberSpend.length > retrievedCount) {
-                        console.log(`✅ 재요청 성공: ${largerData.teamMemberSpend.length}명의 데이터 확보`);
+                    if (!initialData || !initialData.teamMemberSpend) {
+                        throw new Error('지출 데이터를 가져올 수 없습니다.');
+                    }
+                    
+                    const retrievedCount = initialData.teamMemberSpend.length;
+                    const totalMembers = initialData.totalMembers || retrievedCount;
+                    const totalPages = initialData.totalPages || 1;
+                    
+                    // 추가 데이터가 필요한 경우
+                    if (retrievedCount < totalMembers && totalPages > 1) {
+                        if (FeatureFlags.DEBUG_MODE) {
+                            console.log('⚠️ 추가 데이터 요청 필요, 더 큰 pageSize로 재요청...');
+                        }
+                        const largerData = await window.teamService.getSpendingData(1, Math.max(totalMembers + 100, 2000));
                         return largerData;
                     }
+                    
+                    return initialData;
+                    
+                } catch (error) {
+                    console.error('❌ 새로운 TeamService 지출 데이터 가져오기 실패:', error);
+                    throw error;
                 }
-                
-                console.log(`🎯 최종 결과: ${retrievedCount}명의 멤버 데이터 반환`);
-                return spendingData;
-                
-            } catch (error) {
-                console.error('❌ 지출 데이터 가져오기 실패:', error);
-                throw error;
+            } else {
+                // 기존 로직 유지
+                try {
+                    console.log('🔍 전체 멤버 지출 데이터 가져오기 시작...');
+                    
+                    console.log('📡 API 호출: /teams/spend (pageSize: 1000)');
+                    const spendingData = await callAPI('/teams/spend', 'POST', {
+                        page: 1,
+                        pageSize: 1000
+                    });
+                    
+                    if (!spendingData || !spendingData.teamMemberSpend) {
+                        throw new Error('지출 데이터를 가져올 수 없습니다.');
+                    }
+                    
+                    const retrievedCount = spendingData.teamMemberSpend.length;
+                    const totalMembers = spendingData.totalMembers || retrievedCount;
+                    const totalPages = spendingData.totalPages || 1;
+                    
+                    console.log(`✅ 지출 데이터 조회 완료:`);
+                    console.log(`   - 조회된 멤버: ${retrievedCount}명`);
+                    console.log(`   - 전체 멤버: ${totalMembers}명`);
+                    console.log(`   - 전체 페이지: ${totalPages}페이지`);
+                    
+                    if (retrievedCount < totalMembers && totalPages > 1) {
+                        console.log('⚠️ 추가 데이터가 있습니다. 더 큰 pageSize로 재요청...');
+                        
+                        const largerData = await callAPI('/teams/spend', 'POST', {
+                            page: 1,
+                            pageSize: Math.max(totalMembers + 100, 2000)
+                        });
+                        
+                        if (largerData && largerData.teamMemberSpend && largerData.teamMemberSpend.length > retrievedCount) {
+                            console.log(`✅ 재요청 성공: ${largerData.teamMemberSpend.length}명의 데이터 확보`);
+                            return largerData;
+                        }
+                    }
+                    
+                    console.log(`🎯 최종 결과: ${retrievedCount}명의 멤버 데이터 반환`);
+                    return spendingData;
+                    
+                } catch (error) {
+                    console.error('❌ 지출 데이터 가져오기 실패:', error);
+                    throw error;
+                }
             }
         }
 
@@ -5347,52 +6784,81 @@
             return days ? parseInt(days) : 30;
         }
 
-        // 날짜를 epoch milliseconds로 변환 (한국 시간 기준)
+        // 📅 날짜를 epoch milliseconds로 변환 (한국 시간 기준) - Phase 1 어댑터
         function getDateRange(days = 7) {
-            // 한국 시간대 기준으로 현재 날짜 계산
-            const now = new Date();
-            const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
-            
-            const endDate = new Date(koreaTime);
-            const startDate = new Date(koreaTime);
-            startDate.setDate(startDate.getDate() - days);
-           
-            return {
-                startDate: startDate.getTime(),
-                endDate: endDate.getTime()
-            };
+            if (FeatureFlags.USE_NEW_UTILS) {
+                // 새로운 DateUtils 사용
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`📅 새로운 DateUtils.getDateRange 사용: ${days}일`);
+                }
+                return DateUtils.getDateRange(days);
+            } else {
+                // 기존 로직 유지
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log(`📅 기존 getDateRange 함수 사용: ${days}일`);
+                }
+                const now = new Date();
+                const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
+                
+                const endDate = new Date(koreaTime);
+                const startDate = new Date(koreaTime);
+                startDate.setDate(startDate.getDate() - days);
+               
+                return {
+                    startDate: startDate.getTime(),
+                    endDate: endDate.getTime()
+                };
+            }
         }
 
-        // 필터 기간 표시 업데이트 (한국 시간 기준)
+        // 🎨 필터 기간 표시 업데이트 (한국 시간 기준) - Phase 1 어댑터
         function updateFilterPeriodDisplay(startDate, endDate) {
-            const filterPeriodText = document.getElementById('filter-period-text');
-            if (!filterPeriodText) return;
+            if (FeatureFlags.USE_NEW_UTILS) {
+                // 새로운 DateUtils와 DOMUtils 사용
+                const dateRangeStr = DateUtils.formatDateRange(startDate, endDate);
+                const success = DOMUtils.safeSetTextById('filter-period-text', dateRangeStr);
+                if (FeatureFlags.DEBUG_MODE && success) {
+                    console.log(`✅ 새로운 유틸리티로 필터 기간 표시 업데이트: ${dateRangeStr}`);
+                }
+            } else {
+                // 기존 로직 유지
+                const filterPeriodText = document.getElementById('filter-period-text');
+                if (!filterPeriodText) return;
 
-            // 한국 시간대 기준으로 날짜 변환
-            const startDateKorea = new Date(startDate + (9 * 60 * 60 * 1000));
-            const endDateKorea = new Date(endDate + (9 * 60 * 60 * 1000));
-            
-            const startDateStr = startDateKorea.toISOString().split('T')[0];
-            const endDateStr = endDateKorea.toISOString().split('T')[0];
-            
-            filterPeriodText.textContent = `${startDateStr} ~ ${endDateStr}`;
-            console.log(`✅ 필터 기간 표시 업데이트: ${startDateStr} ~ ${endDateStr}`);
+                const startDateKorea = new Date(startDate + (9 * 60 * 60 * 1000));
+                const endDateKorea = new Date(endDate + (9 * 60 * 60 * 1000));
+                
+                const startDateStr = startDateKorea.toISOString().split('T')[0];
+                const endDateStr = endDateKorea.toISOString().split('T')[0];
+                
+                filterPeriodText.textContent = `${startDateStr} ~ ${endDateStr}`;
+                console.log(`✅ 필터 기간 표시 업데이트: ${startDateStr} ~ ${endDateStr}`);
+            }
         }
 
-        // Usage 섹션 필터 기간 표시 업데이트 (한국 시간 기준)
+        // 🎨 Usage 섹션 필터 기간 표시 업데이트 (한국 시간 기준) - Phase 1 어댑터
         function updateUsageFilterPeriodDisplay(startDate, endDate) {
-            const filterPeriodText = document.getElementById('usage-filter-period-text');
-            if (!filterPeriodText) return;
+            if (FeatureFlags.USE_NEW_UTILS) {
+                // 새로운 DateUtils와 DOMUtils 사용
+                const dateRangeStr = DateUtils.formatDateRange(startDate, endDate);
+                const success = DOMUtils.safeSetTextById('usage-filter-period-text', dateRangeStr);
+                if (FeatureFlags.DEBUG_MODE && success) {
+                    console.log(`✅ 새로운 유틸리티로 Usage 필터 기간 표시 업데이트: ${dateRangeStr}`);
+                }
+            } else {
+                // 기존 로직 유지
+                const filterPeriodText = document.getElementById('usage-filter-period-text');
+                if (!filterPeriodText) return;
 
-            // 한국 시간대 기준으로 날짜 변환
-            const startDateKorea = new Date(startDate + (9 * 60 * 60 * 1000));
-            const endDateKorea = new Date(endDate + (9 * 60 * 60 * 1000));
-            
-            const startDateStr = startDateKorea.toISOString().split('T')[0];
-            const endDateStr = endDateKorea.toISOString().split('T')[0];
-            
-            filterPeriodText.textContent = `${startDateStr} ~ ${endDateStr}`;
-            console.log(`✅ Usage 필터 기간 표시 업데이트: ${startDateStr} ~ ${endDateStr}`);
+                const startDateKorea = new Date(startDate + (9 * 60 * 60 * 1000));
+                const endDateKorea = new Date(endDate + (9 * 60 * 60 * 1000));
+                
+                const startDateStr = startDateKorea.toISOString().split('T')[0];
+                const endDateStr = endDateKorea.toISOString().split('T')[0];
+                
+                filterPeriodText.textContent = `${startDateStr} ~ ${endDateStr}`;
+                console.log(`✅ Usage 필터 기간 표시 업데이트: ${startDateStr} ~ ${endDateStr}`);
+            }
         }
 
         // Overview 데이터 업데이트 (초기 로드용)
@@ -8503,6 +9969,94 @@
 
         // 최적화된 페이지 초기화 (Progressive Loading)
         document.addEventListener('DOMContentLoaded', async function() {
+            // 🚀 리팩토링 안전 장치 초기화
+            console.log('🔧 리팩토링 Phase 0 - 안전 장치 초기화');
+            
+            // 성능 기준선 캡처
+            RefactoringSafety.captureBaseline();
+            
+            // 초기 스냅샷 생성
+            RollbackManager.createSnapshot('phase0-start', '리팩토링 시작 전 원본 상태');
+            
+            // 전역 리팩토링 안전 장치 노출 (디버깅용)
+            window.RefactoringSafety = RefactoringSafety;
+            window.RollbackManager = RollbackManager;
+            window.FeatureFlags = FeatureFlags;
+            
+            // Phase 1 유틸리티 전역 노출 (디버깅용)
+            window.DateUtils = DateUtils;
+            window.Formatters = Formatters;
+            window.Validators = Validators;
+            window.DOMUtils = DOMUtils;
+            
+            // DataCache 전역 노출
+            window.DataCache = DataCache;
+            
+            // Phase 3 StateManager 전역 노출
+            window.stateManager = stateManager;
+            
+            // Phase 3-1 C 모델 클래스 및 테스트 시스템 전역 노출
+            window.modelTestSuite = modelTestSuite;
+            window.BaseModel = BaseModel;
+            window.TeamMember = TeamMember;
+            window.UsageEvent = UsageEvent;
+            window.ActivityRecord = ActivityRecord;
+            window.ChartData = ChartData;
+            window.ModelFactory = ModelFactory;
+            
+            // Phase 2 API 서비스 초기화 및 전역 노출
+            window.apiService = new ApiService(API_CONFIG);
+            window.teamService = new TeamService(window.apiService);
+            
+            // API 서비스 인터셉터 추가 (로깅 및 모니터링)
+            window.apiService.addRequestInterceptor(async (config) => {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('📡 요청 인터셉터:', config.method, config.url);
+                }
+                return config;
+            });
+            
+            window.apiService.addResponseInterceptor(async (response) => {
+                if (FeatureFlags.DEBUG_MODE) {
+                    console.log('📡 응답 인터셉터:', response);
+                }
+                return response;
+            });
+            
+            // Phase 1, 2, 3 완료 스냅샷 생성
+            RollbackManager.createSnapshot('phase1-complete', '유틸리티 함수 분리 완료');
+            RollbackManager.createSnapshot('phase2-complete', 'API 서비스 계층 구현 완료');
+            RollbackManager.createSnapshot('phase3-complete', '상태 관리 시스템 및 필터 분리 완료');
+            
+            console.log('✅ 리팩토링 안전 장치 초기화 완료');
+            console.log('✅ Phase 1 유틸리티 함수 분리 완료');
+            console.log('✅ Phase 2 API 서비스 계층 구현 완료');
+            console.log('✅ Phase 3 상태 관리 시스템 및 필터 분리 완료');
+            console.log('✅ Phase 3-1 C 데이터 모델 클래스 구현 완료');
+            console.log('🧪 모델 테스트 실행: modelTestSuite.runAllTests()');
+            console.log('📋 사용 가능한 명령어:');
+            console.log('  - RefactoringSafety.compareWithBaseline() : 성능 비교');
+            console.log('  - RollbackManager.listSnapshots() : 스냅샷 목록');
+            console.log('  - RollbackManager.rollback("phase0-start") : 롤백');
+            console.log('  - RefactoringSafety.emergencyRollback() : 비상 롤백');
+            console.log('📦 Phase 1 새 유틸리티:');
+            console.log('  - DateUtils.getDateRange(days) : 날짜 범위 생성');
+            console.log('  - DateUtils.formatDateRange(start, end) : 날짜 범위 포맷팅');
+            console.log('  - Formatters.currency(amount) : 통화 포맷팅');
+            console.log('  - Formatters.number(value) : 숫자 포맷팅');
+            console.log('  - Validators.isValidEmail(email) : 이메일 검증');
+            console.log('  - DOMUtils.safeSetText(selector, text) : 안전한 텍스트 설정');
+            console.log('  - DOMUtils.waitForElement(selector) : 요소 준비 대기');
+            console.log('🌐 Phase 2 새 API 서비스:');
+            console.log('  - apiService.get(endpoint) : GET 요청');
+            console.log('  - apiService.post(endpoint, data) : POST 요청');
+            console.log('  - teamService.getMembers() : 팀 멤버 조회');
+            console.log('  - teamService.getUsageData(start, end) : 사용량 데이터 조회');
+            console.log('  - teamService.getAllFilteredEvents(start, end) : 모든 이벤트 수집');
+            console.log('🔧 새 유틸리티 활성화: FeatureFlags.USE_NEW_UTILS = true');
+            console.log('🔧 새 API 서비스 활성화: FeatureFlags.USE_NEW_API_SERVICE = true');
+            console.log('🏗️ 새 상태 관리 시스템 활성화: FeatureFlags.USE_NEW_STATE_MANAGER = true');
+            
             PerformanceMonitor.start('페이지 전체 로드');
             console.log('🚀 최적화된 대시보드 초기화 시작');
            
@@ -8512,10 +10066,18 @@
                 updatePerformanceIndicator('loading', 'UI 초기화');
                 console.log('💀 스켈레톤 UI 표시 완료');
                
-                // 2단계: 기본 UI 초기화 (즉시)
-                initOverviewStats();
+                // 2단계: 기본 UI 초기화 (즉시) - Phase 3 안전 장치
+                try {
+                    initOverviewStats();
+                    if (FeatureFlags.DEBUG_MODE) {
+                        console.log('✅ Overview 통계 초기화 완료');
+                    }
+                } catch (error) {
+                    console.error('❌ Overview 통계 초기화 실패:', error);
+                    updatePerformanceIndicator('error', 'Overview Stats Init Failed');
+                }
                
-                // Overview 필터 기본값을 30일로 설정
+                // Overview 필터 기본값을 30일로 설정 - Phase 3 StateManager 적용
                 document.querySelectorAll('#overview .chart-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -8524,6 +10086,20 @@
                 // 초기 필터 기간 표시 설정 (30일)
                 const initialDateRange = getDateRange(30);
                 updateFilterPeriodDisplay(initialDateRange.startDate, initialDateRange.endDate);
+                
+                // StateManager에 섹션별 초기 상태 설정
+                if (FeatureFlags.USE_NEW_STATE_MANAGER) {
+                    // Overview 섹션 초기 상태 (30일)
+                    stateManager.setState('overview.currentDays', 30);
+                    stateManager.setState('overview.dateRange', initialDateRange);
+                    console.log('🏗️ StateManager Overview 초기 상태 설정: 30일');
+                    
+                    // Usage 섹션 초기 상태 (30일)
+                    const usageInitialDateRange = getDateRange(30);
+                    stateManager.setState('usage.currentDays', 30);
+                    stateManager.setState('usage.dateRange', usageInitialDateRange);
+                    console.log('🏗️ StateManager Usage 초기 상태 설정: 30일');
+                }
                
                 createOverviewChart(); // 빈 차트 먼저 표시
                 window.overviewChartInitialized = true; // 차트 초기화 플래그 설정
@@ -8534,14 +10110,21 @@
                 // 3단계: 백그라운드에서 데이터 로드 시작 (비동기)
                 console.log('📡 백그라운드 데이터 로드 시작...');
                
-                // 캐시 확인 및 즉시 사용 가능한 데이터가 있다면 먼저 표시
-                if (DataCache.isValid('members') && DataCache.members) {
-                    console.log('🚀 캐시된 멤버 데이터로 즉시 기본 UI 업데이트');
-                    updatePerformanceIndicator('cached', '캐시 사용');
-                    const totalMembers = DataCache.members.teamMembers?.length || 0;
-                    updateStatsCards(totalMembers, 0, 0); // 기본값으로 먼저 표시
-                } else {
-                    updatePerformanceIndicator('loading', 'API 호출');
+                // 캐시 확인 및 즉시 사용 가능한 데이터가 있다면 먼저 표시 - Phase 3 안전 장치
+                try {
+                    if (DataCache.isValid('members') && DataCache.members) {
+                        console.log('🚀 캐시된 멤버 데이터로 즉시 기본 UI 업데이트');
+                        updatePerformanceIndicator('cached', '캐시 사용');
+                        const totalMembers = DataCache.members.teamMembers?.length || 0;
+                        if (typeof updateStatsCards === 'function') {
+                            updateStatsCards(totalMembers, 0, 0); // 기본값으로 먼저 표시
+                        }
+                    } else {
+                        updatePerformanceIndicator('loading', 'API 호출');
+                    }
+                } catch (cacheError) {
+                    console.error('❌ 캐시 확인 중 오류:', cacheError);
+                    updatePerformanceIndicator('error', 'Cache Check Failed');
                 }
                
                 // 4단계: 실제 API 데이터 로드 및 업데이트
@@ -8875,598 +10458,7 @@
             };
         }
 
-
-
-        // Email Report 설정 - 직접 입력 체크박스 토글 함수
-        function toggleCustomEmailInput(checkbox) {
-            const customEmailInput = document.getElementById('custom-email-input');
-            if (checkbox.checked) {
-                customEmailInput.style.display = 'block';
-                console.log('직접 입력 이메일 영역이 표시되었습니다.');
-            } else {
-                customEmailInput.style.display = 'none';
-                console.log('직접 입력 이메일 영역이 숨겨졌습니다.');
-            }
-        }
-
-        // 수신자 보기 함수
-        function showEmailRecipients() {
-            // 기존 모달이 있으면 제거
-            const existingModal = document.getElementById('email-recipients-modal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-
-            // 현재 설정 값들 수집
-            const frequency = document.getElementById('email-frequency-select');
-            const timeInput = document.getElementById('email-time-input');
-            
-            const frequencyText = frequency ? frequency.options[frequency.selectedIndex].text : '매주';
-            
-            // 시간 입력 처리
-            let timeText = '오전 9시 00분';
-            if (timeInput && timeInput.value) {
-                const [hours, minutes] = timeInput.value.split(':');
-                const hour = parseInt(hours);
-                const minute = parseInt(minutes);
-                
-                if (hour < 12) {
-                    timeText = `오전 ${hour}시 ${minute.toString().padStart(2, '0')}분`;
-                } else if (hour === 12) {
-                    timeText = `오후 12시 ${minute.toString().padStart(2, '0')}분`;
-                } else {
-                    timeText = `오후 ${hour - 12}시 ${minute.toString().padStart(2, '0')}분`;
-                }
-            }
-
-            // 선택된 수신자 그룹 확인
-            const selectedGroups = [];
-            const checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    const labelText = checkbox.nextElementSibling.textContent;
-                    selectedGroups.push(labelText);
-                    console.log('선택된 그룹:', labelText);
-                }
-            });
-
-            // 직접 입력 이메일 확인
-            const customEmails = document.getElementById('custom-emails');
-            const customEmailList = customEmails && customEmails.value.trim() ? customEmails.value.trim() : '';
-            
-            // 직접 입력 체크박스 상태 확인
-            const directInputCheckbox = document.querySelector('input[type="checkbox"][onclick*="toggleCustomEmailInput"]');
-            if (directInputCheckbox && directInputCheckbox.checked && customEmailList) {
-                console.log('직접 입력 체크박스가 선택되었고 이메일이 입력되었습니다.');
-            }
-
-            // 모달 HTML 생성
-            const modalHTML = `
-                <div id="email-recipients-modal" style="
-                    display: block;
-                    position: fixed;
-                    z-index: 1000;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-color: rgba(0,0,0,0.7);
-                ">
-                    <div style="
-                        background-color: #2a2a2a;
-                        margin: 5% auto;
-                        padding: 25px;
-                        border-radius: 8px;
-                        width: 90%;
-                        max-width: 700px;
-                        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-                        max-height: 85vh;
-                        overflow-y: auto;
-                        border: 1px solid #3a3a3a;
-                    ">
-                        <!-- 모달 헤더 -->
-                        <div style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            margin-bottom: 25px;
-                            padding-bottom: 15px;
-                            border-bottom: 1px solid #3a3a3a;
-                        ">
-                            <div style="color: #fff; font-size: 18px; font-weight: 600;">수신자 미리보기</div>
-                            <button onclick="closeEmailRecipientsModal()" style="
-                                background: none;
-                                border: none;
-                                color: #7a7a7a;
-                                font-size: 20px;
-                                cursor: pointer;
-                                padding: 5px;
-                                border-radius: 3px;
-                                transition: color 0.2s ease;
-                            " onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#7a7a7a'">×</button>
-                        </div>
-
-                        <!-- 발송 설정 -->
-                        <div style="margin-bottom: 25px;">
-                            <div style="color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 15px;">발송 설정</div>
-                            <div style="
-                                color: #b1b1b1;
-                                font-size: 14px;
-                                line-height: 1.6;
-                            ">
-                                <div style="
-                                    margin-bottom: 8px;
-                                    padding: 8px 12px;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    background-color: transparent;
-                                ">• 주기: <span style="color: #ff9800;">${frequencyText}</span></div>
-                                <div style="
-                                    margin-bottom: 8px;
-                                    padding: 8px 12px;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    background-color: transparent;
-                                ">• 시간: <span style="color: #ff9800;">${timeText}</span></div>
-                                <div style="
-                                    margin-bottom: 8px;
-                                    padding: 8px 12px;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    background-color: transparent;
-                                ">• 수신자 그룹: <span style="color: #ff9800;">${selectedGroups.length > 0 ? selectedGroups.join(', ') : '선택된 그룹 없음'}</span></div>
-                                <div style="
-                                    padding: 8px 12px;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    background-color: transparent;
-                                ">• 총 수신자: <span style="color: #ff9800;">${calculateTotalRecipients(selectedGroups, customEmailList)}명</span></div>
-                            </div>
-                        </div>
-
-                        <!-- 수신자 그룹 -->
-                        <div style="margin-bottom: 25px;">
-                            <div style="color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 15px;">수신자 그룹</div>
-                            
-                            <!-- 수신자 검색 창 -->
-                            <div style="margin-bottom: 20px; position: relative;">
-                                <div style="
-                                    position: relative;
-                                    display: flex;
-                                    align-items: center;
-                                    background-color: #1a1a1a;
-                                    border: 1px solid #3a3a3a;
-                                    border-radius: 4px;
-                                    padding: 0 12px;
-                                    transition: all 0.2s ease;
-                                " onfocus="this.style.backgroundColor='#2a2a2a'; this.style.borderColor='#4a9eff'" onblur="this.style.backgroundColor='#1a1a1a'; this.style.borderColor='#3a3a3a'">
-                                    <span style="
-                                        color: #7a7a7a;
-                                        margin-right: 8px;
-                                        font-size: 14px;
-                                    ">🔍</span>
-                                    <input 
-                                        type="text" 
-                                        id="recipient-search" 
-                                        placeholder="수신자 검색..."
-                                        style="
-                                            flex: 1;
-                                            padding: 10px 0;
-                                            border: none;
-                                            background: transparent;
-                                            color: #e1e1e1;
-                                            font-size: 14px;
-                                            outline: none;
-                                        "
-                                    >
-                                    <button 
-                                        id="clear-search" 
-                                        onclick="clearRecipientSearch()"
-                                        style="
-                                            background: none;
-                                            border: none;
-                                            color: #7a7a7a;
-                                            cursor: pointer;
-                                            padding: 4px;
-                                            font-size: 16px;
-                                            margin-left: 8px;
-                                            display: none;
-                                        "
-                                        onmouseover="this.style.color='#fff'" 
-                                        onmouseout="this.style.color='#7a7a7a'"
-                                    >×</button>
-                                </div>
-                            </div>
-
-                            ${generateRecipientGroups(selectedGroups, customEmailList)}
-                        </div>
-
-                        <!-- 하단 버튼 -->
-                        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #3a3a3a; padding-top: 20px;">
-                            <button onclick="closeEmailRecipientsModal()" class="chart-btn" style="padding: 10px 20px;">닫기</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // 모달을 페이지에 추가
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-            // 모달 외부 클릭 시 닫기
-            document.getElementById('email-recipients-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeEmailRecipientsModal();
-                }
-            });
-
-            // 수신자 검색 기능 추가
-            setTimeout(() => {
-                const searchInput = document.getElementById('recipient-search');
-                const clearButton = document.getElementById('clear-search');
-                
-                if (searchInput) {
-                    searchInput.addEventListener('input', function() {
-                        const searchTerm = this.value.toLowerCase();
-                        const recipientRows = document.querySelectorAll('#email-recipients-modal .recipient-row');
-                        
-                        // X 버튼 표시/숨김
-                        if (clearButton) {
-                            clearButton.style.display = this.value ? 'block' : 'none';
-                        }
-                        
-                        recipientRows.forEach(row => {
-                            const text = row.textContent.toLowerCase();
-                            if (text.includes(searchTerm)) {
-                                row.style.display = 'grid';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
-                    });
-                }
-            }, 100);
-        }
-
-        // 총 수신자 수 계산 함수
-        function calculateTotalRecipients(selectedGroups, customEmailList) {
-            let total = 0;
-            
-            // 각 그룹별 수신자 수 계산
-            selectedGroups.forEach(group => {
-                switch(group) {
-                    case '관리자':
-                        total += 3; // 관리자 3명
-                        break;
-                    case '전체 멤버':
-                        total += 127; // 전체 멤버 127명
-                        break;
-                    case '비활성 멤버':
-                        total += 23; // 비활성 멤버 23명
-                        break;
-                }
-            });
-            
-            // 직접 입력 이메일 수 추가
-            if (customEmailList) {
-                const emails = customEmailList.split(',').filter(email => email.trim().length > 0);
-                total += emails.length;
-            }
-            
-            return total;
-        }
-
-        // 수신자 그룹 HTML 생성 함수
-        function generateRecipientGroups(selectedGroups, customEmailList) {
-            let html = '';
-            
-            // 관리자 그룹
-            if (selectedGroups.includes('관리자')) {
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 10px;">• 관리자 <span style="color: #fff;">(</span><span style="color: #fff; font-weight: 700;">3명</span><span style="color: #fff;">)</span></div>
-                        <div style="
-                            border: 1px solid #3a3a3a;
-                            border-radius: 4px;
-                            overflow: hidden;
-                            max-height: 200px;
-                            overflow-y: auto;
-                            scrollbar-width: thin;
-                            scrollbar-color: #2a2a2a #1a1a1a;
-                        ">
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">김관리</div>
-                                <div style="padding: 10px; color: #ff9800;">kim.manager@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">이시스템</div>
-                                <div style="padding: 10px; color: #ff9800;">lee.system@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">박운영</div>
-                                <div style="padding: 10px; color: #ff9800;">park.ops@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자1</div>
-                                <div style="padding: 10px; color: #ff9800;">admin1@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자2</div>
-                                <div style="padding: 10px; color: #ff9800;">admin2@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자3</div>
-                                <div style="padding: 10px; color: #ff9800;">admin3@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자4</div>
-                                <div style="padding: 10px; color: #ff9800;">admin4@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자5</div>
-                                <div style="padding: 10px; color: #ff9800;">admin5@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자6</div>
-                                <div style="padding: 10px; color: #ff9800;">admin6@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자7</div>
-                                <div style="padding: 10px; color: #ff9800;">admin7@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자8</div>
-                                <div style="padding: 10px; color: #ff9800;">admin8@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                                border-bottom: 1px solid #3a3a3a;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자9</div>
-                                <div style="padding: 10px; color: #ff9800;">admin9@samsung.com</div>
-                            </div>
-                            <div class="recipient-row" style="
-                                display: grid;
-                                grid-template-columns: 1fr 2fr;
-                            ">
-                                <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">관리자10</div>
-                                <div style="padding: 10px; color: #ff9800;">admin10@samsung.com</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 전체 멤버 그룹
-            if (selectedGroups.includes('전체 멤버')) {
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 10px;">• 전체 멤버 <span style="color: #fff;">(</span><span style="color: #fff; font-weight: 700;">127명</span><span style="color: #fff;">)</span></div>
-                        <div style="
-                            border: 1px solid #3a3a3a;
-                            border-radius: 4px;
-                            overflow: hidden;
-                            max-height: 200px;
-                            overflow-y: auto;
-                            scrollbar-width: thin;
-                            scrollbar-color: #2a2a2a #1a1a1a;
-                        ">
-                            ${generateMemberRows(127, '전체 멤버')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 비활성 멤버 그룹
-            if (selectedGroups.includes('비활성 멤버')) {
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 10px;">• 비활성 멤버 <span style="color: #fff;">(</span><span style="color: #fff; font-weight: 700;">23명</span><span style="color: #fff;">)</span></div>
-                        <div style="
-                            border: 1px solid #3a3a3a;
-                            border-radius: 4px;
-                            overflow: hidden;
-                            max-height: 200px;
-                            overflow-y: auto;
-                            scrollbar-width: thin;
-                            scrollbar-color: #2a2a2a #1a1a1a;
-                        ">
-                            ${generateMemberRows(23, '비활성 멤버')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // 직접 입력 그룹
-            if (selectedGroups.includes('직접 입력')) {
-                const emails = customEmailList ? customEmailList.split(',').filter(email => email.trim().length > 0) : [];
-                const emailCount = emails.length;
-                
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 10px;">• 직접 입력 <span style="color: #fff;">(</span><span style="color: #fff; font-weight: 700;">${emailCount}명</span><span style="color: #fff;">)</span></div>
-                        <div style="
-                            border: 1px solid #3a3a3a;
-                            border-radius: 4px;
-                            overflow: hidden;
-                            max-height: 200px;
-                            overflow-y: auto;
-                            scrollbar-width: thin;
-                            scrollbar-color: #2a2a2a #1a1a1a;
-                        ">
-                            ${emailCount > 0 ? emails.map((email, index) => `
-                                <div class="recipient-row" style="
-                                    display: grid;
-                                    grid-template-columns: 1fr 2fr;
-                                    ${index < emails.length - 1 ? 'border-bottom: 1px solid #3a3a3a;' : ''}
-                                ">
-                                    <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">사용자 ${index + 1}</div>
-                                    <div style="padding: 10px; color: #ff9800;">${email.trim()}</div>
-                                </div>
-                            `).join('') : `
-                                <div style="padding: 20px; text-align: center; color: #7a7a7a; font-size: 14px;">
-                                    직접 입력된 이메일이 없습니다.
-                                </div>
-                            `}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            return html;
-        }
-
-        // 멤버 행 생성 함수
-        function generateMemberRows(count, type) {
-            let html = '';
-            const names = ['김철수', '이영희', '박민수', '정수진', '최동현', '윤서연', '강태우', '임지영', '한승우', '송미라'];
-            const domains = ['samsung.com', 'samsung.co.kr'];
-            
-            for (let i = 0; i < count; i++) {
-                const name = names[i % names.length] + (Math.floor(i / names.length) + 1);
-                const domain = domains[i % domains.length];
-                const email = `${name.toLowerCase().replace(/[가-힣]/g, '')}@${domain}`;
-                
-                html += `
-                    <div class="recipient-row" style="
-                        display: grid;
-                        grid-template-columns: 1fr 2fr;
-                        ${i < count - 1 ? 'border-bottom: 1px solid #3a3a3a;' : ''}
-                    ">
-                        <div style="padding: 10px; color: #ff9800; border-right: 1px solid #3a3a3a;">${name}</div>
-                        <div style="padding: 10px; color: #ff9800;">${email}</div>
-                    </div>
-                `;
-            }
-            
-            return html;
-        }
-
-        // 검색창 초기화 함수
-        function clearRecipientSearch() {
-            const searchInput = document.getElementById('recipient-search');
-            const clearButton = document.getElementById('clear-search');
-            
-            if (searchInput) {
-                searchInput.value = '';
-                if (clearButton) {
-                    clearButton.style.display = 'none';
-                }
-                
-                // 모든 행 다시 표시
-                const recipientRows = document.querySelectorAll('#email-recipients-modal .recipient-row');
-                recipientRows.forEach(row => {
-                    row.style.display = 'grid';
-                });
-            }
-        }
-
-        // 수신자 미리보기 모달 닫기 함수
-        function closeEmailRecipientsModal() {
-            const modal = document.getElementById('email-recipients-modal');
-            if (modal) {
-                modal.remove();
-            }
-        }
-
-        // 설정 저장 함수
-        function saveEmailSettings() {
-            // 자동 리포트 활성화 확인
-            const autoReportToggle = document.querySelector('#settings .toggle-switch');
-            const isAutoReportEnabled = autoReportToggle && autoReportToggle.classList.contains('active') || autoReportToggle && !autoReportToggle.classList.contains('off');
-
-            if (!isAutoReportEnabled) {
-                alert('⚠️ 자동 리포트 발송이 비활성화 상태입니다.\n설정을 저장하기 전에 자동 리포트를 활성화해주세요.');
-                return;
-            }
-
-            // 선택된 수신자 그룹 확인
-            const selectedGroups = [];
-            const checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    selectedGroups.push(checkbox.nextElementSibling.textContent);
-                }
-            });
-
-            if (selectedGroups.length === 0) {
-                alert('⚠️ 수신자 그룹을 최소 하나 이상 선택해주세요.');
-                return;
-            }
-
-            // 직접 입력 체크 시 이메일 주소 확인
-            const customEmailCheckbox = document.querySelector('input[type="checkbox"][onclick*="toggleCustomEmailInput"]');
-            const customEmails = document.getElementById('custom-emails');
-            
-            if (customEmailCheckbox && customEmailCheckbox.checked) {
-                if (!customEmails || !customEmails.value.trim()) {
-                    alert('⚠️ 직접 입력을 선택하셨습니다.\n이메일 주소를 입력해주세요.');
-                    return;
-                }
-                
-                // 이메일 형식 간단 검증
-                const emailList = customEmails.value.split(',');
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                for (let email of emailList) {
-                    email = email.trim();
-                    if (email && !emailRegex.test(email)) {
-                        alert(`⚠️ 올바르지 않은 이메일 형식입니다: ${email}\n\n올바른 형식: example@samsung.com`);
-                        return;
-                    }
-                }
-            }
-
-            // 저장 성공 메시지
-            alert('✅ Email Report 설정이 성공적으로 저장되었습니다!\n\n설정된 주기에 따라 이메일 리포트가 자동으로 발송됩니다.');
-            console.log('Email Report 설정 저장 완료');
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            
             // 기본 설정 후
             setTimeout(async () => {
                 // 드롭다운에서 초기 차트 설정
