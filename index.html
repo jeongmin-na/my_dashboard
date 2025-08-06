@@ -10639,41 +10639,88 @@
             }
         }
 
-        // 설정 저장 함수
-        function saveEmailSettings() {
-            // 자동 리포트 활성화 확인
-            const autoReportToggle = document.querySelector('#settings .toggle-switch');
-            const isAutoReportEnabled = autoReportToggle && autoReportToggle.classList.contains('active') || autoReportToggle && !autoReportToggle.classList.contains('off');
+        // 시간 드롭다운 업데이트 함수
+        function updateTimeInput() {
+            const hourSelect = document.getElementById('email-hour-select');
+            const minuteSelect = document.getElementById('email-minute-select');
+            const timeInput = document.getElementById('email-time-input');
+            
+            if (hourSelect && minuteSelect && timeInput) {
+                const hour = hourSelect.value.padStart(2, '0');
+                const minute = minuteSelect.value.padStart(2, '0');
+                timeInput.value = `${hour}:${minute}`;
+                
+                console.log(`⏰ 시간 드롭다운 업데이트: ${hour}:${minute}`);
+            }
+        }
 
-            if (!isAutoReportEnabled) {
-                showSimpleAlert('⚠️ 자동 리포트 발송이 비활성화 상태입니다.\n설정을 저장하기 전에 자동 리포트를 활성화해주세요.', 'warning');
+        // 이번 발송 시간 계산 함수 (설정 저장 시 지정된 시간)
+        function calculateCurrentSendTime(frequency, time) {
+            const now = new Date();
+            const [hours, minutes] = time.split(':');
+            let currentDate = new Date();
+            
+            // 현재 날짜에 설정된 시간 적용
+            currentDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+            
+            // 만약 현재 시간이 이미 지났으면, 다음 주기로 설정
+            if (currentDate <= now) {
+                switch(frequency) {
+                    case 'daily':
+                        // 내일 같은 시간
+                        currentDate.setDate(currentDate.getDate() + 1);
+                        break;
+                    case 'weekly':
+                        // 다음주 같은 시간
+                        currentDate.setDate(currentDate.getDate() + 7);
+                        break;
+                    case 'monthly':
+                        // 다음달 같은 시간
+                        currentDate.setMonth(currentDate.getMonth() + 1);
+                        break;
+                }
+            }
+            
+            return currentDate.toLocaleDateString('ko-KR') + ' ' + currentDate.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+        }
+
+        // 설정 저장 함수
+        async function saveEmailSettings() {
+            // 예약 메일 발송 관리 토글 확인
+            const emailToggle = document.querySelector('#settings .toggle-switch');
+            const isEmailSchedulerEnabled = emailToggle && !emailToggle.classList.contains('off');
+
+            if (!isEmailSchedulerEnabled) {
+                showSimpleAlert('⚠️ 예약 메일 발송 관리가 비활성화 상태입니다.\n설정을 저장하기 전에 예약 메일 발송 관리를 활성화해주세요.', 'warning');
                 return;
             }
 
-            // 선택된 수신자 그룹 확인
+            // 선택된 수신자 그룹 확인 (직접 입력 제외)
             const selectedGroups = [];
             const checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
-                    selectedGroups.push(checkbox.nextElementSibling.textContent);
+                    const labelText = checkbox.nextElementSibling.textContent.trim();
+                    // 직접 입력은 selectedGroups에서 제외 (별도 처리)
+                    if (labelText && labelText !== '직접 입력') {
+                        selectedGroups.push(labelText);
+                    }
                 }
             });
-
-            if (selectedGroups.length === 0) {
-                showSimpleAlert('⚠️ 수신자 그룹을 최소 하나 이상 선택해주세요.', 'warning');
-                return;
-            }
 
             // 직접 입력 체크 시 이메일 주소 확인
             const customEmailCheckbox = document.querySelector('input[type="checkbox"][onclick*="toggleCustomEmailInput"]');
             const customEmails = document.getElementById('custom-emails');
             
-            if (customEmailCheckbox && customEmailCheckbox.checked) {
-                if (!customEmails || !customEmails.value.trim()) {
-                    showSimpleAlert('⚠️ 직접 입력을 선택하셨습니다.\n이메일 주소를 입력해주세요.', 'warning');
-                    return;
-                }
-                
+            // 수신자 그룹이나 직접 입력 중 하나라도 선택되어야 함
+            const hasCustomEmail = customEmailCheckbox && customEmailCheckbox.checked && customEmails && customEmails.value.trim();
+            
+            if (selectedGroups.length === 0 && !hasCustomEmail) {
+                showSimpleAlert('⚠️ 수신자 그룹을 선택하거나 직접 이메일을 입력해주세요.', 'warning');
+                return;
+            }
+            
+            if (hasCustomEmail) {
                 // 이메일 형식 간단 검증
                 const emailList = customEmails.value.split(',');
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -10723,10 +10770,15 @@
             }
 
             // 수신자 정보 수집
-            const recipientsText = selectedGroups.join(', ');
-            if (customEmailCheckbox && customEmailCheckbox.checked && customEmails && customEmails.value.trim()) {
-                recipientsText += `, 직접입력`;
+            let recipientsText = selectedGroups.join(', ');
+            
+            if (hasCustomEmail) {
+                // 직접 입력이 체크되고 이메일이 있는 경우에만 추가
+                recipientsText += recipientsText ? ', 직접입력' : '직접입력';
             }
+
+            // 이번 발송 시간 계산 (현재 설정된 시간)
+            const currentSendTime = calculateCurrentSendTime(frequencyValue, timeValue);
 
             // 새 예약 생성
             const newSchedule = {
@@ -10736,6 +10788,7 @@
                 time: timeText,
                 recipients: recipientsText,
                 status: "활성",
+                currentSend: currentSendTime, // 이번 발송 시간
                 nextSend: calculateNextSendTime(frequencyValue, timeValue),
                 message: messageText
             };
@@ -10925,8 +10978,508 @@
                 setTimeout(() => {
                     updateRecipientCount();
                 }, 2000); // 데이터 로드 후 수신자 수 계산
+
+                // 시간 드롭다운 초기화
+                setTimeout(() => {
+                    initializeTimeDropdowns();
+                }, 1000); // UI 로드 후 시간 드롭다운 초기화
+
+                // 예약 메일 발송 관리 토글 상태 초기화
+                setTimeout(() => {
+                    const emailToggle = document.querySelector('#settings .toggle-switch');
+                    if (emailToggle) {
+                        // 기본적으로 활성화 상태로 시작
+                        emailToggle.classList.remove('off');
+                        emailSchedulerActive = true;
+                        console.log('📅 예약 메일 발송 관리 토글 초기화: 활성화 상태');
+                        
+                        // 스케줄러 시작
+                        startEmailScheduler();
+                    }
+                }, 3000); // 데이터 로드 완료 후 토글 상태 초기화
             }, 100);
         });
+
+        // =====================================================
+        // 📅 자동 메일 발송 스케줄러 시스템
+        // =====================================================
+
+        // 스케줄러 상태 관리
+        let emailSchedulerActive = false;
+        let emailSchedulerInterval = null;
+        let isSchedulerRunning = false;
+
+        // 스케줄러 시작 함수
+        function startEmailScheduler() {
+            if (isSchedulerRunning) {
+                console.log('📅 이메일 스케줄러가 이미 실행 중입니다.');
+                return;
+            }
+
+            console.log('📅 이메일 스케줄러를 시작합니다.');
+            isSchedulerRunning = true;
+
+            // 1분마다 예약 리스트 검사
+            emailSchedulerInterval = setInterval(() => {
+                checkAndSendScheduledEmails();
+            }, 60000); // 60초 = 1분
+
+            // 즉시 한 번 검사
+            checkAndSendScheduledEmails();
+        }
+
+        // 스케줄러 중지 함수
+        function stopEmailScheduler() {
+            if (emailSchedulerInterval) {
+                clearInterval(emailSchedulerInterval);
+                emailSchedulerInterval = null;
+                isSchedulerRunning = false;
+                console.log('📅 이메일 스케줄러가 중지되었습니다.');
+            }
+        }
+
+        // 예약된 이메일 검사 및 발송
+        async function checkAndSendScheduledEmails() {
+            // 토글 상태 확인
+            if (!emailSchedulerActive) {
+                console.log('📅 예약 메일 발송이 비활성화되어 있습니다.');
+                return;
+            }
+
+            if (!window.emailScheduleList || window.emailScheduleList.length === 0) {
+                console.log('📅 예약된 이메일이 없습니다.');
+                return;
+            }
+
+            const now = new Date();
+            console.log(`📅 예약 이메일 검사 시작: ${now.toLocaleString('ko-KR')}`);
+
+            // 활성 상태인 예약만 검사
+            const activeSchedules = window.emailScheduleList.filter(schedule => 
+                schedule.status === '활성'
+            );
+
+            console.log(`📅 활성 예약 ${activeSchedules.length}개 검사 중...`);
+
+            for (const schedule of activeSchedules) {
+                try {
+                    // 시간 갱신 적용
+                    updateScheduleTimeIfNeeded(schedule);
+                    
+                    const shouldSend = shouldSendEmailNow(schedule, now);
+                    
+                    if (shouldSend) {
+                        console.log(`📧 예약 발송 시작: ${schedule.title} (ID: ${schedule.id})`);
+                        
+                        // 예약에 따른 이메일 데이터 수집
+                        const emailData = await collectEmailDataFromSchedule(schedule);
+                        
+                        if (emailData) {
+                            // 이메일 발송
+                            await sendEmailViaSMTP(emailData);
+                            
+                            // 다음 발송 시간 업데이트
+                            updateNextSendTime(schedule);
+                            
+                            console.log(`✅ 예약 이메일 발송 완료: ${schedule.title}`);
+                            
+                            // 예약 리스트 팝업이 열려있으면 테이블 새로고침
+                            refreshEmailScheduleList();
+                            
+                            // 성공 로그를 UI에 표시 (옵션)
+                            showScheduledEmailNotification(schedule, 'success');
+                        } else {
+                            console.error(`❌ 예약 이메일 데이터 수집 실패: ${schedule.title}`);
+                            showScheduledEmailNotification(schedule, 'error');
+                        }
+                    }
+                } catch (error) {
+                    console.error(`❌ 예약 이메일 발송 실패: ${schedule.title}`, error);
+                    showScheduledEmailNotification(schedule, 'error');
+                }
+            }
+        }
+
+        // 현재 시간에 이메일을 발송해야 하는지 검사
+        function shouldSendEmailNow(schedule, currentTime) {
+            // currentSend 시간을 우선 체크, 없으면 nextSend 사용
+            const targetSendTimeStr = schedule.currentSend || schedule.nextSend;
+            const targetSendTime = parseNextSendTime(targetSendTimeStr);
+            
+            if (!targetSendTime) {
+                console.warn(`⚠️ 발송 시간 파싱 실패: ${targetSendTimeStr}`);
+                return false;
+            }
+
+            // 현재 시간이 예약 시간과 같거나 지났는지 확인 (1분 오차 허용)
+            const timeDiff = currentTime.getTime() - targetSendTime.getTime();
+            const shouldSend = timeDiff >= 0 && timeDiff < 60000; // 1분 이내
+
+            if (shouldSend) {
+                console.log(`⏰ 발송 시간 도달: ${schedule.title} (이번 발송: ${targetSendTimeStr}, 현재: ${currentTime.toLocaleString('ko-KR')})`);
+            }
+
+            return shouldSend;
+        }
+
+        // nextSend 문자열을 Date 객체로 변환
+        function parseNextSendTime(nextSendStr) {
+            try {
+                // "2025. 8. 7. 오전 9:00" 형태의 문자열 파싱
+                const parts = nextSendStr.split(' ');
+                const datePart = parts[0] + ' ' + parts[1] + ' ' + parts[2]; // "2025. 8. 7."
+                const timePart = parts[4]; // "9:00"
+                const ampm = parts[3]; // "오전" or "오후"
+
+                // 날짜 파싱
+                const dateMatch = datePart.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\./);
+                if (!dateMatch) return null;
+
+                const year = parseInt(dateMatch[1]);
+                const month = parseInt(dateMatch[2]) - 1; // Date 객체는 0부터 시작
+                const day = parseInt(dateMatch[3]);
+
+                // 시간 파싱
+                const timeMatch = timePart.match(/(\d{1,2}):(\d{2})/);
+                if (!timeMatch) return null;
+
+                let hour = parseInt(timeMatch[1]);
+                const minute = parseInt(timeMatch[2]);
+
+                // 오후 처리
+                if (ampm === '오후' && hour !== 12) {
+                    hour += 12;
+                } else if (ampm === '오전' && hour === 12) {
+                    hour = 0;
+                }
+
+                return new Date(year, month, day, hour, minute, 0, 0);
+            } catch (error) {
+                console.error('nextSend 시간 파싱 오류:', error);
+                return null;
+            }
+        }
+
+        // 예약에서 이메일 데이터 수집
+        async function collectEmailDataFromSchedule(schedule) {
+            console.log(`📋 예약에서 이메일 데이터 수집: ${schedule.title}`);
+
+            try {
+                // 수신자 그룹 파싱
+                const recipients = schedule.recipients.split(', ');
+                const selectedRecipients = [];
+                let allRecipientEmails = [];
+                let customEmailList = [];
+
+                // 각 수신자 그룹 처리
+                for (const recipient of recipients) {
+                    if (recipient === '관리자') {
+                        const admins = originalMembersData ? originalMembersData.filter(member => member.role === 'owner') : [];
+                        const adminEmails = admins.map(admin => admin.email);
+                        allRecipientEmails = allRecipientEmails.concat(adminEmails);
+                        selectedRecipients.push('관리자');
+                        console.log(`✓ 관리자 ${admins.length}명 추가`);
+                    } else if (recipient === '전체 멤버') {
+                        const allMembers = originalMembersData ? [...originalMembersData] : [];
+                        const allMemberEmails = allMembers.map(member => member.email);
+                        allRecipientEmails = allRecipientEmails.concat(allMemberEmails);
+                        selectedRecipients.push('전체 멤버');
+                        console.log(`✓ 전체 멤버 ${allMembers.length}명 추가`);
+                    } else if (recipient === '비활성 멤버') {
+                        const inactiveMembers = originalMembersData ? originalMembersData.filter(member => {
+                            if (member.spendData) {
+                                return member.spendData.premiumRequests === 0;
+                            }
+                            return true;
+                        }) : [];
+                        const inactiveMemberEmails = inactiveMembers.map(member => member.email);
+                        allRecipientEmails = allRecipientEmails.concat(inactiveMemberEmails);
+                        selectedRecipients.push('비활성 멤버');
+                        console.log(`✓ 비활성 멤버 ${inactiveMembers.length}명 추가`);
+                    } else if (recipient === '직접입력') {
+                        // 직접 입력된 이메일은 별도 처리 필요
+                        console.log(`⚠️ 직접입력 이메일은 현재 예약에서 지원되지 않습니다.`);
+                    }
+                }
+
+                // 중복 이메일 제거
+                const uniqueEmails = [...new Set(allRecipientEmails)];
+                console.log(`📬 총 수신자 ${uniqueEmails.length}명 (중복 제거 후)`);
+
+                if (uniqueEmails.length === 0) {
+                    console.warn('⚠️ 수신자가 없습니다.');
+                    return null;
+                }
+
+                return {
+                    message: schedule.message || '예약된 삼성 AI Experience Group 대시보드 리포트입니다.',
+                    selectedGroups: selectedRecipients,
+                    customEmails: customEmailList,
+                    allEmails: uniqueEmails,
+                    timestamp: new Date().toLocaleString('ko-KR'),
+                    source: 'scheduled',
+                    scheduleId: schedule.id,
+                    scheduleTitle: schedule.title
+                };
+
+            } catch (error) {
+                console.error('예약 이메일 데이터 수집 오류:', error);
+                return null;
+            }
+        }
+
+        // 발송 완료 후 시간 업데이트 (이번 발송 → 다음 발송 이동)
+        function updateNextSendTime(schedule) {
+            const frequency = getFrequencyValue(schedule.frequency);
+            const time = getTimeValue(schedule.time);
+            
+            if (frequency && time) {
+                // 현재 시간을 이번 발송 시간으로 설정
+                const now = new Date();
+                schedule.currentSend = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+                
+                // 새로운 다음 발송 시간 계산 (이번 발송 기준으로 한 주기 후)
+                schedule.nextSend = calculateNextSendTimeFromCurrent(schedule.currentSend, frequency);
+                
+                console.log(`⏰ 발송 완료 후 시간 업데이트: ${schedule.title}`);
+                console.log(`   이번 발송: ${schedule.currentSend}`);
+                console.log(`   다음 발송: ${schedule.nextSend}`);
+            }
+        }
+
+        // 이번 발송 기준으로 다음 발송 시간 계산
+        function calculateNextSendTimeFromCurrent(currentSendStr, frequency) {
+            try {
+                // currentSend 시간을 Date 객체로 변환
+                const currentSendTime = parseNextSendTime(currentSendStr);
+                if (!currentSendTime) {
+                    console.error('currentSend 시간 파싱 실패:', currentSendStr);
+                    return currentSendStr; // 파싱 실패 시 기존 값 유지
+                }
+
+                // 주기에 따라 다음 발송 시간 계산
+                const nextSendTime = new Date(currentSendTime);
+                switch(frequency) {
+                    case 'daily':
+                        // 매일: 1일 후
+                        nextSendTime.setDate(nextSendTime.getDate() + 1);
+                        break;
+                    case 'weekly':
+                        // 매주: 7일 후
+                        nextSendTime.setDate(nextSendTime.getDate() + 7);
+                        break;
+                    case 'monthly':
+                        // 매월: 1개월 후 (정확한 월 계산)
+                        const currentMonth = nextSendTime.getMonth();
+                        const currentYear = nextSendTime.getFullYear();
+                        const currentDay = nextSendTime.getDate();
+                        
+                        // 다음 달의 같은 날짜로 설정
+                        let nextMonth = currentMonth + 1;
+                        let nextYear = currentYear;
+                        
+                        if (nextMonth > 11) {
+                            nextMonth = 0;
+                            nextYear++;
+                        }
+                        
+                        // 다음 달의 마지막 날을 확인하여 날짜 조정
+                        const lastDayOfNextMonth = new Date(nextYear, nextMonth + 1, 0).getDate();
+                        const adjustedDay = Math.min(currentDay, lastDayOfNextMonth);
+                        
+                        nextSendTime.setFullYear(nextYear, nextMonth, adjustedDay);
+                        break;
+                }
+
+                console.log(`📅 다음 발송 시간 계산: ${frequency} 주기, 현재: ${currentSendTime.toLocaleString('ko-KR')}, 다음: ${nextSendTime.toLocaleString('ko-KR')}`);
+
+                return nextSendTime.toLocaleDateString('ko-KR') + ' ' + nextSendTime.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+            } catch (error) {
+                console.error('다음 발송 시간 계산 오류:', error);
+                return currentSendStr; // 오류 시 기존 값 유지
+            }
+        }
+
+        // 주기 텍스트를 값으로 변환
+        function getFrequencyValue(frequencyText) {
+            switch(frequencyText) {
+                case '매일': return 'daily';
+                case '매주': return 'weekly';
+                case '매월': return 'monthly';
+                default: return 'weekly';
+            }
+        }
+
+        // 시간 텍스트를 값으로 변환
+        function getTimeValue(timeText) {
+            try {
+                // "오전 9시 00분" 형태를 "09:00" 형태로 변환
+                const match = timeText.match(/(오전|오후)\s*(\d{1,2})시\s*(\d{2})분/);
+                if (!match) return '09:00';
+
+                const ampm = match[1];
+                let hour = parseInt(match[2]);
+                const minute = match[3];
+
+                if (ampm === '오후' && hour !== 12) {
+                    hour += 12;
+                } else if (ampm === '오전' && hour === 12) {
+                    hour = 0;
+                }
+
+                return `${hour.toString().padStart(2, '0')}:${minute}`;
+            } catch (error) {
+                console.error('시간 변환 오류:', error);
+                return '09:00';
+            }
+        }
+
+        // 예약 이메일 발송 알림 표시
+        function showScheduledEmailNotification(schedule, type) {
+            let message = '';
+            let alertType = 'info';
+
+            switch(type) {
+                case 'success':
+                    message = `✅ 예약 이메일 발송 완료\n\n${schedule.title}\n다음 발송: ${schedule.nextSend}`;
+                    alertType = 'success';
+                    break;
+                case 'error':
+                    message = `❌ 예약 이메일 발송 실패\n\n${schedule.title}\n다시 시도하거나 설정을 확인해주세요.`;
+                    alertType = 'error';
+                    break;
+            }
+
+            // 조용한 알림 (콘솔에만 기록, UI 알림은 선택사항)
+            console.log(`📢 ${message}`);
+            
+            // 필요시 UI 알림도 표시
+            // showSimpleAlert(message, alertType);
+        }
+
+        // 예약 시간 갱신 함수 (이번 발송 시간이 과거인 경우)
+        function updateScheduleTimeIfNeeded(schedule) {
+            const now = new Date();
+            const currentSendTime = parseNextSendTime(schedule.currentSend);
+            
+            if (!currentSendTime) {
+                console.warn(`⚠️ 이번 발송 시간 파싱 실패: ${schedule.currentSend}`);
+                return;
+            }
+            
+            // 이번 발송 시간이 현재보다 과거인 경우 갱신
+            if (currentSendTime < now) {
+                console.log(`⏰ 예약 시간 갱신 필요: ${schedule.title}`);
+                console.log(`   현재 시간: ${now.toLocaleString('ko-KR')}`);
+                console.log(`   이번 발송 시간: ${currentSendTime.toLocaleString('ko-KR')}`);
+                
+                // 이번 발송 <- 다음 발송
+                schedule.currentSend = schedule.nextSend;
+                
+                // 다음 발송 <- 다음 발송 + 주기
+                const frequency = getFrequencyValue(schedule.frequency);
+                if (frequency) {
+                    schedule.nextSend = calculateNextSendTimeFromCurrent(schedule.currentSend, frequency);
+                }
+                
+                console.log(`   갱신 후 이번 발송: ${schedule.currentSend}`);
+                console.log(`   갱신 후 다음 발송: ${schedule.nextSend}`);
+            }
+        }
+
+        // 예약 리스트 팝업 테이블 새로고침 (메일 발송 후 사용)
+        function refreshEmailScheduleList() {
+            const modal = document.getElementById('email-schedule-modal');
+            if (modal) {
+                console.log('🔄 예약 리스트 팝업 테이블 새로고침 중...');
+                
+                // 시간 갱신 적용
+                if (window.emailScheduleList) {
+                    window.emailScheduleList.forEach(schedule => {
+                        updateScheduleTimeIfNeeded(schedule);
+                    });
+                }
+                
+                // 테이블 내용만 업데이트 (모달은 유지)
+                const tableContent = document.getElementById('schedule-list-content');
+                if (tableContent && window.emailScheduleList) {
+                    const scheduleList = window.emailScheduleList;
+                    
+                    // 테이블 내용 재생성
+                    tableContent.innerHTML = scheduleList.map(item => `
+                        <div class="schedule-item" data-status="${item.status}" style="
+                            display: grid;
+                            grid-template-columns: 2fr 1fr 1.2fr 1.2fr 1.5fr 0.8fr 0.8fr 0.8fr;
+                            gap: 15px;
+                            padding: 15px;
+                            border-bottom: 1px solid #3a3a3a;
+                            color: #e1e1e1;
+                            font-size: 14px;
+                            transition: background-color 0.2s ease;
+                        " onmouseover="this.style.backgroundColor='#3a3a3a'" onmouseout="this.style.backgroundColor='transparent'">
+                            <div style="cursor: pointer;" onclick="showScheduleDetail(${item.id})">
+                                <div style="font-weight: 600; color: #fff; margin-bottom: 5px;">${item.title}</div>
+                                <div style="color: #7a7a7a; font-size: 12px;">${item.message}</div>
+                            </div>
+                            <div>${item.frequency}</div>
+                            <div style="color: #ff9800; font-weight: 600;">${item.currentSend || item.nextSend}</div>
+                            <div style="color: #7a7a7a;">${item.nextSend}</div>
+                            <div>${item.recipients}</div>
+                            <div style="text-align: center;">
+                                <input type="radio" name="status-${item.id}" value="active" ${item.status === '활성' ? 'checked' : ''} 
+                                       onchange="updateScheduleStatus(${item.id}, '활성')" style="
+                                    width: 16px;
+                                    height: 16px;
+                                    accent-color: #4a9eff;
+                                ">
+                            </div>
+                            <div style="text-align: center;">
+                                <input type="radio" name="status-${item.id}" value="inactive" ${item.status === '비활성' ? 'checked' : ''} 
+                                       onchange="updateScheduleStatus(${item.id}, '비활성')" style="
+                                    width: 16px;
+                                    height: 16px;
+                                    accent-color: #4a9eff;
+                                ">
+                            </div>
+                            <div style="text-align: center;">
+                                <button onclick="deleteSchedule(${item.id})" style="
+                                    background: none;
+                                    border: none;
+                                    color: #ff4757;
+                                    cursor: pointer;
+                                    padding: 4px;
+                                    font-size: 16px;
+                                    font-weight: bold;
+                                ">×</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    // 총 개수 업데이트
+                    const totalCountElement = modal.querySelector('.pagination-info span');
+                    if (totalCountElement) {
+                        totalCountElement.textContent = scheduleList.length;
+                    }
+                    
+                    console.log('✅ 예약 리스트 팝업 테이블 새로고침 완료');
+                }
+            }
+        }
+
+        // 페이지 로드 시 시간 드롭다운 초기화
+        function initializeTimeDropdowns() {
+            const timeInput = document.getElementById('email-time-input');
+            const hourSelect = document.getElementById('email-hour-select');
+            const minuteSelect = document.getElementById('email-minute-select');
+            
+            if (timeInput && hourSelect && minuteSelect) {
+                const [hours, minutes] = timeInput.value.split(':');
+                hourSelect.value = hours;
+                minuteSelect.value = minutes;
+                
+                console.log(`⏰ 시간 드롭다운 초기화: ${hours}:${minutes}`);
+            }
+        }
 
     </script>
 </body>
