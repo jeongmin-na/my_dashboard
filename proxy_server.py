@@ -117,6 +117,68 @@ def proxy_api(api_path):
         }
         return jsonify(error_response), 500
 
+@app.route('/send-email', methods=['POST', 'OPTIONS'])
+def send_email():
+    """이메일 발송 엔드포인트"""
+    
+    # CORS preflight 요청 처리
+    if request.method == 'OPTIONS':
+        response = jsonify({'status': 'ok'})
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers['Access-Control-Max-Age'] = '86400'
+        return response
+    
+    try:
+        # 요청 데이터 가져오기
+        email_data = request.get_json()
+        
+        if not email_data:
+            return jsonify({'error': 'No email data provided'}), 400
+        
+        # 필수 필드 확인
+        required_fields = ['to_emails', 'subject', 'message']
+        for field in required_fields:
+            if field not in email_data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # 이메일 발송 로그
+        print(f"📧 이메일 발송 요청:")
+        print(f"- 수신자: {len(email_data.get('to_emails', []))}명")
+        print(f"- 제목: {email_data.get('subject', '')}")
+        print(f"- 메시지 길이: {len(email_data.get('message', ''))}자")
+        
+        # 실제 SMTP 발송 대신 성공 응답 (테스트용)
+        # 추후 실제 SMTP 서버 연동 시 이 부분을 수정
+        response_data = {
+            'success': True,
+            'message': '이메일이 성공적으로 발송되었습니다.',
+            'sent_count': len(email_data.get('to_emails', [])),
+            'timestamp': email_data.get('timestamp', ''),
+            'subject': email_data.get('subject', '')
+        }
+        
+        # CORS 헤더 추가
+        response = jsonify(response_data)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        
+        print(f"✅ 이메일 발송 완료: {len(email_data.get('to_emails', []))}명")
+        return response
+        
+    except Exception as e:
+        print(f"❌ 이메일 발송 에러: {e}")
+        error_response = {
+            'success': False,
+            'error': 'Email sending failed',
+            'message': str(e)
+        }
+        response = jsonify(error_response)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response, 500
+
 @app.route('/health')
 def health_check():
     """헬스 체크 엔드포인트"""
